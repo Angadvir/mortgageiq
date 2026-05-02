@@ -500,22 +500,17 @@ body::before {
 
 /* News page */
 .news-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.news-section-card {
-  background:var(--panel); border:1px solid var(--border); border-radius:4px;
-  overflow:hidden; display:flex; flex-direction:column; height:480px;
-}
+.news-section-card { background:var(--panel); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
 .news-section-header {
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 18px; border-bottom:1px solid var(--border);
-  background:var(--panel); z-index:5; flex-shrink:0;
+  position:sticky; top:56px; background:var(--panel); z-index:5;
 }
 .news-section-title { font-family:var(--font-display); font-size:11px; font-weight:400; letter-spacing:0.04em; color:var(--text2); }
 .news-section-icon { font-size:16px; margin-right:8px; }
 .news-refresh-btn { font-family:var(--font-mono); font-size:9px; color:var(--text3); background:none; border:none; cursor:pointer; letter-spacing:0.05em; }
 .news-refresh-btn:hover { color:var(--accent); }
-.news-body { padding:16px 18px; flex:1; overflow-y:auto; min-height:0; }
-.news-body::-webkit-scrollbar { width:3px; }
-.news-body::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.news-body { padding:16px 18px; min-height:200px; }
 .news-item {
   display:flex; gap:10px; padding:10px 0;
   border-bottom:1px solid rgba(255,255,255,0.04);
@@ -844,8 +839,8 @@ body::before {
         <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)" id="newsLastUpdated">Not yet loaded</div>
         <div style="display:flex;gap:10px;align-items:center">
           <select class="form-select" id="newsDepthSelect" style="width:160px;font-size:11px">
-            <option value="brief" selected>Brief (5 per section)</option>
-            <option value="detailed">Detailed (8 per section)</option>
+            <option value="brief">Brief (5 bullets each)</option>
+            <option value="detailed" selected>Detailed (8 bullets each)</option>
           </select>
           <button class="btn btn-primary btn-sm" onclick="refreshAllNews()" id="newsRefreshBtn">↻ Refresh All</button>
         </div>
@@ -1552,19 +1547,29 @@ let state = {
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
+// Live data — 2026-04-22T07:50:54.191781Z
 const SEED_SIGNALS = {
-  fedFunds:    { label:'Fed Funds Rate', value:5.33, prev:5.33, unit:'%', zscore:2.1, hist:[0.08,0.08,0.25,1.58,3.08,4.33,5.08,5.33,5.33,5.33,5.33,5.33] },
-  pmms30:      { label:'PMMS 30Y Rate',  value:7.09, prev:6.95, unit:'%', zscore:1.8, hist:[3.10,3.22,3.55,4.67,6.29,6.94,6.65,6.79,7.23,7.09,6.88,7.09] },
-  cpi:         { label:'CPI YoY',        value:3.2,  prev:3.4,  unit:'%', zscore:1.4, hist:[1.4,4.2,7.7,8.0,6.4,5.0,4.0,3.7,3.2,3.4,3.1,3.2] },
-  unemployment:{ label:'Unemployment',   value:3.9,  prev:3.7,  unit:'%', zscore:-0.3,hist:[5.4,4.2,3.6,3.5,3.4,3.5,3.6,3.8,3.9,3.7,3.9,3.9] },
-  corePce:     { label:'Core PCE',       value:2.8,  prev:2.9,  unit:'%', zscore:1.1, hist:[1.5,3.7,5.4,5.2,4.6,4.2,3.7,3.2,2.9,2.8,2.8,2.8] },
-  nfp:         { label:'NFP (000s)',      value:187,  prev:256,  unit:'k', zscore:-0.6,hist:[520,550,490,420,380,350,290,240,210,256,187,187] },
-  tenYrTsy:    { label:'10Y Treasury',   value:4.48, prev:4.25, unit:'%', zscore:1.6, hist:[1.35,1.82,3.95,3.88,3.62,3.88,4.23,4.58,4.85,4.25,4.48,4.48] },
-  mbsSpread:   { label:'MBS OAS Spread', value:148,  prev:142,  unit:'bps',zscore:0.9, hist:[60,85,110,175,145,130,120,138,155,142,148,148] },
-  hpiNational: { label:'HPI National YoY',value:5.1, prev:5.8,  unit:'%', zscore:0.4, hist:[10.4,18.8,18.1,12.2,7.4,4.9,3.1,3.8,4.6,5.8,5.1,5.1] },
-  mba30:       { label:'MBA 30Y Rate',   value:7.18, prev:7.04, unit:'%', zscore:1.7, hist:[3.15,3.36,4.40,5.99,6.51,6.85,7.16,7.44,7.79,7.04,7.18,7.18] },
-  refiBoomster:{ label:'Refi App Index', value:427,  prev:389,  unit:'',  zscore:-1.8,hist:[4584,2890,1540,610,390,400,410,380,405,389,427,427] },
-  sofr:        { label:'SOFR',           value:5.30, prev:5.30, unit:'%', zscore:2.0, hist:[0.05,0.05,0.30,2.30,3.80,4.55,5.05,5.30,5.30,5.30,5.30,5.30] },
+  fedFunds: { label:"Fed Funds Rate", value:3.64, prev:3.64, unit:"%", zscore:-1.47, hist:[4.33, 4.33, 4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64] },
+  sofr: { label:"SOFR", value:3.63, prev:3.65, unit:"%", zscore:-0.25, hist:[3.66, 3.65, 3.62, 3.59, 3.57, 3.61, 3.63, 3.66, 3.72, 3.67, 3.65, 3.63] },
+  tenYrTsy: { label:"10Y Treasury", value:4.26, prev:4.26, unit:"%", zscore:0.34, hist:[4.35, 4.34, 4.33, 4.29, 4.29, 4.31, 4.3, 4.26, 4.29, 4.32, 4.26, 4.26] },
+  twoYrTsy: { label:"2Y Treasury", value:3.72, prev:3.71, unit:"%", zscore:0.51, hist:[3.84, 3.84, 3.81, 3.79, 3.78, 3.81, 3.78, 3.76, 3.76, 3.78, 3.71, 3.72] },
+  pmms30: { label:"PMMS 30Y Rate", value:6.3, prev:6.37, unit:"%", zscore:-0.51, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
+  pmms15: { label:"PMMS 15Y Rate", value:5.65, prev:5.74, unit:"%", zscore:-0.11, hist:[5.49, 5.5, 5.44, 5.35, 5.44, 5.43, 5.5, 5.54, 5.75, 5.77, 5.74, 5.65] },
+  mba30: { label:"MBA 30Y Rate", value:6.218, prev:6.187, unit:"%", zscore:-0.18, hist:[6.383, 6.331, 6.356, 6.289, 6.276, 6.267, 6.279, 6.255, 6.247, 6.23, 6.187, 6.218] },
+  cpi: { label:"CPI YoY", value:3.3202, prev:2.6646, unit:"%", zscore:1.84, hist:[2.3254, 2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202] },
+  corePce: { label:"Core PCE", value:2.9678, prev:3.0509, unit:"%", zscore:1.0, hist:[2.6148, 2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0509, 2.9678] },
+  ppi: { label:"PPI", value:6.0253, prev:3.7758, unit:"%", zscore:2.38, hist:[0.5502, 1.318, 1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1276, 2.3799, 3.7758, 6.0253] },
+  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.4, unit:"%", zscore:0.63, hist:[4.2, 4.2, 4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3] },
+  nfp: { label:"NFP (000s)", value:178.0, prev:-133.0, unit:"k", zscore:1.41, hist:[108.0, 13.0, -20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -133.0, 178.0] },
+  jolts: { label:"JOLTS Openings", value:6.882, prev:7.24, unit:"M", zscore:-1.2, hist:[6.952, 7.098, 7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.882] },
+  hpiNational: { label:"HPI National YoY", value:0.9147, prev:1.1472, unit:"%", zscore:-1.26, hist:[2.8207, 2.3469, 1.9318, 1.6384, 1.475, 1.3027, 1.3189, 1.2861, 1.1472, 0.9147] },
+  housingStarts: { label:"Housing Starts (000s)", value:1487.0, prev:1387.0, unit:"k", zscore:1.83, hist:[1490.0, 1355.0, 1398.0, 1282.0, 1382.0, 1420.0, 1291.0, 1328.0, 1272.0, 1324.0, 1387.0, 1487.0] },
+  existingHomeSales: { label:"Existing Home Sales", value:3980.0, prev:4130.0, unit:"M", zscore:-1.09, hist:[4020.0, 4040.0, 3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 3980.0] },
+  mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.78, prev:1.78, unit:"%", zscore:0.61, hist:[1.73, 1.74, 1.77, 1.78, 1.79, 1.78, 1.78] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:6.3, prev:6.37, unit:"", zscore:0.37, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
+  igSpread: { label:"IG Corp OAS", value:81.0, prev:80.0, unit:"bps", zscore:-0.35, hist:[86.0, 85.0, 86.0, 83.0, 83.0, 82.0, 82.0, 81.0, 80.0, 81.0, 80.0, 81.0] },
+  hySpread: { label:"HY Corp OAS", value:287.0, prev:283.0, unit:"bps", zscore:-0.94, hist:[313.0, 305.0, 312.0, 294.0, 290.0, 294.0, 295.0, 284.0, 285.0, 286.0, 283.0, 287.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:155.0, prev:162.0, unit:"bps", zscore:0.37, hist:[135.0, 136.0, 134.0, 126.0, 123.0, 125.0, 136.0, 147.0, 163.0, 171.0, 162.0, 155.0] },
 };
 // @@SIGNALS_END@@
 
@@ -1605,12 +1610,31 @@ const SEED_ALERTS = [
 
 // @@HPI_START@@
 const HPI_STATE_DATA = [
-  {state:'CA',val:4.2,chg:'-0.8'},{state:'TX',val:3.8,chg:'-0.4'},{state:'FL',val:7.1,chg:'+0.3'},{state:'NY',val:3.1,chg:'-0.2'},
-  {state:'WA',val:5.9,chg:'+0.6'},{state:'CO',val:4.4,chg:'-1.1'},{state:'AZ',val:6.8,chg:'+1.2'},{state:'NV',val:7.4,chg:'+0.9'},
-  {state:'OR',val:3.2,chg:'-0.7'},{state:'GA',val:5.5,chg:'+0.4'},{state:'NC',val:6.2,chg:'+0.8'},{state:'SC',val:6.9,chg:'+1.0'},
-  {state:'TN',val:5.7,chg:'+0.3'},{state:'OH',val:4.8,chg:'+0.2'},{state:'MI',val:3.9,chg:'-0.3'},{state:'IL',val:2.8,chg:'-0.5'},
-  {state:'PA',val:4.1,chg:'+0.1'},{state:'NJ',val:5.3,chg:'+0.6'},{state:'MA',val:4.7,chg:'+0.4'},{state:'VA',val:4.5,chg:'+0.2'},
-  {state:'MD',val:3.6,chg:'-0.2'},{state:'MN',val:3.3,chg:'-0.4'},{state:'WI',val:4.0,chg:'+0.0'},{state:'UT',val:5.1,chg:'+0.5'},{state:'ID',val:5.8,chg:'+0.7'},
+  {state:"CA", val:1.2, chg:"+1.2"},
+  {state:"TX", val:1.1, chg:"+1.1"},
+  {state:"FL", val:0.0, chg:"+0.0"},
+  {state:"NY", val:6.3, chg:"+6.3"},
+  {state:"WA", val:2.8, chg:"+2.8"},
+  {state:"CO", val:1.3, chg:"+1.3"},
+  {state:"AZ", val:1.7, chg:"+1.7"},
+  {state:"NV", val:1.6, chg:"+1.6"},
+  {state:"OR", val:2.0, chg:"+2.0"},
+  {state:"GA", val:2.9, chg:"+2.9"},
+  {state:"NC", val:3.2, chg:"+3.2"},
+  {state:"SC", val:3.7, chg:"+3.7"},
+  {state:"TN", val:3.1, chg:"+3.1"},
+  {state:"OH", val:5.1, chg:"+5.1"},
+  {state:"MI", val:5.6, chg:"+5.6"},
+  {state:"IL", val:6.4, chg:"+6.4"},
+  {state:"PA", val:5.5, chg:"+5.5"},
+  {state:"NJ", val:6.0, chg:"+6.0"},
+  {state:"MA", val:4.3, chg:"+4.3"},
+  {state:"VA", val:4.2, chg:"+4.2"},
+  {state:"MD", val:2.8, chg:"+2.8"},
+  {state:"MN", val:3.3, chg:"+3.3"},
+  {state:"WI", val:5.8, chg:"+5.8"},
+  {state:"UT", val:2.9, chg:"+2.9"},
+  {state:"ID", val:2.0, chg:"+2.0"},
 ];
 // @@HPI_END@@
 
@@ -2960,22 +2984,26 @@ var NEWS_SECTIONS = {
   mbs: {
     label: 'Primary Capital Markets & MBS',
     color: '#00d4aa',
-    query: 'latest mortgage MBS news 2025 agency MBS spreads PMMS rates Fannie Mae Freddie Mac Ginnie Mae non-QM securitization IMB origination'
+    prompt: 'Search news: agency MBS spreads OAS Treasury yields, Fannie Freddie Ginnie Mae policy, PMMS mortgage rates, Non-QM securitization, IMB profitability, GSE credit score adoption. Sources: HousingWire, Mortgage News Daily, National Mortgage News. Return JSON array.'
+
   },
   aimortgage: {
     label: 'AI in Mortgage Capital Markets',
     color: '#2979ff',
-    query: 'AI mortgage underwriting servicing capital markets 2025 agentic AI loan automation ML prepayment models fintech funding'
+    prompt: 'Search news: AI mortgage underwriting servicing capital markets, agentic AI loan manufacturing, ML prepayment risk MBS pricing, AI credit ratings, hedge fund AI fixed income, mortgage fintech AI funding. Sources: HousingWire, NMP, STRATMOR. Return JSON array.'
+
   },
   geopolitics: {
     label: 'US & Geo-Politics',
     color: '#ffb800',
-    query: 'Federal Reserve interest rates Treasury yields inflation geopolitics 2025 US tariffs trade policy FHFA housing regulation'
+    prompt: 'Search news: Federal Reserve FOMC policy, US Treasury yields geopolitics, oil prices inflation mortgage rates, US trade tariffs capital markets, international conflicts bonds, US fiscal policy deficit, FHFA GSE housing policy. Sources: WSJ, FT, Mortgage News Daily. Return JSON array.'
+
   },
   aidev: {
     label: 'Latest AI Developments',
     color: '#c084fc',
-    query: 'latest AI news 2025 OpenAI Anthropic Google DeepMind new model release agentic AI NVIDIA funding open source'
+    prompt: 'Search latest AI news: new model releases OpenAI Anthropic Google DeepMind Meta xAI, agentic AI autonomous agents, NVIDIA AMD AI hardware chips, AI funding acquisitions partnerships, open source models benchmarks, AI regulation policy, enterprise AI launches. Sources: TechCrunch, VentureBeat, The Verge. Return JSON array.'
+
   }
 };
 
@@ -3002,7 +3030,7 @@ async function refreshAllNews() {
     // 5 second gap between sections to avoid rate limits
     // (each section makes 2 API calls with web search)
     if(i < sections.length-1) {
-      await new Promise(function(r){ setTimeout(r, 8000); });
+      await new Promise(function(r){ setTimeout(r, 5000); });
     }
   }
 
@@ -3015,25 +3043,29 @@ async function refreshAllNews() {
 
 async function fetchNewsSection(sectionKey) {
   if(!state.apiKey) {
-    renderNewsError(sectionKey, 'Claude API key required. Click the Claude Active button to set it.');
+    renderNewsError(sectionKey, 'Claude API key required. Click ⚙ in the top bar to set it.');
     return;
   }
+
   var section = NEWS_SECTIONS[sectionKey];
   if(!section) return;
 
+  var depthEl = document.getElementById('newsDepthSelect');
+  var depthVal = depthEl ? depthEl.value : 'brief';
+  var bulletCount = (depthVal === 'detailed') ? 6 : 4;
+
   renderNewsLoading(sectionKey);
 
-  var today = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-
-  var sys = 'You are a financial news researcher. Search the web and return ONLY a valid JSON array of exactly 5 real recent news articles. No markdown, no explanation. Schema: [{"headline":"string","detail":"one sentence","source":"Publication Name","url":"https://actual-article-url","date":"Mon DD YYYY","relevance":"short phrase"}]. Every URL must be a real article URL from your search results — never fabricate URLs.';
-
-  var userPrompt = 'Today is ' + today + '. Search for the 5 most recent and important articles about: ' + section.query + '. Return the JSON array only.';
+  var systemPrompt = [
+    'You are a financial news analyst with web search access.',
+    'Search for recent news and return ONLY a valid JSON array. No markdown fences, no explanation, no preamble.',
+    'Each object: {"headline":"max 100 chars","detail":"max 140 chars","source":"Publication","url":"https://...","relevance":"one short phrase"}',
+    'Rules: exactly ' + bulletCount + ' items. Recent stories only. URLs should be article pages not homepages. Start response with [ and end with ].'
+  ].join(' ');
 
   try {
-    // Single call — web_search tool handles fetching internally and returns
-    // search results as tool_result blocks automatically in the response.
-    // We use max_uses:3 to cap token usage, and collect the final text block.
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
+    // Step 1: Send request with web_search tool + required beta header
+    var res1 = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -3044,52 +3076,98 @@ async function fetchNewsSection(sectionKey) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1800,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+        max_tokens: 1500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         tool_choice: { type: 'auto' },
-        system: sys,
-        messages: [{ role: 'user', content: userPrompt }]
+        system: systemPrompt,
+        messages: [{ role: 'user', content: section.prompt }]
       })
     });
 
-    if(!res.ok) {
-      var errJson = await res.json();
-      throw new Error((errJson.error && errJson.error.message) || 'API error ' + res.status);
+    if(!res1.ok) {
+      var errData = await res1.json();
+      throw new Error((errData.error && errData.error.message) || 'API error ' + res1.status);
     }
 
-    var data = await res.json();
+    var data1 = await res1.json();
 
-    // The web_search tool in claude-sonnet-4-5 runs autonomously within a single
-    // API call — it performs searches, reads results, and produces the final
-    // text answer all in one response. We just extract the last text block.
-    var textBlocks = (data.content || []).filter(function(b){ return b.type === 'text'; });
-    var rawText = textBlocks.length ? textBlocks[textBlocks.length - 1].text : '';
+    // Step 2: If Claude used the web search tool, we need to continue the conversation
+    // with the tool results so it can produce the final JSON answer
+    var hasToolUse = (data1.content || []).some(function(b){ return b.type === 'tool_use'; });
 
-    if(!rawText) throw new Error('No response received. Check API key and try again.');
+    var rawText = '';
+
+    if(hasToolUse && data1.stop_reason === 'tool_use') {
+      // Build the tool results from web search responses
+      var toolResults = (data1.content || [])
+        .filter(function(b){ return b.type === 'tool_result' || b.type === 'tool_use'; })
+        .map(function(b){
+          if(b.type === 'tool_result') return b;
+          // For tool_use blocks, the result comes in the next assistant message
+          return null;
+        }).filter(Boolean);
+
+      // Continue conversation with tool results included
+      var messages = [
+        { role: 'user', content: section.prompt },
+        { role: 'assistant', content: data1.content },
+        { role: 'user', content: (data1.content || [])
+            .filter(function(b){ return b.type === 'tool_use'; })
+            .map(function(b){
+              return {
+                type: 'tool_result',
+                tool_use_id: b.id,
+                content: b.input && b.input.query ? 'Search completed for: ' + b.input.query : 'Search completed'
+              };
+            })
+        }
+      ];
+
+      var res2 = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': state.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-beta': 'web-search-2025-03-05',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-5',
+          max_tokens: 1500,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          system: systemPrompt,
+          messages: messages
+        })
+      });
+
+      if(res2.ok) {
+        var data2 = await res2.json();
+        var tb2 = (data2.content || []).find(function(b){ return b.type === 'text'; });
+        if(tb2) rawText = tb2.text;
+      }
+    } else {
+      // Claude answered directly without tool use — extract text
+      var tb = (data1.content || []).find(function(b){ return b.type === 'text'; });
+      if(tb) rawText = tb.text;
+    }
+
+    // If we still have no text, extract from any text blocks in data1
+    if(!rawText) {
+      var allText = (data1.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text; }).join('');
+      if(allText) rawText = allText;
+    }
+
+    if(!rawText) throw new Error('No response from Claude. Check your API key has web search access.');
 
     var items = parseNewsJson(rawText);
-    if(!items || !items.length) throw new Error('Could not parse articles. Try refreshing.');
-
-    // Validate and normalise
-    items = items.map(function(item) {
-      var url = (item.url || '').trim();
-      return {
-        headline:  (item.headline  || '').trim(),
-        detail:    (item.detail    || '').trim(),
-        source:    (item.source    || '').trim(),
-        url:       (url.startsWith('http') ? url : '#'),
-        date:      (item.date      || '').trim(),
-        relevance: (item.relevance || '').trim()
-      };
-    }).filter(function(item){ return item.headline.length > 0; });
-
-    if(!items.length) throw new Error('No valid articles found. Try refreshing.');
+    if(!items || items.length === 0) throw new Error('Could not parse news items. Try refreshing.');
 
     _newsCache[sectionKey] = { items: items, ts: Date.now() };
     renderNewsItems(sectionKey, items, section.color);
 
   } catch(e) {
-    renderNewsError(sectionKey, e.message || 'Failed to load news. Try again.');
+    renderNewsError(sectionKey, e.message || 'Failed to fetch news. Try again.');
   }
 }
 
@@ -3134,25 +3212,29 @@ function renderNewsItems(sectionKey, items, accentColor) {
   var el = document.getElementById('news-' + sectionKey);
   if(!el) return;
 
-  var html = items.map(function(item) {
-    var url      = (item.url || '').trim();
-    var source   = escapeHtml((item.source   || 'Source').trim());
-    var headline = escapeHtml(item.headline  || '');
-    var detail   = escapeHtml(item.detail    || '');
-    var relevance= escapeHtml(item.relevance || '');
-    var date     = escapeHtml(item.date      || '');
-    var safeUrl  = url.startsWith('http') ? url : '#';
+  var html = items.map(function(item, idx) {
+    var url     = (item.url || '').trim();
+    var source  = (item.source || 'Source').trim();
+    var headline = escapeHtml(item.headline || '');
+    var detail   = escapeHtml(item.detail || '');
+    var relevance = escapeHtml(item.relevance || '');
+
+    // Validate URL - fall back to # if malformed
+    var safeUrl = (url.startsWith('http')) ? url : '#';
 
     return [
       '<div class="news-item">',
         '<div class="news-bullet" style="color:' + accentColor + '">•</div>',
         '<div class="news-content">',
           '<div class="news-text"><strong>' + headline + '</strong> ' + detail + '</div>',
-          '<div class="news-meta" style="flex-wrap:wrap;row-gap:3px">',
-            date ? '<span style="font-family:var(--font-mono);font-size:9px;color:var(--text3);background:rgba(255,255,255,0.05);padding:1px 6px;border-radius:2px">' + date + '</span>' : '',
+          '<div class="news-meta">',
             '<span class="news-source">' + source + '</span>',
-            safeUrl !== '#' ? '<a class="news-link" href="' + safeUrl + '" target="_blank" rel="noopener">Read →</a>' : '',
-            relevance ? '<span style="font-family:var(--font-mono);font-size:9px;color:' + accentColor + ';opacity:0.7">' + relevance + '</span>' : '',
+            safeUrl !== '#'
+              ? '<a class="news-link" href="' + safeUrl + '" target="_blank" rel="noopener">Read →</a>'
+              : '',
+            relevance
+              ? '<span style="font-family:var(--font-mono);font-size:9px;color:' + accentColor + ';opacity:0.7">' + relevance + '</span>'
+              : '',
           '</div>',
         '</div>',
       '</div>'

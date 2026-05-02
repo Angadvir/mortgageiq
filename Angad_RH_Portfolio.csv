@@ -1,0 +1,12 @@
+"Activity Date","Process Date","Settle Date","Instrument","Description","Trans Code","Quantity","Price","Amount"
+"4/24/2026","4/24/2026","4/24/2026","ORCL","Cash Div: R/D 2026-04-09 P/D 2026-04-24 - 1.004486 shares at 0.5","CDIV","","","$0.50"
+"4/8/2026","4/8/2026","4/8/2026","PFSI","Stock Lending","SLIP","","","$0.01"
+"4/8/2026","4/8/2026","4/8/2026","OEF","Stock Lending","SLIP","","","$0.01"
+"4/8/2026","4/8/2026","4/8/2026","BLND","Stock Lending","SLIP","","","$0.01"
+"4/8/2026","4/8/2026","4/8/2026","PCAR","Stock Lending","SLIP","","","$0.01"
+"4/2/2026","4/2/2026","4/6/2026","NVDA","NVIDIA
+CUSIP: 67066G104
+Dividend Reinvestment","Buy","0.001323","$173.82","($0.23)"
+"4/1/2026","4/1/2026","4/1/2026","NVDA","Cash Div: R/D 2026-03-11 P/D 2026-04-01 - 22.553636 shares at 0.01","CDIV","","","$0.23"
+""
+"","","","","","","","","","The data provided is for informational purposes only. Please consult a professional tax service or personal tax advisor if you need instructions on how to calculate cost basis or questions regarding your specific tax situation. Reminder: This data does not include Robinhood Crypto or Robinhood Spending activity."

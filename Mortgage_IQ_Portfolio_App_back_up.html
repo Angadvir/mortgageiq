@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MortgageIQ — Portfolio Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Unbounded:wght@300;400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0a0c0f;
+  --bg2: #0f1215;
+  --bg3: #141820;
+  --bg4: #1a2030;
+  --panel: #111418;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #8a909e;
+  --text3: #5a6070;
+  --accent: #00d4aa;
+  --accent2: #0088ff;
+  --warn: #ff9500;
+  --danger: #ff3b5c;
+  --green: #00d4aa;
+  --red: #ff3b5c;
+  --amber: #ffb800;
+  --blue: #2979ff;
+  --font-display: 'Unbounded', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanline texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; overflow: hidden; position: relative; z-index: 1; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logo {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-mark {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.logo-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 3px;
+  letter-spacing: 0.05em;
+}
+
+.nav { padding: 12px 0; flex: 1; }
+.nav-section { padding: 8px 20px 4px; font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 400;
+  transition: all 0.15s;
+  position: relative;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--accent); background: rgba(0,212,170,0.07); }
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+}
+.nav-icon { width: 14px; height: 14px; opacity: 0.7; }
+.nav-item.active .nav-icon { opacity: 1; }
+
+.sidebar-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+.fred-status {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text3);
+}
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* Main content */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,12,15,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-left { display: flex; align-items: center; gap: 20px; }
+.page-title { font-family: var(--font-display); font-size: 12px; font-weight: 400; color: var(--text2); letter-spacing: 0.04em; }
+.regime-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 2px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.regime-badge.risk-off { background: rgba(255,59,92,0.12); color: var(--red); border: 1px solid rgba(255,59,92,0.25); }
+.regime-badge.risk-on  { background: rgba(0,212,170,0.1); color: var(--green); border: 1px solid rgba(0,212,170,0.2); }
+.regime-badge.neutral  { background: rgba(255,184,0,0.1); color: var(--amber); border: 1px solid rgba(255,184,0,0.2); }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+.last-update { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 3px; border: none;
+  cursor: pointer; font-family: var(--font-body); font-size: 12px;
+  font-weight: 500; transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #00f0c0; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.btn-sm { padding: 5px 10px; font-size: 11px; }
+.btn-danger { background: rgba(255,59,92,0.15); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
+.btn-danger:hover { background: rgba(255,59,92,0.25); }
+
+/* Content area */
+.content { padding: 24px 28px; flex: 1; }
+
+/* Pages */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── KPI STRIP ── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--panel);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.kpi-card:hover { background: var(--bg4); }
+.kpi-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.kpi-value { font-family: var(--font-display); font-size: 20px; font-weight: 600; line-height: 1; }
+.kpi-change { font-family: var(--font-mono); font-size: 10px; margin-top: 5px; }
+.kpi-change.up { color: var(--green); }
+.kpi-change.down { color: var(--red); }
+.kpi-change.flat { color: var(--text3); }
+
+/* ── SIGNAL HEATMAP ── */
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.signal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.signal-card:hover { border-color: var(--border2); }
+.signal-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+}
+.signal-card.bullish::before { background: var(--green); }
+.signal-card.bearish::before { background: var(--red); }
+.signal-card.neutral::before { background: var(--amber); }
+.signal-card.extreme-bearish::before { background: #ff0040; }
+.signal-card.extreme-bullish::before { background: #00ffcc; }
+
+.signal-name { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.signal-value { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.signal-zscore { font-family: var(--font-mono); font-size: 10px; color: var(--text2); margin-bottom: 6px; }
+.signal-bar-bg { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; }
+.signal-bar-fill { height: 3px; border-radius: 2px; transition: width 0.5s; }
+
+/* ── DASHBOARD GRID ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.dash-grid-full { grid-column: 1/-1; }
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.panel-title { font-family: var(--font-display); font-size: 11px; font-weight: 400; letter-spacing: 0.04em; color: var(--text2); }
+.panel-body { padding: 18px; }
+
+/* ── CHART CONTAINERS ── */
+.chart-wrap { position: relative; }
+
+/* ── PORTFOLIO TABLE ── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-family: var(--font-mono); font-size: 9px; color: var(--text3);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 10px 14px; text-align: right;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table th:first-child { text-align: left; }
+.data-table td {
+  padding: 11px 14px; text-align: right;
+  font-family: var(--font-mono); font-size: 11px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  white-space: nowrap;
+}
+.data-table td:first-child { text-align: left; }
+.data-table tr:hover td { background: rgba(255,255,255,0.03); }
+.data-table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 2px 7px; border-radius: 2px;
+  font-family: var(--font-mono); font-size: 9px; font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase;
+}
+.badge-buy    { background: rgba(0,212,170,0.1);  color: var(--green); }
+.badge-sell   { background: rgba(255,59,92,0.1);  color: var(--red);   }
+.badge-hold   { background: rgba(255,184,0,0.1);  color: var(--amber); }
+.badge-hedge  { background: rgba(41,121,255,0.1); color: var(--blue);  }
+.badge-watch  { background: rgba(138,144,158,0.1); color: var(--text2); }
+.badge-whole-loan { background: rgba(0,136,255,0.1); color: #66aaff; }
+.badge-mbs    { background: rgba(147,51,234,0.1);  color: #c084fc; }
+.badge-equity { background: rgba(245,158,11,0.1);  color: #fbbf24; }
+.badge-hedge-pos { background: rgba(59,130,246,0.1); color: #93c5fd; }
+
+/* ── AI BRIEF ── */
+.ai-brief {
+  background: linear-gradient(135deg, rgba(0,212,170,0.04) 0%, rgba(0,136,255,0.04) 100%);
+  border: 1px solid rgba(0,212,170,0.15);
+  border-radius: 4px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.ai-brief::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+}
+.ai-brief-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.ai-badge {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em;
+  color: var(--accent); padding: 3px 8px; border: 1px solid rgba(0,212,170,0.3); border-radius: 2px;
+}
+.ai-brief-title { font-family: var(--font-display); font-size: 11px; color: var(--text2); letter-spacing: 0.04em; }
+.ai-text { font-size: 13px; line-height: 1.7; color: var(--text); }
+.ai-text strong { color: var(--accent); font-weight: 500; }
+.ai-loading { display: flex; align-items: center; gap: 10px; color: var(--text3); font-family: var(--font-mono); font-size: 11px; }
+.ai-spinner {
+  width: 14px; height: 14px; border: 1.5px solid var(--border2);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SCENARIO PANEL ── */
+.scenario-controls { display: flex; flex-direction: column; gap: 14px; }
+.scenario-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.scenario-label { font-family: var(--font-mono); font-size: 10px; color: var(--text2); white-space: nowrap; min-width: 80px; }
+.scenario-slider { flex: 1; -webkit-appearance: none; height: 3px; background: var(--border2); border-radius: 2px; outline: none; }
+.scenario-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--accent); cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(0,212,170,0.15);
+}
+.scenario-val { font-family: var(--font-mono); font-size: 11px; color: var(--accent); min-width: 52px; text-align: right; }
+
+.scenario-output {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 4px; padding: 14px; margin-top: 14px;
+}
+.scenario-pnl { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+.scenario-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+
+/* ── MACRO TREND CHART ── */
+.trend-tabs { display: flex; gap: 2px; padding: 12px 18px 0; }
+.trend-tab {
+  padding: 5px 12px; border-radius: 2px; cursor: pointer;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text3);
+  transition: all 0.15s;
+}
+.trend-tab:hover { color: var(--text2); }
+.trend-tab.active { background: rgba(0,212,170,0.1); color: var(--accent); }
+
+/* ── TRADE BLOTTER ── */
+.blotter-entry {
+  display: grid;
+  grid-template-columns: 90px 1fr 80px 90px 80px 80px;
+  gap: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.blotter-entry:hover { background: rgba(255,255,255,0.03); }
+.blotter-entry:last-child { border-bottom: none; }
+.blotter-time { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+.blotter-name { font-size: 12px; font-weight: 500; color: var(--text); }
+.blotter-rationale { font-size: 10px; color: var(--text2); margin-top: 1px; }
+.blotter-amount { font-family: var(--font-mono); font-size: 11px; color: var(--text); text-align: right; }
+.blotter-price { font-family: var(--font-mono); font-size: 11px; text-align: right; }
+.blotter-pnl { font-family: var(--font-mono); font-size: 11px; text-align: right; font-weight: 500; }
+
+/* ── ALERTS ── */
+.alert-list { display: flex; flex-direction: column; gap: 8px; }
+.alert-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 4px;
+  border: 1px solid transparent;
+}
+.alert-item.high { background: rgba(255,59,92,0.06); border-color: rgba(255,59,92,0.2); }
+.alert-item.medium { background: rgba(255,184,0,0.06); border-color: rgba(255,184,0,0.2); }
+.alert-item.low { background: rgba(0,212,170,0.04); border-color: rgba(0,212,170,0.15); }
+.alert-icon { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.alert-icon.high { background: var(--red); }
+.alert-icon.medium { background: var(--amber); }
+.alert-icon.low { background: var(--green); }
+.alert-title { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+.alert-body { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.alert-time { font-family: var(--font-mono); font-size: 9px; color: var(--text3); margin-top: 4px; }
+
+/* ── HPI MAP ── */
+.hpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+}
+.hpi-state {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 3px; padding: 10px 12px;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.hpi-state:hover { border-color: var(--border2); }
+.hpi-state-name { font-family: var(--font-mono); font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+.hpi-state-val { font-family: var(--font-display); font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.hpi-state-chg { font-family: var(--font-mono); font-size: 10px; }
+
+/* ── POSITIONS PAGE ── */
+.positions-toolbar {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.search-input {
+  flex: 1; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 3px; padding: 8px 14px; color: var(--text);
+  font-family: var(--font-mono); font-size: 11px; outline: none;
+}
+.search-input:focus { border-color: var(--border2); }
+.search-input::placeholder { color: var(--text3); }
+
+/* ── MODALS ── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 6px; width: 580px; max-height: 80vh;
+  overflow-y: auto;
+  transform: translateY(8px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-title { font-family: var(--font-display); font-size: 13px; font-weight: 400; letter-spacing: 0.04em; }
+.modal-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; line-height: 1; }
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 24px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-family: var(--font-mono); font-size: 9px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+.form-input, .form-select {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 3px; padding: 9px 12px; color: var(--text);
+  font-family: var(--font-mono); font-size: 11px; outline: none;
+  transition: border-color 0.15s; width: 100%;
+}
+.form-input:focus, .form-select:focus { border-color: var(--accent); }
+.form-select { cursor: pointer; }
+
+/* ── HEADER ACTIONS ── */
+.api-key-prompt {
+  background: rgba(255,184,0,0.08); border: 1px solid rgba(255,184,0,0.25);
+  border-radius: 3px; padding: 4px 12px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--amber);
+  cursor: pointer; transition: background 0.15s;
+}
+.api-key-prompt:hover { background: rgba(255,184,0,0.14); }
+
+/* ── DIVIDERS ── */
+.section-label {
+  font-family: var(--font-mono); font-size: 9px; color: var(--text3);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── METRIC DETAIL ── */
+.metric-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.metric-row:last-child { border-bottom: none; }
+.metric-key { font-family: var(--font-mono); font-size: 10px; color: var(--text3); }
+.metric-val { font-family: var(--font-mono); font-size: 11px; color: var(--text); }
+.metric-val.accent { color: var(--accent); }
+.metric-val.danger { color: var(--red); }
+.metric-val.warn { color: var(--amber); }
+
+/* ── SPARKLINE ── */
+.sparkline-wrap { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+.spark-bar { width: 4px; border-radius: 1px; background: rgba(0,212,170,0.3); transition: background 0.2s; }
+.spark-bar:hover { background: var(--accent); }
+
+/* Import tabs */
+.import-tab.active { background:rgba(0,212,170,0.1); color:var(--accent); border-color:rgba(0,212,170,0.25); }
+
+/* Animations */
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+.page.active { animation: fadeIn 0.2s ease; }
+
+/* tooltip */
+.tooltip {
+  position: absolute; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 3px; padding: 8px 12px; z-index: 200;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text);
+  pointer-events: none; white-space: nowrap;
+  opacity: 0; transition: opacity 0.1s;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">MortgageIQ</div>
+    <div class="logo-sub">Portfolio Command Center</div>
+  </div>
+  <div class="nav">
+    <div class="nav-section">Analysis</div>
+    <div class="nav-item active" onclick="navTo('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="navTo('signals')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><polyline points="1,12 4,7 7,9 10,4 13,6 15,2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Market Signals
+    </div>
+    <div class="nav-item" onclick="navTo('hpi')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M1 13 L8 3 L15 13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 13V9h6v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      HPI by State
+    </div>
+
+    <div class="nav-section">Portfolio</div>
+    <div class="nav-item" onclick="navTo('positions')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="3" x2="5" y2="13" stroke="currentColor" stroke-width="1.2"/></svg>
+      Positions
+    </div>
+    <div class="nav-item" onclick="navTo('blotter')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Trade Blotter
+    </div>
+    <div class="nav-item" onclick="navTo('hedges')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Hedge Book
+    </div>
+
+    <div class="nav-section">Intelligence</div>
+    <div class="nav-item" onclick="navTo('scenario')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M1 8C3 3 13 3 15 8C13 13 3 13 1 8Z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
+      Scenarios
+    </div>
+    <div class="nav-item" onclick="navTo('alerts')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.2 2 3 4.2 3 7v4l-1 1h12l-1-1V7c0-2.8-2.2-5-5-5Z" stroke="currentColor" stroke-width="1.2"/><path d="M6.5 12.5c0 .8.7 1.5 1.5 1.5s1.5-.7 1.5-1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Alerts
+    </div>
+    <div class="nav-item" onclick="navTo('aibrief')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M11 6l4-2v8l-4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      AI Brief
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="fred-status">
+      <div class="status-dot"></div>
+      FRED feed live
+    </div>
+    <div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:6px;" id="lastFetchTime">—</div>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="main">
+  <div class="header">
+    <div class="header-left">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="regime-badge neutral" id="regimeBadge">⬤ Neutral</div>
+    </div>
+    <div class="header-right">
+      <div class="last-update" id="lastUpdate">Loading signals…</div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshData()">↻ Refresh</button>
+      <div class="api-key-prompt" onclick="openApiKeyModal()" id="apiKeyStatus">⚙ Set Claude API Key</div>
+      <button class="btn btn-primary btn-sm" onclick="openAddPositionModal()">+ Add Position</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- DASHBOARD PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- AI Brief (inline) -->
+      <div class="ai-brief" id="dashAiBrief">
+        <div class="ai-brief-header">
+          <div class="ai-badge">AI · MACRO BRIEF</div>
+          <div class="ai-brief-title">Daily Intelligence — <span id="briefDate">—</span></div>
+        </div>
+        <div class="ai-loading" id="briefLoading"><div class="ai-spinner"></div> Waiting for Claude API key…</div>
+        <div class="ai-text" id="briefText" style="display:none"></div>
+      </div>
+
+      <!-- KPI Strip -->
+      <div class="kpi-strip" id="kpiStrip">
+        <div class="kpi-card"><div class="kpi-label">Fed Funds</div><div class="kpi-value" id="kpi-fed">—</div><div class="kpi-change flat" id="kpi-fed-chg">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">30Y PMMS</div><div class="kpi-value" id="kpi-pmms">—</div><div class="kpi-change flat" id="kpi-pmms-chg">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">CPI YoY</div><div class="kpi-value" id="kpi-cpi">—</div><div class="kpi-change flat" id="kpi-cpi-chg">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Unemployment</div><div class="kpi-value" id="kpi-unemp">—</div><div class="kpi-change flat" id="kpi-unemp-chg">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Portfolio DV01</div><div class="kpi-value" id="kpi-dv01">—</div><div class="kpi-change flat">per $1M</div></div>
+        <div class="kpi-card"><div class="kpi-label">Unrealized P&L</div><div class="kpi-value" id="kpi-pnl">—</div><div class="kpi-change flat" id="kpi-pnl-chg">Total book</div></div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Rate Environment — Historical</div>
+            <div class="trend-tabs" id="rateTabs">
+              <div class="trend-tab active" onclick="switchRateChart('fed',this)">Fed Funds</div>
+              <div class="trend-tab" onclick="switchRateChart('pmms',this)">PMMS 30Y</div>
+              <div class="trend-tab" onclick="switchRateChart('cpi',this)">CPI</div>
+              <div class="trend-tab" onclick="switchRateChart('unemp',this)">Unemployment</div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap" style="height:220px"><canvas id="rateChart"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Portfolio Composition</div></div>
+          <div class="panel-body">
+            <div class="chart-wrap" style="height:180px"><canvas id="allocChart"></canvas></div>
+            <div style="margin-top:14px" id="allocLegend"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Top Positions by Risk</div>
+            <button class="btn btn-ghost btn-sm" onclick="navTo('positions')">View all →</button>
+          </div>
+          <div class="panel-body" style="padding:0">
+            <table class="data-table" id="dashPositionTable">
+              <thead><tr>
+                <th>Instrument</th><th>Type</th><th>UPB / Notional</th><th>Coupon</th><th>WAL</th><th>OAS</th><th>DV01</th><th>Signal</th>
+              </tr></thead>
+              <tbody id="dashPositionBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Active Alerts</div></div>
+          <div class="panel-body">
+            <div class="alert-list" id="dashAlerts"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- MARKET SIGNALS PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-signals">
+      <div class="section-label">Live Market Signals — Z-Score Heatmap</div>
+      <div class="signal-grid" id="signalGrid"></div>
+
+      <div class="section-label" style="margin-top:20px">MBS Market Conditions</div>
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">MBS Spread Environment</div></div>
+          <div class="panel-body">
+            <div class="chart-wrap" style="height:240px"><canvas id="mbsChart"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Key Mortgage Metrics</div></div>
+          <div class="panel-body" id="mbsMetrics"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- HPI BY STATE PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-hpi">
+      <div class="section-label">House Price Index — State Level YoY Change</div>
+      <div class="hpi-grid" id="hpiGrid"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- POSITIONS PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-positions">
+      <div class="positions-toolbar">
+        <input class="search-input" placeholder="Search positions…" id="posSearch" oninput="filterPositions()">
+        <select class="form-select" style="width:140px" id="posTypeFilter" onchange="filterPositions()">
+          <option value="">All Types</option>
+          <option value="Whole Loan">Whole Loans</option>
+          <option value="MBS">MBS</option>
+          <option value="Equity">Equity</option>
+          <option value="Hedge">Hedges</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="openImportModal()">⬆ Import CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="openAddPositionModal()">+ Add Position</button>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Full Portfolio — <span id="posCount">0</span> positions</div>
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">Total book DV01: <span id="totalDv01" style="color:var(--text)">—</span></div>
+        </div>
+        <table class="data-table" id="fullPositionTable">
+          <thead><tr>
+            <th>Instrument</th><th>Type</th><th>UPB / Notional</th><th>Coupon</th><th>WAL</th><th>OAS (bps)</th><th>CPR</th><th>DV01</th><th>Unreal P&L</th><th>Signal</th><th>Action</th>
+          </tr></thead>
+          <tbody id="fullPositionBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- TRADE BLOTTER PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-blotter">
+      <div class="section-label">Trade Blotter — All Transactions</div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Trade History</div>
+          <button class="btn btn-ghost btn-sm" onclick="openAddTradeModal()">+ Log Trade</button>
+        </div>
+        <div id="blotterList"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- HEDGE BOOK PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-hedges">
+      <div class="section-label">Hedge Book — Rate Risk Management</div>
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Hedge Overlay Analysis</div></div>
+          <div class="panel-body">
+            <div class="chart-wrap" style="height:260px"><canvas id="hedgeChart"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Net Risk Position</div></div>
+          <div class="panel-body" id="hedgeSummary"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="panel-header">
+          <div class="panel-title">Hedge Instruments</div>
+          <button class="btn btn-ghost btn-sm" onclick="openAddHedgeModal()">+ Add Hedge</button>
+        </div>
+        <table class="data-table" id="hedgeTable">
+          <thead><tr><th>Instrument</th><th>Type</th><th>Notional</th><th>Strike / Rate</th><th>Maturity</th><th>DV01 Offset</th><th>P&L</th></tr></thead>
+          <tbody id="hedgeBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- SCENARIOS PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-scenario">
+      <div class="section-label">Rate Shock Scenario Analysis</div>
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Scenario Controls</div></div>
+          <div class="panel-body">
+            <div class="scenario-controls" id="scenarioControls"></div>
+            <div class="scenario-output" id="scenarioOutput">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;">ESTIMATED PORTFOLIO P&L</div>
+              <div class="scenario-pnl" id="scenarioPnl">$0</div>
+              <div class="scenario-meta" id="scenarioMeta">Adjust sliders to model rate shocks</div>
+            </div>
+            <div style="margin-top:14px">
+              <div class="chart-wrap" style="height:220px"><canvas id="scenarioChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Preset Scenarios</div></div>
+          <div class="panel-body" id="presetScenarios"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- ALERTS PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-alerts">
+      <div class="section-label">Active Alerts & Triggers</div>
+      <div class="alert-list" id="fullAlertList"></div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- AI BRIEF PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-aibrief">
+      <div class="section-label">Claude AI — Mortgage Market Intelligence</div>
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-header">
+          <div class="panel-title">Custom Analysis Prompt</div>
+        </div>
+        <div class="panel-body">
+          <textarea id="customPrompt" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;min-height:80px;line-height:1.6" placeholder="Ask Claude anything about your portfolio, macro signals, or mortgage market conditions…"></textarea>
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn btn-primary" onclick="runCustomAi()">Run Analysis</button>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('customPrompt').value=presets[0]">Prepayment risk</button>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('customPrompt').value=presets[1]">Hedge recommendation</button>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('customPrompt').value=presets[2]">Credit conditions</button>
+          </div>
+        </div>
+      </div>
+      <div class="ai-brief" id="fullAiBrief">
+        <div class="ai-brief-header">
+          <div class="ai-badge">AI · ANALYSIS</div>
+          <div class="ai-brief-title" id="aiAnalysisTitle">Daily Macro Brief</div>
+        </div>
+        <div class="ai-loading" id="fullBriefLoading" style="display:none"><div class="ai-spinner"></div> Analyzing…</div>
+        <div class="ai-text" id="fullBriefText">Set your Claude API key and click "Run Analysis" to get started.</div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ── MODALS ── -->
+<!-- Add Position Modal -->
+<div class="modal-overlay" id="addPositionModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Position</div>
+      <button class="modal-close" onclick="closeModal('addPositionModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Instrument Name / Ticker</label><input class="form-input" id="pos-name" placeholder="e.g. FNMA 6.0 2053 or AAPL"></div>
+        <div class="form-group"><label class="form-label">Type</label>
+          <select class="form-select" id="pos-type" onchange="togglePositionFields()">
+            <option value="Whole Loan">Whole Loan</option>
+            <option value="MBS">MBS</option>
+            <option value="Equity">Equity / Stock</option>
+            <option value="Hedge">Hedge</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Equity fields -->
+      <div id="equity-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Number of Shares</label><input class="form-input" id="pos-shares" type="number" placeholder="100"></div>
+          <div class="form-group"><label class="form-label">Avg Cost Per Share ($)</label><input class="form-input" id="pos-costbasis" type="number" step="0.01" placeholder="11.20"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Current Price Per Share ($)</label><input class="form-input" id="pos-shareprice" type="number" step="0.01" placeholder="9.80"></div>
+          <div class="form-group"><label class="form-label">Signal</label>
+            <select class="form-select" id="pos-signal-eq">
+              <option value="Buy">Buy</option><option value="Hold">Hold</option><option value="Sell">Sell</option><option value="Watch">Watch</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:12px;margin-bottom:14px;font-family:var(--font-mono);font-size:11px;color:var(--text2)">
+          Total value: <span id="eq-total-val" style="color:var(--text)">—</span> &nbsp;·&nbsp; Unrealized P&L: <span id="eq-pnl-val" style="color:var(--text)">—</span>
+        </div>
+      </div>
+
+      <!-- Bond / Loan fields -->
+      <div id="bond-fields">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">UPB / Notional ($)</label><input class="form-input" id="pos-upb" type="number" placeholder="5000000"></div>
+          <div class="form-group"><label class="form-label">Coupon (%)</label><input class="form-input" id="pos-coupon" type="number" step="0.125" placeholder="6.0"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">WAL (years)</label><input class="form-input" id="pos-wal" type="number" step="0.1" placeholder="7.2"></div>
+          <div class="form-group"><label class="form-label">OAS (bps)</label><input class="form-input" id="pos-oas" type="number" placeholder="145"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">CPR Assumption (%)</label><input class="form-input" id="pos-cpr" type="number" placeholder="8.5"></div>
+          <div class="form-group"><label class="form-label">Purchase Price</label><input class="form-input" id="pos-price" type="number" step="0.01" placeholder="98.50"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Current Price</label><input class="form-input" id="pos-curprice" type="number" step="0.01" placeholder="97.25"></div>
+          <div class="form-group"><label class="form-label">Signal</label>
+            <select class="form-select" id="pos-signal">
+              <option value="Buy">Buy</option><option value="Hold">Hold</option><option value="Sell">Sell</option><option value="Watch">Watch</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button class="btn btn-primary" onclick="addPosition()" style="flex:1">Add Position</button>
+        <button class="btn btn-ghost" onclick="closeModal('addPositionModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="width:640px">
+    <div class="modal-header">
+      <div class="modal-title">Import Positions from CSV</div>
+      <button class="modal-close" onclick="closeModal('importModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <!-- Format tabs -->
+      <div style="display:flex;gap:6px;margin-bottom:16px">
+        <button class="btn btn-ghost btn-sm import-tab active" id="tab-robinhood" onclick="switchImportTab('robinhood')">Robinhood Export</button>
+        <button class="btn btn-ghost btn-sm import-tab" id="tab-generic" onclick="switchImportTab('generic')">Generic CSV</button>
+        <button class="btn btn-ghost btn-sm import-tab" id="tab-manual" onclick="switchImportTab('manual')">Paste CSV</button>
+      </div>
+
+      <!-- Robinhood instructions -->
+      <div id="import-robinhood" class="import-panel">
+        <div style="background:rgba(0,212,170,0.06);border:1px solid rgba(0,212,170,0.15);border-radius:4px;padding:14px;margin-bottom:14px;font-size:12px;line-height:1.8;color:var(--text2)">
+          <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);margin-bottom:8px;letter-spacing:0.08em">HOW TO EXPORT FROM ROBINHOOD</div>
+          1. Open Robinhood app or robinhood.com<br>
+          2. Go to <strong style="color:var(--text)">Account → Statements & History</strong><br>
+          3. Click <strong style="color:var(--text)">Generate Report → Positions</strong> (or use Tax Documents → Portfolio CSV)<br>
+          4. Download the CSV file<br>
+          5. Upload it below — the importer will auto-detect columns
+        </div>
+        <div id="rh-drop-zone" style="border:2px dashed var(--border2);border-radius:4px;padding:32px;text-align:center;cursor:pointer;transition:border-color 0.2s"
+          onclick="document.getElementById('rh-file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+          ondragleave="this.style.borderColor='var(--border2)'"
+          ondrop="handleFileDrop(event,'robinhood')">
+          <div style="font-size:24px;margin-bottom:8px">📄</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text2)">Drop your Robinhood CSV here</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">or click to browse</div>
+          <input type="file" id="rh-file-input" accept=".csv" style="display:none" onchange="handleFileSelect(event,'robinhood')">
+        </div>
+      </div>
+
+      <!-- Generic CSV instructions -->
+      <div id="import-generic" class="import-panel" style="display:none">
+        <div style="background:rgba(41,121,255,0.06);border:1px solid rgba(41,121,255,0.15);border-radius:4px;padding:14px;margin-bottom:14px;font-size:12px;line-height:1.8;color:var(--text2)">
+          <div style="font-family:var(--font-mono);font-size:10px;color:#2979ff;margin-bottom:8px;letter-spacing:0.08em">EXPECTED CSV COLUMNS</div>
+          Required: <strong style="color:var(--text)">name, type, shares or upb, purchase_price, current_price</strong><br>
+          Optional: coupon, wal, oas, cpr, signal<br>
+          Type values: <strong style="color:var(--text)">Equity, MBS, Whole Loan, Hedge</strong><br>
+          First row must be a header row.
+        </div>
+        <div style="border:2px dashed var(--border2);border-radius:4px;padding:32px;text-align:center;cursor:pointer"
+          onclick="document.getElementById('gen-file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+          ondragleave="this.style.borderColor='var(--border2)'"
+          ondrop="handleFileDrop(event,'generic')">
+          <div style="font-size:24px;margin-bottom:8px">📊</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text2)">Drop your CSV here or click to browse</div>
+          <input type="file" id="gen-file-input" accept=".csv" style="display:none" onchange="handleFileSelect(event,'generic')">
+        </div>
+      </div>
+
+      <!-- Paste CSV -->
+      <div id="import-manual" class="import-panel" style="display:none">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.08em">PASTE CSV DATA</div>
+        <textarea id="csv-paste-area" style="width:100%;height:160px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:12px;color:var(--text);font-family:var(--font-mono);font-size:11px;outline:none;resize:vertical;line-height:1.5"
+          placeholder="name,type,shares,purchase_price,current_price&#10;AAPL,Equity,50,182.50,211.30&#10;NVDA,Equity,20,495.00,880.00&#10;RKT,Equity,500,11.20,9.80"></textarea>
+        <button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="parsePastedCsv()">Parse & Import</button>
+      </div>
+
+      <!-- Preview table -->
+      <div id="import-preview" style="display:none;margin-top:16px">
+        <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-bottom:8px;letter-spacing:0.08em">PREVIEW — <span id="preview-count">0</span> POSITIONS DETECTED</div>
+        <div style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:3px">
+          <table class="data-table" id="preview-table">
+            <thead><tr><th>Name</th><th>Type</th><th>Shares / UPB</th><th>Cost</th><th>Current</th><th>Unreal P&L</th></tr></thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-primary" onclick="confirmImport()" style="flex:1">✓ Import <span id="import-count">0</span> Positions</button>
+          <button class="btn btn-ghost" onclick="clearImportPreview()">Clear</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- API Key Modal -->
+<div class="modal-overlay" id="apiKeyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Configure Claude API Key</div>
+      <button class="modal-close" onclick="closeModal('apiKeyModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text2);font-size:12px;line-height:1.7;margin-bottom:16px">Enter your Anthropic API key to enable AI-powered macro briefs and portfolio analysis. The key is stored only in your browser's local storage.</p>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Anthropic API Key</label>
+        <input class="form-input" id="apiKeyInput" type="password" placeholder="sk-ant-…">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="saveApiKey()" style="flex:1">Save Key</button>
+        <button class="btn btn-ghost" onclick="closeModal('apiKeyModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Trade Modal -->
+<div class="modal-overlay" id="addTradeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Log Trade</div>
+      <button class="modal-close" onclick="closeModal('addTradeModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Instrument</label><input class="form-input" id="trade-name" placeholder="FNMA 6.0 2053"></div>
+        <div class="form-group"><label class="form-label">Action</label>
+          <select class="form-select" id="trade-action">
+            <option>Buy</option><option>Sell</option><option>Hedge</option><option>Cover</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount ($)</label><input class="form-input" id="trade-amount" type="number" placeholder="1000000"></div>
+        <div class="form-group"><label class="form-label">Price</label><input class="form-input" id="trade-price" type="number" step="0.01" placeholder="98.50"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label class="form-label">Rationale</label>
+        <input class="form-input" id="trade-rationale" placeholder="OAS > 150bps, Fed pause expected…">
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="addTrade()" style="flex:1">Log Trade</button>
+        <button class="btn btn-ghost" onclick="closeModal('addTradeModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let state = {
+  signals: {},
+  positions: [],
+  trades: [],
+  hedges: [],
+  alerts: [],
+  apiKey: localStorage.getItem('mortgageiq_key') || '',
+  currentPage: 'dashboard',
+  charts: {}
+};
+
+// ── SEED DATA ──────────────────────────────────────────────────────
+// @@SIGNALS_START@@
+// Live data — 2026-04-22T07:50:54.191781Z
+const SEED_SIGNALS = {
+  fedFunds: { label:"Fed Funds Rate", value:3.64, prev:3.64, unit:"%", zscore:-1.47, hist:[4.33, 4.33, 4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64] },
+  sofr: { label:"SOFR", value:3.63, prev:3.65, unit:"%", zscore:-0.25, hist:[3.66, 3.65, 3.62, 3.59, 3.57, 3.61, 3.63, 3.66, 3.72, 3.67, 3.65, 3.63] },
+  tenYrTsy: { label:"10Y Treasury", value:4.26, prev:4.26, unit:"%", zscore:0.34, hist:[4.35, 4.34, 4.33, 4.29, 4.29, 4.31, 4.3, 4.26, 4.29, 4.32, 4.26, 4.26] },
+  twoYrTsy: { label:"2Y Treasury", value:3.72, prev:3.71, unit:"%", zscore:0.51, hist:[3.84, 3.84, 3.81, 3.79, 3.78, 3.81, 3.78, 3.76, 3.76, 3.78, 3.71, 3.72] },
+  pmms30: { label:"PMMS 30Y Rate", value:6.3, prev:6.37, unit:"%", zscore:-0.51, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
+  pmms15: { label:"PMMS 15Y Rate", value:5.65, prev:5.74, unit:"%", zscore:-0.11, hist:[5.49, 5.5, 5.44, 5.35, 5.44, 5.43, 5.5, 5.54, 5.75, 5.77, 5.74, 5.65] },
+  mba30: { label:"MBA 30Y Rate", value:6.218, prev:6.187, unit:"%", zscore:-0.18, hist:[6.383, 6.331, 6.356, 6.289, 6.276, 6.267, 6.279, 6.255, 6.247, 6.23, 6.187, 6.218] },
+  cpi: { label:"CPI YoY", value:3.3202, prev:2.6646, unit:"%", zscore:1.84, hist:[2.3254, 2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202] },
+  corePce: { label:"Core PCE", value:2.9678, prev:3.0509, unit:"%", zscore:1.0, hist:[2.6148, 2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0509, 2.9678] },
+  ppi: { label:"PPI", value:6.0253, prev:3.7758, unit:"%", zscore:2.38, hist:[0.5502, 1.318, 1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1276, 2.3799, 3.7758, 6.0253] },
+  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.4, unit:"%", zscore:0.63, hist:[4.2, 4.2, 4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3] },
+  nfp: { label:"NFP (000s)", value:178.0, prev:-133.0, unit:"k", zscore:1.41, hist:[108.0, 13.0, -20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -133.0, 178.0] },
+  jolts: { label:"JOLTS Openings", value:6.882, prev:7.24, unit:"M", zscore:-1.2, hist:[6.952, 7.098, 7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.882] },
+  hpiNational: { label:"HPI National YoY", value:0.9147, prev:1.1472, unit:"%", zscore:-1.26, hist:[2.8207, 2.3469, 1.9318, 1.6384, 1.475, 1.3027, 1.3189, 1.2861, 1.1472, 0.9147] },
+  housingStarts: { label:"Housing Starts (000s)", value:1487.0, prev:1387.0, unit:"k", zscore:1.83, hist:[1490.0, 1355.0, 1398.0, 1282.0, 1382.0, 1420.0, 1291.0, 1328.0, 1272.0, 1324.0, 1387.0, 1487.0] },
+  existingHomeSales: { label:"Existing Home Sales", value:3980.0, prev:4130.0, unit:"M", zscore:-1.09, hist:[4020.0, 4040.0, 3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 3980.0] },
+  mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.78, prev:1.78, unit:"%", zscore:0.61, hist:[1.73, 1.74, 1.77, 1.78, 1.79, 1.78, 1.78] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:6.3, prev:6.37, unit:"", zscore:0.37, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
+  igSpread: { label:"IG Corp OAS", value:81.0, prev:80.0, unit:"bps", zscore:-0.35, hist:[86.0, 85.0, 86.0, 83.0, 83.0, 82.0, 82.0, 81.0, 80.0, 81.0, 80.0, 81.0] },
+  hySpread: { label:"HY Corp OAS", value:287.0, prev:283.0, unit:"bps", zscore:-0.94, hist:[313.0, 305.0, 312.0, 294.0, 290.0, 294.0, 295.0, 284.0, 285.0, 286.0, 283.0, 287.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:155.0, prev:162.0, unit:"bps", zscore:0.37, hist:[135.0, 136.0, 134.0, 126.0, 123.0, 125.0, 136.0, 147.0, 163.0, 171.0, 162.0, 155.0] },
+};
+// @@SIGNALS_END@@
+
+const SEED_POSITIONS = [
+  { id:1, name:'FNMA 6.0 2053',    type:'MBS',       upb:5000000,  coupon:6.0,  wal:7.2,  oas:145, cpr:8.5,  purchasePrice:99.25, currentPrice:98.50, signal:'Hold'  },
+  { id:2, name:'FHLMC 5.5 2052',   type:'MBS',       upb:3500000,  coupon:5.5,  wal:8.1,  oas:138, cpr:6.2,  purchasePrice:97.50, currentPrice:96.25, signal:'Buy'   },
+  { id:3, name:'WL Pool - CA ARM', type:'Whole Loan', upb:12000000, coupon:7.25, wal:4.8,  oas:185, cpr:11.0, purchasePrice:100.0, currentPrice:99.10, signal:'Hold'  },
+  { id:4, name:'GNMA 6.5 2054',    type:'MBS',       upb:2200000,  coupon:6.5,  wal:6.9,  oas:155, cpr:9.8,  purchasePrice:100.5, currentPrice:99.75, signal:'Hold'  },
+  { id:5, name:'RKT (Rocket)',      type:'Equity',    upb:450000,   coupon:0,    wal:0,    oas:0,   cpr:0,    purchasePrice:11.20, currentPrice:9.80,  signal:'Sell'  },
+  { id:6, name:'PFSI (PennyMac)',   type:'Equity',    upb:280000,   coupon:0,    wal:0,    oas:0,   cpr:0,    purchasePrice:72.40, currentPrice:68.90, signal:'Watch' },
+  { id:7, name:'WL Pool - TX Fix',  type:'Whole Loan',upb:8500000,  coupon:6.875,wal:9.5,  oas:172, cpr:5.5,  purchasePrice:99.50, currentPrice:98.00, signal:'Buy'   },
+  { id:8, name:'Non-Agency RMBS A', type:'MBS',       upb:1800000,  coupon:7.0,  wal:5.2,  oas:220, cpr:12.0, purchasePrice:98.00, currentPrice:97.50, signal:'Hold'  },
+];
+
+const SEED_TRADES = [
+  { date:'2024-04-18', name:'FNMA 6.0 2053',    action:'Buy',  amount:5000000, price:99.25, pnl:-37500, rationale:'OAS 145bps vs 120 hist avg; Fed pause likely' },
+  { date:'2024-04-15', name:'RKT (Rocket)',      action:'Sell', amount:150000,  price:11.20, pnl:-9450,  rationale:'Origination volumes declining, refi index near lows' },
+  { date:'2024-04-10', name:'WL Pool - TX Fix',  action:'Buy',  amount:8500000, price:99.50, pnl:-127500,rationale:'PMMS spread to WAC attractive; solid credit metrics' },
+  { date:'2024-04-05', name:'IR Swap Pay Fixed', action:'Hedge',amount:10000000,price:4.72,  pnl:18500,  rationale:'Duration hedge: DV01 offset for rate exposure' },
+  { date:'2024-03-28', name:'FHLMC 5.5 2052',   action:'Buy',  amount:3500000, price:97.50, pnl:-43750, rationale:'Spec pool with prepay protection; buyup economics' },
+  { date:'2024-03-20', name:'GNMA 6.5 2054',     action:'Buy',  amount:2200000, price:100.5, pnl:-16500, rationale:'Government guarantee, VA/FHA collateral premium' },
+];
+
+const SEED_HEDGES = [
+  { name:'IR Swap Pay Fixed',   type:'Swap',     notional:10000000, strikeRate:4.72, maturity:'2027-04-05', dv01Offset:4850,  pnl:18500  },
+  { name:'TBA MBS Short',       type:'TBA Short',notional:5000000,  strikeRate:6.0,  maturity:'2024-05-15', dv01Offset:2100,  pnl:-4200  },
+  { name:'Swaption Receiver 4Y',type:'Swaption', notional:7500000,  strikeRate:4.25, maturity:'2025-06-01', dv01Offset:1800,  pnl:7200   },
+];
+
+const SEED_ALERTS = [
+  { level:'high',   title:'PMMS rate 7.09% — elevated CPR suppression',  body:'Current mortgage rate 215bps above refi threshold for ~78% of portfolio coupons. Prepayment extension risk is elevated. Consider reviewing WAL assumptions on FNMA 6.0 and FHLMC 5.5 pools.', time:'2 hours ago' },
+  { level:'high',   title:'OAS widening detected — MBS spreads +6bps WoW', body:'Agency MBS OAS at 148bps, above 52-week average of 132bps (z-score +0.9). Widening correlates with Treasury supply surge. Review buy levels on new originations.', time:'4 hours ago' },
+  { level:'medium', title:'NFP miss: 187k vs 240k consensus',               body:'Labor market softening signal. If sustained, may accelerate Fed pivot timing. Positive for duration; consider extending WAL on new purchases. Unemployment now 3.9%.', time:'6 hours ago' },
+  { level:'medium', title:'CPI trending down — 3.2% vs 3.4% prior',        body:'Disinflation continuing. Core PCE also declining. Market pricing 2 cuts by year-end. Rate rally could compress OAS and create exit opportunities on wide-OAS positions.', time:'1 day ago' },
+  { level:'low',    title:'HPI national +5.1% — collateral stable',         body:'Home price appreciation continues, supporting LTV improvements across whole loan book. CA ARM pool CLTV estimated improving 3-4pts. Reduced credit risk.', time:'2 days ago' },
+  { level:'low',    title:'RKT equity below 52-week cost basis',             body:'Rocket Companies equity position showing -12.5% unrealized loss. Origination outlook pressured by elevated rates. Sell signal active.', time:'3 days ago' },
+];
+
+// @@HPI_START@@
+const HPI_STATE_DATA = [
+  {state:"CA", val:1.2, chg:"+1.2"},
+  {state:"TX", val:1.1, chg:"+1.1"},
+  {state:"FL", val:0.0, chg:"+0.0"},
+  {state:"NY", val:6.3, chg:"+6.3"},
+  {state:"WA", val:2.8, chg:"+2.8"},
+  {state:"CO", val:1.3, chg:"+1.3"},
+  {state:"AZ", val:1.7, chg:"+1.7"},
+  {state:"NV", val:1.6, chg:"+1.6"},
+  {state:"OR", val:2.0, chg:"+2.0"},
+  {state:"GA", val:2.9, chg:"+2.9"},
+  {state:"NC", val:3.2, chg:"+3.2"},
+  {state:"SC", val:3.7, chg:"+3.7"},
+  {state:"TN", val:3.1, chg:"+3.1"},
+  {state:"OH", val:5.1, chg:"+5.1"},
+  {state:"MI", val:5.6, chg:"+5.6"},
+  {state:"IL", val:6.4, chg:"+6.4"},
+  {state:"PA", val:5.5, chg:"+5.5"},
+  {state:"NJ", val:6.0, chg:"+6.0"},
+  {state:"MA", val:4.3, chg:"+4.3"},
+  {state:"VA", val:4.2, chg:"+4.2"},
+  {state:"MD", val:2.8, chg:"+2.8"},
+  {state:"MN", val:3.3, chg:"+3.3"},
+  {state:"WI", val:5.8, chg:"+5.8"},
+  {state:"UT", val:2.9, chg:"+2.9"},
+  {state:"ID", val:2.0, chg:"+2.0"},
+];
+// @@HPI_END@@
+
+const presets = [
+  'Analyze the prepayment risk in my portfolio given the current PMMS rate of 7.09% and the coupon stack. Which positions are most at risk of CPR slowdown and extension?',
+  'Based on my portfolio DV01 exposure and the current rate environment, what hedging strategy would you recommend? Consider the Fed Funds rate at 5.33% and 10Y at 4.48%.',
+  'Evaluate current credit conditions for mortgage whole loans. How does the unemployment rate of 3.9% and HPI appreciation of 5.1% affect default probability and recovery assumptions?'
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════
+const PAGE_TITLES = {
+  dashboard:'Dashboard', signals:'Market Signals', hpi:'HPI by State',
+  positions:'Positions', blotter:'Trade Blotter', hedges:'Hedge Book',
+  scenario:'Scenario Analysis', alerts:'Alerts', aibrief:'AI Brief'
+};
+
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if(n.getAttribute('onclick')?.includes("'"+page+"'")) n.classList.add('active');
+  });
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[page] || page;
+  state.currentPage = page;
+  if(page==='signals') {
+    renderSignalGrid();
+    setTimeout(function() { buildMbsChart(); renderMbsMetrics(); }, 80);
+  }
+  if(page==='hpi') renderHpiGrid();
+  if(page==='positions') renderFullPositions();
+  if(page==='blotter') renderBlotter();
+  if(page==='hedges') renderHedgePage();
+  if(page==='scenario') renderScenarioPage();
+  if(page==='alerts') renderAlerts();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════════════
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CHART_DEFAULTS = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1a2030', titleColor:'#8a909e', bodyColor:'#e8eaf0', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10 }},
+  scales:{
+    x:{ ticks:{color:'#5a6070',font:{family:'DM Mono',size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} },
+    y:{ ticks:{color:'#5a6070',font:{family:'DM Mono',size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} }
+  }
+};
+
+let activeRateKey = 'fed';
+function buildRateChart() {
+  const ctx = document.getElementById('rateChart').getContext('2d');
+  const d = state.signals;
+  const sig = d[activeRateKey==='fed'?'fedFunds':activeRateKey==='pmms'?'pmms30':activeRateKey==='cpi'?'cpi':'unemployment'];
+  const hist = sig?.hist || [];
+  if(state.charts.rate) state.charts.rate.destroy();
+  state.charts.rate = new Chart(ctx, {
+    type:'line',
+    data:{ labels:MONTHS, datasets:[{ data:hist, borderColor:'#00d4aa', backgroundColor:'rgba(0,212,170,0.06)', borderWidth:1.5, tension:0.4, fill:true, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#00d4aa' }]},
+    options:{ ...CHART_DEFAULTS, plugins:{ ...CHART_DEFAULTS.plugins }, scales:{ ...CHART_DEFAULTS.scales } }
+  });
+}
+
+function switchRateChart(key, el) {
+  document.querySelectorAll('.trend-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  activeRateKey = key;
+  buildRateChart();
+}
+
+function buildAllocChart() {
+  const ctx = document.getElementById('allocChart').getContext('2d');
+  const byType = {};
+  state.positions.forEach(p => { byType[p.type] = (byType[p.type]||0) + p.upb; });
+  const labels = Object.keys(byType);
+  const vals = Object.values(byType);
+  const colors = {'MBS':'#00d4aa','Whole Loan':'#2979ff','Equity':'#ffb800','Hedge':'#9333ea'};
+  if(state.charts.alloc) state.charts.alloc.destroy();
+  state.charts.alloc = new Chart(ctx, {
+    type:'doughnut',
+    data:{ labels, datasets:[{ data:vals, backgroundColor:labels.map(l=>colors[l]||'#888'), borderWidth:0, hoverBorderWidth:2, hoverBorderColor:'rgba(255,255,255,0.2)' }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ ...CHART_DEFAULTS.plugins.tooltip, callbacks:{label:c=>`$${(c.raw/1e6).toFixed(1)}M`} }}, cutout:'72%' }
+  });
+  const leg = document.getElementById('allocLegend');
+  const total = vals.reduce((a,b)=>a+b,0);
+  leg.innerHTML = labels.map((l,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${colors[l]||'#888'}"></div>
+        <span style="font-size:11px;color:var(--text2)">${l}</span>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text)">${((vals[i]/total)*100).toFixed(0)}%</div>
+    </div>`).join('');
+}
+
+function buildMbsChart() {
+  const ctx = document.getElementById('mbsChart');
+  if(!ctx) return;
+  try {
+    if(state.charts.mbs) { state.charts.mbs.destroy(); state.charts.mbs = null; }
+    const spread = (state.signals.mbsSpread && state.signals.mbsSpread.hist) ? state.signals.mbsSpread.hist : [60,85,110,175,145,130,120,138,155,142,148,148];
+    const pmms   = (state.signals.pmms30   && state.signals.pmms30.hist)   ? state.signals.pmms30.hist   : [3.10,3.22,3.55,4.67,6.29,6.94,6.65,6.79,7.23,7.09,6.88,7.09];
+    const len    = Math.min(spread.length, pmms.length, MONTHS.length);
+    const labels = MONTHS.slice(0, len);
+    state.charts.mbs = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label:'MBS OAS (bps)', data:spread.slice(0,len), borderColor:'#00d4aa', backgroundColor:'rgba(0,212,170,0.06)', borderWidth:1.5, tension:0.4, fill:true,  pointRadius:0, pointHoverRadius:4, yAxisID:'y'  },
+          { label:'PMMS 30Y (%)',  data:pmms.slice(0,len),   borderColor:'#2979ff', backgroundColor:'rgba(41,121,255,0.04)', borderWidth:1.5, tension:0.4, fill:false, pointRadius:0, pointHoverRadius:4, yAxisID:'y1' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { display:true, labels:{ color:'#8a909e', font:{family:'DM Mono',size:10}, boxWidth:10, padding:16 } },
+          tooltip: { backgroundColor:'#1a2030', titleColor:'#8a909e', bodyColor:'#e8eaf0', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10 }
+        },
+        scales: {
+          x:  { ticks:{color:'#5a6070',font:{family:'DM Mono',size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'} },
+          y:  { position:'left',  ticks:{color:'#00d4aa',font:{family:'DM Mono',size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, border:{color:'rgba(255,255,255,0.06)'}, title:{display:true,text:'OAS (bps)',color:'#5a6070',font:{size:9}} },
+          y1: { position:'right', ticks:{color:'#2979ff',font:{family:'DM Mono',size:10}}, grid:{display:false}, border:{color:'rgba(255,255,255,0.06)'},              title:{display:true,text:'Rate (%)', color:'#5a6070',font:{size:9}} }
+        }
+      }
+    });
+  } catch(e) {
+    console.error('MBS chart error:', e);
+  }
+}
+
+function buildHedgeChart() {
+  const ctx = document.getElementById('hedgeChart');
+  if(!ctx) return;
+  if(state.charts.hedge) state.charts.hedge.destroy();
+  const posDv01 = state.positions.filter(p=>p.type!=='Equity').reduce((s,p)=>s+calcDv01(p),0);
+  const hedgeDv01 = state.hedges.reduce((s,h)=>s+h.dv01Offset,0);
+  state.charts.hedge = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:['Portfolio Long DV01','Hedge DV01 Offset','Net Exposure'],
+      datasets:[{ data:[posDv01, -hedgeDv01, posDv01-hedgeDv01], backgroundColor:['rgba(41,121,255,0.6)','rgba(0,212,170,0.6)','rgba(255,184,0,0.6)'], borderRadius:3, borderWidth:0 }]},
+    options:{ ...CHART_DEFAULTS, plugins:{ legend:{display:false}, tooltip:{...CHART_DEFAULTS.plugins.tooltip,callbacks:{label:c=>`$${c.raw.toFixed(0)} per $1M`}} } }
+  });
+}
+
+function buildScenarioChart(shocks) {
+  const ctx = document.getElementById('scenarioChart');
+  if(!ctx) return;
+  if(state.charts.scenario) state.charts.scenario.destroy();
+  const rateShocks = [-200,-100,-50,0,50,100,200,300];
+  const pnls = rateShocks.map(shock => {
+    return state.positions.filter(p=>p.type!=='Equity').reduce((sum,p)=>{
+      const dv01 = calcDv01(p);
+      return sum + (-dv01 * shock / 100 * p.upb / 1e6);
+    },0);
+  });
+  state.charts.scenario = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:rateShocks.map(s=>`${s>0?'+':''}${s}bps`),
+      datasets:[{ data:pnls, backgroundColor:pnls.map(v=>v>=0?'rgba(0,212,170,0.5)':'rgba(255,59,92,0.5)'), borderRadius:3, borderWidth:0 }]},
+    options:{ ...CHART_DEFAULTS, plugins:{ legend:{display:false}, tooltip:{...CHART_DEFAULTS.plugins.tooltip,callbacks:{label:c=>`$${c.raw.toFixed(0)}`}} } }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CALCULATIONS
+// ═══════════════════════════════════════════════════════════════════
+function calcDv01(p) {
+  if(!p.wal || p.wal===0) return 0;
+  return (p.upb / 1000000) * p.wal * 0.085;
+}
+
+function calcPnl(p) {
+  if(p.type==='Equity') {
+    if(p.shares) return p.shares * (p.currentPrice - p.purchasePrice);
+    return p.upb * (p.currentPrice - p.purchasePrice) / p.purchasePrice;
+  }
+  return p.upb * (p.currentPrice - p.purchasePrice) / 100;
+}
+
+function fmtMoney(v, decimals=0) {
+  const abs = Math.abs(v);
+  if(abs>=1e6) return `${v<0?'-':''}$${(abs/1e6).toFixed(1)}M`;
+  if(abs>=1e3) return `${v<0?'-':''}$${(abs/1e3).toFixed(0)}K`;
+  return `${v<0?'-':''}$${abs.toFixed(decimals)}`;
+}
+
+function zscoreColor(z) {
+  if(z > 1.5) return 'bearish';
+  if(z > 0.5) return 'neutral';
+  if(z < -1.5) return 'extreme-bullish';
+  if(z < -0.5) return 'bullish';
+  return 'neutral';
+}
+
+function signalClass(s) {
+  return {Buy:'badge-buy',Sell:'badge-sell',Hold:'badge-hold',Watch:'badge-watch',Hedge:'badge-hedge'}[s]||'badge-watch';
+}
+
+function typeClass(t) {
+  return {'MBS':'badge-mbs','Whole Loan':'badge-whole-loan','Equity':'badge-equity','Hedge':'badge-hedge-pos'}[t]||'badge-watch';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════
+
+function renderKpis() {
+  const s = state.signals;
+  const totalPnl = state.positions.reduce((sum,p)=>sum+calcPnl(p),0);
+  const totalDv01 = state.positions.reduce((sum,p)=>sum+calcDv01(p),0);
+
+  function setKpi(id, val, prev, unit) {
+    document.getElementById('kpi-'+id).textContent = val+unit;
+    const diff = val-prev, el = document.getElementById('kpi-'+id+'-chg');
+    if(!el) return;
+    const sign = diff>=0?'+':'';
+    el.textContent = `${sign}${diff.toFixed(diff<1?2:1)}${unit} vs prior`;
+    el.className = `kpi-change ${diff>0?'up':'down'}`;
+  }
+
+  if(s.fedFunds)     setKpi('fed',  s.fedFunds.value,     s.fedFunds.prev,    '%');
+  if(s.pmms30)       setKpi('pmms', s.pmms30.value,       s.pmms30.prev,      '%');
+  if(s.cpi)          setKpi('cpi',  s.cpi.value,          s.cpi.prev,         '%');
+  if(s.unemployment) setKpi('unemp',s.unemployment.value, s.unemployment.prev,'%');
+  document.getElementById('kpi-dv01').textContent = `$${totalDv01.toFixed(0)}`;
+  const pnlEl = document.getElementById('kpi-pnl');
+  pnlEl.textContent = fmtMoney(totalPnl);
+  pnlEl.style.color = totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
+}
+
+function renderDashPositions() {
+  const sorted = [...state.positions].sort((a,b)=>calcDv01(b)-calcDv01(a)).slice(0,5);
+  document.getElementById('dashPositionBody').innerHTML = sorted.map(p=>{
+    const pnl = calcPnl(p);
+    return `<tr>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="badge ${typeClass(p.type)}">${p.type}</span></td>
+      <td>${fmtMoney(p.upb)}</td>
+      <td>${p.coupon?p.coupon.toFixed(3)+'%':'—'}</td>
+      <td>${p.wal?p.wal.toFixed(1)+'y':'—'}</td>
+      <td>${p.oas?p.oas+'bps':'—'}</td>
+      <td>$${calcDv01(p).toFixed(0)}</td>
+      <td><span class="badge ${signalClass(p.signal)}">${p.signal}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderDashAlerts() {
+  document.getElementById('dashAlerts').innerHTML = state.alerts.slice(0,4).map(a=>`
+    <div class="alert-item ${a.level}">
+      <div class="alert-icon ${a.level}"></div>
+      <div>
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-body">${a.body.substring(0,100)}…</div>
+        <div class="alert-time">${a.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSignalGrid() {
+  const grid = document.getElementById('signalGrid');
+  grid.innerHTML = Object.entries(state.signals).map(([k,s])=>{
+    const cls = zscoreColor(s.zscore);
+    const zabs = Math.min(Math.abs(s.zscore)/3, 1);
+    const barColor = s.zscore > 0 ? 'var(--red)' : 'var(--green)';
+    const zDir = s.zscore > 0 ? 'Elevated' : 'Suppressed';
+    return `<div class="signal-card ${cls}" onclick="window.open('https://fred.stlouisfed.org/','_blank')">
+      <div class="signal-name">${s.label}</div>
+      <div class="signal-value">${s.value}${s.unit}</div>
+      <div class="signal-zscore">z = ${s.zscore>=0?'+':''}${s.zscore.toFixed(2)} · ${zDir}</div>
+      <div class="signal-bar-bg"><div class="signal-bar-fill" style="width:${(zabs*100).toFixed(0)}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderHpiGrid() {
+  document.getElementById('hpiGrid').innerHTML = HPI_STATE_DATA.map(d=>{
+    const color = parseFloat(d.chg)>=0?'var(--green)':'var(--red)';
+    const heat = d.val > 6 ? 'rgba(255,59,92,0.08)' : d.val > 4 ? 'rgba(255,184,0,0.06)' : 'rgba(0,212,170,0.06)';
+    return `<div class="hpi-state" style="background:${heat}">
+      <div class="hpi-state-name">${d.state}</div>
+      <div class="hpi-state-val" style="color:${d.val>6?'var(--red)':d.val>4?'var(--amber)':'var(--green)'}">${d.val}%</div>
+      <div class="hpi-state-chg" style="color:${color}">YoY ${d.chg>0?'+':''}${d.chg}%</div>
+    </div>`;
+  }).join('');
+}
+
+function renderFullPositions() {
+  const search = document.getElementById('posSearch')?.value?.toLowerCase()||'';
+  const typeF = document.getElementById('posTypeFilter')?.value||'';
+  let filtered = state.positions.filter(p=>{
+    return (!search || p.name.toLowerCase().includes(search)) &&
+           (!typeF || p.type===typeF);
+  });
+  document.getElementById('posCount').textContent = filtered.length;
+  const totalDv01 = filtered.reduce((s,p)=>s+calcDv01(p),0);
+  document.getElementById('totalDv01').textContent = `$${totalDv01.toFixed(0)}/bp`;
+  document.getElementById('fullPositionBody').innerHTML = filtered.map(p=>{
+    const pnl = calcPnl(p);
+    const dv01 = calcDv01(p);
+    return `<tr>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="badge ${typeClass(p.type)}">${p.type}</span></td>
+      <td>${fmtMoney(p.upb)}</td>
+      <td>${p.coupon?p.coupon.toFixed(3)+'%':'—'}</td>
+      <td>${p.wal?p.wal.toFixed(1)+'y':'—'}</td>
+      <td>${p.oas||'—'}</td>
+      <td>${p.cpr?p.cpr.toFixed(1)+'%':'—'}</td>
+      <td>$${dv01.toFixed(0)}</td>
+      <td style="color:${pnl>=0?'var(--green)':'var(--red)'}">${fmtMoney(pnl)}</td>
+      <td><span class="badge ${signalClass(p.signal)}">${p.signal}</span></td>
+      <td><button class="btn btn-danger btn-sm" onclick="removePosition(${p.id})">×</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterPositions() { renderFullPositions(); }
+
+function renderBlotter() {
+  document.getElementById('blotterList').innerHTML = state.trades.map(t=>{
+    const actionColor = {Buy:'var(--green)',Sell:'var(--red)',Hedge:'var(--blue)',Cover:'var(--amber)'}[t.action]||'var(--text)';
+    const pnlColor = t.pnl>=0?'var(--green)':'var(--red)';
+    return `<div class="blotter-entry">
+      <div>
+        <div class="blotter-time">${t.date}</div>
+        <div style="color:${actionColor};font-family:var(--font-mono);font-size:11px;font-weight:500;margin-top:2px">${t.action}</div>
+      </div>
+      <div>
+        <div class="blotter-name">${t.name}</div>
+        <div class="blotter-rationale">${t.rationale}</div>
+      </div>
+      <div class="blotter-amount">${fmtMoney(t.amount)}</div>
+      <div class="blotter-price" style="color:var(--text2)">${t.price>100?t.price.toFixed(2)+'%':t.price.toFixed(2)}</div>
+      <div class="blotter-pnl" style="color:${pnlColor}">${fmtMoney(t.pnl)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderHedgePage() {
+  buildHedgeChart();
+  const posDv01 = state.positions.filter(p=>p.type!=='Equity').reduce((s,p)=>s+calcDv01(p),0);
+  const hedgeDv01 = state.hedges.reduce((s,h)=>s+h.dv01Offset,0);
+  const net = posDv01 - hedgeDv01;
+  const hedgeRatio = posDv01>0?(hedgeDv01/posDv01*100).toFixed(0):0;
+  document.getElementById('hedgeSummary').innerHTML = `
+    <div class="metric-row"><span class="metric-key">Portfolio DV01 (long)</span><span class="metric-val accent">$${posDv01.toFixed(0)}/bp</span></div>
+    <div class="metric-row"><span class="metric-key">Hedge DV01 (short)</span><span class="metric-val" style="color:var(--blue)">-$${hedgeDv01.toFixed(0)}/bp</span></div>
+    <div class="metric-row"><span class="metric-key">Net DV01 exposure</span><span class="metric-val ${net>3000?'danger':'warn'}">$${net.toFixed(0)}/bp</span></div>
+    <div class="metric-row"><span class="metric-key">Hedge ratio</span><span class="metric-val">${hedgeRatio}%</span></div>
+    <div class="metric-row"><span class="metric-key">+100bps shock P&L</span><span class="metric-val danger">-$${(net*100/1000).toFixed(0)}K</span></div>
+    <div class="metric-row"><span class="metric-key">-100bps shock P&L</span><span class="metric-val accent">+$${(net*100/1000).toFixed(0)}K</span></div>
+  `;
+  document.getElementById('hedgeBody').innerHTML = state.hedges.map(h=>`
+    <tr>
+      <td style="font-weight:500">${h.name}</td>
+      <td><span class="badge badge-hedge">${h.type}</span></td>
+      <td>${fmtMoney(h.notional)}</td>
+      <td>${h.strikeRate}%</td>
+      <td>${h.maturity}</td>
+      <td style="color:var(--green)">-$${h.dv01Offset}/bp</td>
+      <td style="color:${h.pnl>=0?'var(--green)':'var(--red)'}">${fmtMoney(h.pnl)}</td>
+    </tr>`).join('');
+}
+
+function renderScenarioPage() {
+  let shocks = { rates: 0, cpr: 0, oas: 0, hpi: 0 };
+  const controls = [
+    { key:'rates', label:'Rate Shock', min:-300, max:300, step:25, unit:'bps', default:0 },
+    { key:'cpr',   label:'CPR Change', min:-10,  max:15,  step:1,  unit:'%',   default:0 },
+    { key:'oas',   label:'OAS Change', min:-100, max:150, step:10, unit:'bps', default:0 },
+    { key:'hpi',   label:'HPI Shock',  min:-20,  max:15,  step:1,  unit:'%',   default:0 },
+  ];
+  document.getElementById('scenarioControls').innerHTML = controls.map(c=>`
+    <div class="scenario-row">
+      <div class="scenario-label">${c.label}</div>
+      <input type="range" class="scenario-slider" id="slider-${c.key}" min="${c.min}" max="${c.max}" step="${c.step}" value="${c.default}" oninput="updateScenario()">
+      <div class="scenario-val" id="sliderval-${c.key}">${c.default>=0?'+':''}${c.default}${c.unit}</div>
+    </div>`).join('');
+
+  const presetEl = document.getElementById('presetScenarios');
+  const PRESETS = [
+    { name:'Fed Rate Cut 200bps', desc:'Easing cycle begins, PMMS follows', rates:-200, cpr:5, oas:-40, hpi:2 },
+    { name:'Soft Landing',        desc:'Gradual disinflation, rates stable', rates:-50,  cpr:2, oas:-15, hpi:3 },
+    { name:'Higher for Longer',   desc:'Fed stays restrictive thru 2025',    rates:50,   cpr:-2,oas:25, hpi:-2 },
+    { name:'Stagflation',         desc:'Inflation re-accelerates, recession', rates:100, cpr:-4,oas:60, hpi:-8 },
+    { name:'Hard Landing',        desc:'Sharp recession, credit widening',    rates:-150, cpr:3, oas:80, hpi:-12},
+  ];
+  presetEl.innerHTML = PRESETS.map(p=>`
+    <div class="signal-card neutral" style="margin-bottom:8px;cursor:pointer" onclick="applyPreset(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div class="signal-name">${p.name}</div>
+      <div style="font-size:12px;color:var(--text);margin-bottom:6px">${p.desc}</div>
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">Rates: ${p.rates>=0?'+':''}${p.rates}bps · CPR: ${p.cpr>=0?'+':''}${p.cpr}% · OAS: ${p.oas>=0?'+':''}${p.oas}bps</div>
+    </div>`).join('');
+
+  buildScenarioChart(shocks);
+  updateScenario();
+}
+
+function applyPreset(p) {
+  ['rates','cpr','oas','hpi'].forEach(k=>{
+    const el = document.getElementById('slider-'+k);
+    if(el) { el.value = p[k]||0; }
+  });
+  updateScenario();
+}
+
+function updateScenario() {
+  const shocks = {};
+  ['rates','cpr','oas','hpi'].forEach(k=>{
+    const el = document.getElementById('slider-'+k);
+    if(!el) return;
+    const v = parseInt(el.value);
+    shocks[k] = v;
+    const units = {rates:'bps',cpr:'%',oas:'bps',hpi:'%'}[k];
+    document.getElementById('sliderval-'+k).textContent = (v>=0?'+':'')+v+units;
+  });
+
+  let totalPnl = 0;
+  state.positions.forEach(p=>{
+    if(p.type==='Equity') return;
+    const dv01 = calcDv01(p);
+    const ratePnl = -dv01 * (shocks.rates/100) * p.upb/1e6;
+    const oasPnl = -(p.upb/10000) * (shocks.oas||0) * 0.01;
+    totalPnl += ratePnl + oasPnl;
+  });
+
+  const pnlEl = document.getElementById('scenarioPnl');
+  pnlEl.textContent = fmtMoney(totalPnl);
+  pnlEl.style.color = totalPnl>=0?'var(--green)':'var(--red)';
+  document.getElementById('scenarioMeta').textContent =
+    `Rates ${shocks.rates>=0?'+':''}${shocks.rates}bps · OAS ${shocks.oas>=0?'+':''}${shocks.oas}bps · CPR ${shocks.cpr>=0?'+':''}${shocks.cpr}%`;
+}
+
+function renderAlerts() {
+  document.getElementById('fullAlertList').innerHTML = state.alerts.map(a=>`
+    <div class="alert-item ${a.level}">
+      <div class="alert-icon ${a.level}" style="margin-top:6px"></div>
+      <div style="flex:1">
+        <div class="alert-title">${a.title}</div>
+        <div class="alert-body" style="margin-top:4px">${a.body}</div>
+        <div class="alert-time">${a.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderMbsMetrics() {
+  const m = document.getElementById('mbsMetrics');
+  if(!m) return;
+  const s = state.signals;
+  const zspread = s.mbsSpread?.value||0;
+  const pmms = s.pmms30?.value||7.09;
+  const fed = s.fedFunds?.value||5.33;
+  const spread_to_tsy = (pmms - (s.tenYrTsy?.value||4.48)).toFixed(2);
+  m.innerHTML = `
+    <div class="metric-row"><span class="metric-key">MBS OAS (Agency)</span><span class="metric-val accent">${zspread} bps</span></div>
+    <div class="metric-row"><span class="metric-key">PMMS-to-TSY spread</span><span class="metric-val">${spread_to_tsy}%</span></div>
+    <div class="metric-row"><span class="metric-key">Fed Funds</span><span class="metric-val">${fed}%</span></div>
+    <div class="metric-row"><span class="metric-key">PMMS 30Y</span><span class="metric-val">${pmms}%</span></div>
+    <div class="metric-row"><span class="metric-key">Refi threshold gap</span><span class="metric-val danger">~215bps avg coupon</span></div>
+    <div class="metric-row"><span class="metric-key">MBA App Index YoY</span><span class="metric-val danger">−38%</span></div>
+    <div class="metric-row"><span class="metric-key">Purchase app YoY</span><span class="metric-val danger">−14%</span></div>
+    <div class="metric-row"><span class="metric-key">Avg CPR (agency)</span><span class="metric-val">7.2%</span></div>
+    <div class="metric-row"><span class="metric-key">Avg LTV (new orig)</span><span class="metric-val">79.4%</span></div>
+  `;
+}
+
+function renderRegimeBadge() {
+  const s = state.signals;
+  const avgZ = (s.fedFunds?.zscore+s.cpi?.zscore+s.mbsSpread?.zscore)/3;
+  const badge = document.getElementById('regimeBadge');
+  if(avgZ > 1.2) { badge.className='regime-badge risk-off'; badge.textContent='⬤ Risk Off'; }
+  else if(avgZ < -0.5) { badge.className='regime-badge risk-on'; badge.textContent='⬤ Risk On'; }
+  else { badge.className='regime-badge neutral'; badge.textContent='⬤ Neutral'; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openAddPositionModal() { openModal('addPositionModal'); }
+function openApiKeyModal() { document.getElementById('apiKeyInput').value=state.apiKey; openModal('apiKeyModal'); }
+function openAddTradeModal() { openModal('addTradeModal'); }
+function openAddHedgeModal() { /* future */ }
+
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click', e=>{ if(e.target===el) closeModal(el.id); });
+});
+
+function togglePositionFields() {
+  const type = document.getElementById('pos-type').value;
+  const isEquity = type === 'Equity';
+  document.getElementById('equity-fields').style.display = isEquity ? 'block' : 'none';
+  document.getElementById('bond-fields').style.display   = isEquity ? 'none'  : 'block';
+}
+
+function calcEquityPreview() {
+  const shares   = parseFloat(document.getElementById('pos-shares').value) || 0;
+  const cost     = parseFloat(document.getElementById('pos-costbasis').value) || 0;
+  const current  = parseFloat(document.getElementById('pos-shareprice').value) || 0;
+  const totalVal = shares * current;
+  const pnl      = shares * (current - cost);
+  const tv = document.getElementById('eq-total-val');
+  const pv = document.getElementById('eq-pnl-val');
+  if(tv) tv.textContent = totalVal ? '$' + totalVal.toLocaleString('en-US',{maximumFractionDigits:0}) : '—';
+  if(pv) { pv.textContent = pnl ? (pnl>=0?'+':'-') + '$' + Math.abs(pnl).toLocaleString('en-US',{maximumFractionDigits:0}) : '—'; pv.style.color = pnl>=0?'var(--green)':'var(--red)'; }
+}
+
+// Wire up live preview on equity inputs
+['pos-shares','pos-costbasis','pos-shareprice'].forEach(id => {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', calcEquityPreview);
+  }, 500);
+});
+
+function addPosition() {
+  const type   = document.getElementById('pos-type').value;
+  const isEquity = type === 'Equity';
+  let p;
+  if(isEquity) {
+    const shares  = parseFloat(document.getElementById('pos-shares').value) || 0;
+    const cost    = parseFloat(document.getElementById('pos-costbasis').value) || 0;
+    const current = parseFloat(document.getElementById('pos-shareprice').value) || 0;
+    p = {
+      id: Date.now(),
+      name: document.getElementById('pos-name').value || 'Stock Position',
+      type: 'Equity',
+      shares: shares,
+      upb: shares * current,
+      coupon: 0, wal: 0, oas: 0, cpr: 0,
+      purchasePrice: cost,
+      currentPrice: current,
+      signal: document.getElementById('pos-signal-eq').value,
+    };
+  } else {
+    p = {
+      id: Date.now(),
+      name: document.getElementById('pos-name').value || 'New Position',
+      type: type,
+      upb: parseFloat(document.getElementById('pos-upb').value)||0,
+      coupon: parseFloat(document.getElementById('pos-coupon').value)||0,
+      wal: parseFloat(document.getElementById('pos-wal').value)||0,
+      oas: parseFloat(document.getElementById('pos-oas').value)||0,
+      cpr: parseFloat(document.getElementById('pos-cpr').value)||0,
+      purchasePrice: parseFloat(document.getElementById('pos-price').value)||100,
+      currentPrice: parseFloat(document.getElementById('pos-curprice').value)||100,
+      signal: document.getElementById('pos-signal').value,
+    };
+  }
+  state.positions.push(p);
+  // Reset form
+  ['pos-name','pos-upb','pos-coupon','pos-wal','pos-oas','pos-cpr','pos-price','pos-curprice','pos-shares','pos-costbasis','pos-shareprice'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('equity-fields').style.display = 'none';
+  document.getElementById('bond-fields').style.display   = 'block';
+  document.getElementById('pos-type').value = 'Whole Loan';
+  closeModal('addPositionModal');
+  refreshDashboard();
+}
+
+function removePosition(id) {
+  state.positions = state.positions.filter(p=>p.id!==id);
+  renderFullPositions();
+  refreshDashboard();
+}
+
+function addTrade() {
+  const t = {
+    date: new Date().toISOString().split('T')[0],
+    name: document.getElementById('trade-name').value,
+    action: document.getElementById('trade-action').value,
+    amount: parseFloat(document.getElementById('trade-amount').value)||0,
+    price: parseFloat(document.getElementById('trade-price').value)||0,
+    pnl: 0,
+    rationale: document.getElementById('trade-rationale').value,
+  };
+  state.trades.unshift(t);
+  closeModal('addTradeModal');
+  renderBlotter();
+}
+
+function saveApiKey() {
+  state.apiKey = document.getElementById('apiKeyInput').value.trim();
+  localStorage.setItem('mortgageiq_key', state.apiKey);
+  closeModal('apiKeyModal');
+  updateApiKeyStatus();
+  runDailyBrief();
+}
+
+function updateApiKeyStatus() {
+  const el = document.getElementById('apiKeyStatus');
+  if(state.apiKey) {
+    el.textContent = '✓ Claude Active';
+    el.style.background = 'rgba(0,212,170,0.08)';
+    el.style.color = 'var(--accent)';
+    el.style.borderColor = 'rgba(0,212,170,0.25)';
+  } else {
+    el.textContent = '⚙ Set Claude API Key';
+    el.style.background = '';
+    el.style.color = '';
+    el.style.borderColor = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// AI INTEGRATION
+// ═══════════════════════════════════════════════════════════════════
+function buildSignalContext() {
+  const s = state.signals;
+  const totalPnl = state.positions.reduce((sum,p)=>sum+calcPnl(p),0);
+  const totalUpb = state.positions.reduce((sum,p)=>sum+p.upb,0);
+  const totalDv01 = state.positions.reduce((sum,p)=>sum+calcDv01(p),0);
+  return `
+CURRENT MARKET SIGNALS:
+- Fed Funds Rate: ${s.fedFunds?.value}% (z-score: +${s.fedFunds?.zscore})
+- PMMS 30Y Mortgage Rate: ${s.pmms30?.value}% (z-score: +${s.pmms30?.zscore})
+- CPI YoY: ${s.cpi?.value}% (z-score: +${s.cpi?.zscore})
+- Core PCE: ${s.corePce?.value}%
+- Unemployment: ${s.unemployment?.value}% (z-score: ${s.unemployment?.zscore})
+- NFP: ${s.nfp?.value}K jobs (z-score: ${s.nfp?.zscore})
+- 10Y Treasury: ${s.tenYrTsy?.value}%
+- Agency MBS OAS: ${s.mbsSpread?.value}bps
+- HPI National YoY: ${s.hpiNational?.value}%
+- Refi App Index: ${s.refiBoomster?.value} (z-score: ${s.refiBoomster?.zscore})
+
+PORTFOLIO SUMMARY:
+- Total book UPB: ${fmtMoney(totalUpb)}
+- Unrealized P&L: ${fmtMoney(totalPnl)}
+- Portfolio DV01: $${totalDv01.toFixed(0)}/bp
+- Positions: ${state.positions.length} (${state.positions.filter(p=>p.type==='MBS').length} MBS, ${state.positions.filter(p=>p.type==='Whole Loan').length} whole loans, ${state.positions.filter(p=>p.type==='Equity').length} equities)
+- Hedge book: ${state.hedges.length} instruments
+`;
+}
+
+function formatAiResponse(text) {
+  text = text.replace(/[*]{2}([^*]+)[*]{2}/g, '<strong>$1</strong>');
+  var lines = text.split('\n').map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+  var html = '<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px">';
+  lines.forEach(function(line) {
+    if(/^[A-Z\s\-]{8,}$/.test(line)) return;
+    line = line.replace(/^[•\-]\s*/, '');
+    if(!line) return;
+    html += '<li style="display:flex;gap:10px;line-height:1.6"><span style="color:var(--accent);flex-shrink:0">•</span><span>' + line + '</span></li>';
+  });
+  html += '</ul>';
+  return html;
+}
+
+async function runDailyBrief() {
+  if(!state.apiKey) return;
+  const loading = document.getElementById('briefLoading');
+  const text = document.getElementById('briefText');
+  const dateEl = document.getElementById('briefDate');
+  if(!loading || !text) return;
+
+  const spinnerSpan = loading.querySelector('span');
+  if(spinnerSpan) spinnerSpan.textContent = 'Analyzing…';
+  loading.style.display='flex';
+  text.style.display='none';
+
+  const today = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  if(dateEl) dateEl.textContent = today;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5', max_tokens:600,
+        system:`You are a senior mortgage portfolio strategist and fixed income analyst. You analyze macro signals and provide concise, actionable intelligence for a mortgage portfolio manager trading whole loans, MBS, and originator equities. Always respond in clean bullet points using this exact format:
+• [Signal/observation]: [implication for mortgage portfolio]
+Use 4-6 bullets maximum. End with a RECOMMENDATION bullet listing specific buy/sell/hedge actions. Bold key numbers using <strong> tags. No paragraph prose — bullets only.`,
+        messages:[{role:'user',content:`Given today's market signals, provide a concise daily macro brief focusing on mortgage market implications for buy/sell/hedge decisions.\n\n${buildSignalContext()}`}]
+      })
+    });
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || 'Unable to generate brief.';
+    loading.style.display='none';
+    text.style.display='block';
+    text.innerHTML = formatAiResponse(raw);
+  } catch(e) {
+    if(spinnerSpan) spinnerSpan.textContent = 'Error: '+e.message;
+  }
+}
+
+async function runCustomAi() {
+  if(!state.apiKey) { openApiKeyModal(); return; }
+  const prompt = document.getElementById('customPrompt').value.trim();
+  if(!prompt) return;
+
+  const loading = document.getElementById('fullBriefLoading');
+  const text = document.getElementById('fullBriefText');
+  const title = document.getElementById('aiAnalysisTitle');
+  loading.style.display='flex'; text.style.display='none';
+  title.textContent = 'Analyzing…';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5', max_tokens:1000,
+        system:`You are a senior mortgage portfolio strategist and fixed income analyst. Analyze signals and provide specific, actionable intelligence. Always respond in clean bullet points using this exact format:
+• [Signal/observation]: [implication for mortgage portfolio]
+Use 5-8 bullets. End with a RECOMMENDATION bullet listing specific buy/sell/hedge actions. Bold key numbers using <strong> tags. No paragraph prose — bullets only.`,
+        messages:[{role:'user',content:`${prompt}\n\n${buildSignalContext()}`}]
+      })
+    });
+    const data = await res.json();
+    loading.style.display='none'; text.style.display='block';
+    text.innerHTML = formatAiResponse(data.content?.[0]?.text || 'No response.');
+    title.textContent = 'Analysis Result';
+  } catch(e) {
+    loading.style.display='none'; text.style.display='block';
+    text.textContent = 'Error: '+e.message;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DATA REFRESH
+// ═══════════════════════════════════════════════════════════════════
+function refreshData() {
+  // Simulate small price movements on refresh
+  Object.values(state.signals).forEach(s=>{
+    s.value = parseFloat((s.value * (0.998 + Math.random()*0.004)).toFixed(2));
+  });
+  document.getElementById('lastUpdate').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+  document.getElementById('lastFetchTime').textContent = `Last pull: ${new Date().toLocaleTimeString()}`;
+  refreshDashboard();
+}
+
+function refreshDashboard() {
+  renderKpis();
+  renderDashPositions();
+  renderDashAlerts();
+  renderRegimeBadge();
+  buildAllocChart();
+  buildRateChart();
+  renderMbsMetrics();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+function init() {
+  state.signals = SEED_SIGNALS;
+  state.positions = SEED_POSITIONS;
+  state.trades = SEED_TRADES;
+  state.hedges = SEED_HEDGES;
+  state.alerts = SEED_ALERTS;
+
+  document.getElementById('lastUpdate').textContent = `Updated ${new Date().toLocaleTimeString()}`;
+  document.getElementById('lastFetchTime').textContent = `Last pull: ${new Date().toLocaleTimeString()}`;
+  document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  updateApiKeyStatus();
+  refreshDashboard();
+
+  if(state.apiKey) {
+    setTimeout(runDailyBrief, 400);
+  } else {
+    document.getElementById('briefLoading').innerHTML = `<span style="color:var(--text3);font-family:var(--font-mono);font-size:11px">Set your Claude API key to enable AI-powered macro briefs →</span>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CSV IMPORT
+// ═══════════════════════════════════════════════════════════════════
+let importBuffer = [];
+
+function openImportModal() { openModal('importModal'); }
+
+function switchImportTab(tab) {
+  document.querySelectorAll('.import-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.import-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('import-' + tab).style.display = 'block';
+  document.getElementById('tab-' + tab).classList.add('active');
+  clearImportPreview();
+}
+
+function handleFileDrop(event, format) {
+  event.preventDefault();
+  event.currentTarget.style.borderColor = 'var(--border2)';
+  const file = event.dataTransfer.files[0];
+  if(file) readCsvFile(file, format);
+}
+
+function handleFileSelect(event, format) {
+  const file = event.target.files[0];
+  if(file) readCsvFile(file, format);
+}
+
+function readCsvFile(file, format) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    if(format === 'robinhood') parseRobinhoodCsv(text);
+    else parseGenericCsv(text);
+  };
+  reader.readAsText(file);
+}
+
+function parsePastedCsv() {
+  const text = document.getElementById('csv-paste-area').value.trim();
+  if(!text) return;
+  parseGenericCsv(text);
+}
+
+function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for(let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if(ch === '"') { inQuotes = !inQuotes; }
+    else if(ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function parseRobinhoodCsv(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  if(lines.length < 2) { alert('CSV appears empty or invalid.'); return; }
+
+  const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g,'_'));
+  console.log('Robinhood headers:', headers);
+
+  // Robinhood column mappings (they change these occasionally)
+  const colMap = {
+    name:          ['name','instrument','symbol','ticker','security'],
+    shares:        ['quantity','shares','share_count','units'],
+    average_cost:  ['average_cost','avg_cost','cost_basis','average_buy_price','cost_per_share'],
+    last_price:    ['last_price','current_price','price','last_trade_price','mark_price','equity_price'],
+    equity:        ['equity','market_value','total_value','position_value'],
+  };
+
+  function findCol(candidates) {
+    for(const c of candidates) {
+      const idx = headers.findIndex(h => h.includes(c));
+      if(idx !== -1) return idx;
+    }
+    return -1;
+  }
+
+  const nameIdx   = findCol(colMap.name);
+  const sharesIdx = findCol(colMap.shares);
+  const costIdx   = findCol(colMap.average_cost);
+  const priceIdx  = findCol(colMap.last_price);
+  const equityIdx = findCol(colMap.equity);
+
+  const positions = [];
+  for(let i = 1; i < lines.length; i++) {
+    const cols = parseCsvLine(lines[i]);
+    if(cols.length < 2) continue;
+
+    const name    = nameIdx >= 0   ? cols[nameIdx].replace(/"/g,'').trim()  : 'Unknown';
+    const shares  = sharesIdx >= 0 ? parseFloat(cols[sharesIdx])  || 0 : 0;
+    const cost    = costIdx >= 0   ? parseFloat(cols[costIdx])    || 0 : 0;
+    let   price   = priceIdx >= 0  ? parseFloat(cols[priceIdx])   || 0 : 0;
+    const equity  = equityIdx >= 0 ? parseFloat(cols[equityIdx])  || 0 : 0;
+
+    if(!name || name === 'Unknown') continue;
+    if(shares === 0 && equity === 0) continue;
+
+    // Derive price from equity/shares if direct price not found
+    if(price === 0 && shares > 0 && equity > 0) price = equity / shares;
+
+    positions.push({
+      name, type:'Equity', shares,
+      purchasePrice: cost,
+      currentPrice:  price,
+      upb: shares * price,
+      coupon:0, wal:0, oas:0, cpr:0,
+      signal: price > cost ? 'Hold' : 'Watch',
+    });
+  }
+
+  if(positions.length === 0) {
+    alert('No positions found. Try the "Generic CSV" or "Paste CSV" tab and check your column names.\n\nDetected headers: ' + headers.join(', '));
+    return;
+  }
+  showImportPreview(positions);
+}
+
+function parseGenericCsv(text) {
+  const lines = text.trim().split('\n').filter(l => l.trim());
+  if(lines.length < 2) { alert('Need at least a header row and one data row.'); return; }
+
+  const headers = parseCsvLine(lines[0]).map(h => h.toLowerCase().trim().replace(/\s+/g,'_'));
+
+  function col(names) {
+    for(const n of names) {
+      const i = headers.indexOf(n);
+      if(i !== -1) return i;
+    }
+    return -1;
+  }
+
+  const iName   = col(['name','ticker','symbol','instrument','security']);
+  const iType   = col(['type','asset_type','position_type']);
+  const iShares = col(['shares','quantity','units','share_count']);
+  const iUpb    = col(['upb','notional','balance','principal']);
+  const iCost   = col(['purchase_price','cost','avg_cost','cost_basis','average_cost','cost_per_share']);
+  const iCur    = col(['current_price','price','last_price','mark_price']);
+  const iCoupon = col(['coupon','rate','coupon_rate']);
+  const iWal    = col(['wal','weighted_avg_life','duration']);
+  const iOas    = col(['oas','spread','oas_bps']);
+  const iCpr    = col(['cpr','prepay','prepayment_rate']);
+  const iSig    = col(['signal','recommendation','action']);
+
+  const positions = [];
+  for(let i = 1; i < lines.length; i++) {
+    const c = parseCsvLine(lines[i]);
+    if(c.length < 2) continue;
+    const name    = iName >= 0   ? c[iName].replace(/"/g,'').trim() : 'Row ' + i;
+    const type    = iType >= 0   ? c[iType].trim() : 'Equity';
+    const shares  = iShares >= 0 ? parseFloat(c[iShares]) || 0 : 0;
+    const upb     = iUpb >= 0    ? parseFloat(c[iUpb])    || 0 : 0;
+    const cost    = iCost >= 0   ? parseFloat(c[iCost])   || 0 : 0;
+    const price   = iCur >= 0    ? parseFloat(c[iCur])    || 0 : 0;
+    const isEq    = type.toLowerCase().includes('equity') || (shares > 0 && upb === 0);
+    positions.push({
+      name, type: isEq ? 'Equity' : (type || 'Equity'),
+      shares: isEq ? shares : 0,
+      upb:    isEq ? shares * price : upb,
+      purchasePrice: cost,
+      currentPrice:  price,
+      coupon: iCoupon >= 0 ? parseFloat(c[iCoupon]) || 0 : 0,
+      wal:    iWal >= 0    ? parseFloat(c[iWal])    || 0 : 0,
+      oas:    iOas >= 0    ? parseFloat(c[iOas])    || 0 : 0,
+      cpr:    iCpr >= 0    ? parseFloat(c[iCpr])    || 0 : 0,
+      signal: iSig >= 0    ? c[iSig].trim() : (price >= cost ? 'Hold' : 'Watch'),
+    });
+  }
+
+  if(positions.length === 0) { alert('No valid rows found. Check your CSV format.'); return; }
+  showImportPreview(positions);
+}
+
+function showImportPreview(positions) {
+  importBuffer = positions;
+  document.getElementById('preview-count').textContent = positions.length;
+  document.getElementById('import-count').textContent  = positions.length;
+  document.getElementById('import-preview').style.display = 'block';
+
+  document.getElementById('preview-body').innerHTML = positions.map(p => {
+    const pnl = p.shares > 0
+      ? p.shares * (p.currentPrice - p.purchasePrice)
+      : p.upb * (p.currentPrice - p.purchasePrice) / (p.purchasePrice || 100);
+    const pnlColor = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+    const sizeStr  = p.shares > 0
+      ? p.shares.toLocaleString() + ' shares'
+      : '$' + (p.upb/1e6).toFixed(2) + 'M';
+    return '<tr>' +
+      '<td style="font-weight:500">' + p.name + '</td>' +
+      '<td><span class="badge ' + typeClass(p.type) + '">' + p.type + '</span></td>' +
+      '<td>' + sizeStr + '</td>' +
+      '<td>$' + (p.purchasePrice||0).toFixed(2) + '</td>' +
+      '<td>$' + (p.currentPrice||0).toFixed(2) + '</td>' +
+      '<td style="color:' + pnlColor + '">' + (pnl>=0?'+':'-') + '$' + Math.abs(pnl).toLocaleString('en-US',{maximumFractionDigits:0}) + '</td>' +
+      '</tr>';
+  }).join('');
+}
+
+function confirmImport() {
+  if(!importBuffer.length) return;
+  let added = 0;
+  importBuffer.forEach(p => {
+    // Skip if position with same name already exists
+    const exists = state.positions.find(existing => existing.name.toLowerCase() === p.name.toLowerCase());
+    if(!exists) {
+      state.positions.push({ id: Date.now() + Math.random(), ...p });
+      added++;
+    }
+  });
+  closeModal('importModal');
+  clearImportPreview();
+  refreshDashboard();
+  if(state.currentPage === 'positions') renderFullPositions();
+  const skipped = importBuffer.length - added;
+  alert('Imported ' + added + ' positions.' + (skipped > 0 ? ' Skipped ' + skipped + ' duplicates.' : ''));
+  importBuffer = [];
+}
+
+function clearImportPreview() {
+  importBuffer = [];
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('preview-body').innerHTML = '';
+  const rhInput = document.getElementById('rh-file-input');
+  const genInput = document.getElementById('gen-file-input');
+  if(rhInput) rhInput.value = '';
+  if(genInput) genInput.value = '';
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+2026-04-22 00:38:41  INFO      Database initialised → signals.db
+2026-04-22 00:38:41  INFO      ============================================================
+2026-04-22 00:38:41  INFO      MortgageIQ Pipeline — fetch run starting (2026-04-22 00:38)
+2026-04-22 00:38:41  INFO      ============================================================
+2026-04-22 00:38:41  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-04-22 00:38:41  INFO          → 24 observations saved
+2026-04-22 00:38:42  INFO        Fetching sofr (SOFR)…
+2026-04-22 00:38:42  INFO          → 113 observations saved
+2026-04-22 00:38:42  INFO        Fetching tenYrTsy (DGS10)…
+2026-04-22 00:38:42  INFO          → 114 observations saved
+2026-04-22 00:38:42  INFO        Fetching twoYrTsy (DGS2)…
+2026-04-22 00:38:43  INFO          → 114 observations saved
+2026-04-22 00:38:43  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-04-22 00:38:43  INFO          → 106 observations saved
+2026-04-22 00:38:43  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-04-22 00:38:43  INFO          → 106 observations saved
+2026-04-22 00:38:44  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-04-22 00:38:44  INFO          → 112 observations saved
+2026-04-22 00:38:44  INFO        Fetching cpi (CPIAUCSL)…
+2026-04-22 00:38:44  INFO          → 11 observations saved
+2026-04-22 00:38:44  INFO        Fetching corePce (PCEPILFE)…
+2026-04-22 00:38:45  INFO          → 11 observations saved
+2026-04-22 00:38:45  INFO        Fetching ppi (PPIACO)…
+2026-04-22 00:38:46  INFO          → 12 observations saved
+2026-04-22 00:38:46  INFO        Fetching unemployment (UNRATE)…
+2026-04-22 00:38:46  INFO          → 23 observations saved
+2026-04-22 00:38:46  INFO        Fetching nfp (PAYEMS)…
+2026-04-22 00:38:47  INFO          → 23 observations saved
+2026-04-22 00:38:47  INFO        Fetching jolts (JTSJOL)…
+2026-04-22 00:38:47  INFO          → 23 observations saved
+2026-04-22 00:38:47  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-04-22 00:38:47  INFO          → 10 observations saved
+2026-04-22 00:38:48  INFO        Fetching housingStarts (HOUST)…
+2026-04-22 00:38:48  INFO          → 22 observations saved
+2026-04-22 00:38:48  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-04-22 00:38:48  INFO          → 13 observations saved
+2026-04-22 00:38:48  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-04-22 00:38:49  INFO          → 7 observations saved
+2026-04-22 00:38:49  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-04-22 00:38:49  INFO          → 106 observations saved
+2026-04-22 00:38:49  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-04-22 00:38:49  INFO          → 118 observations saved
+2026-04-22 00:38:49  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-04-22 00:38:50  INFO          → 118 observations saved
+2026-04-22 00:38:50  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-04-22 00:38:50  INFO          → 106 observations saved
+2026-04-22 00:38:50  INFO        Fetching HPI by state…
+2026-04-22 00:38:51  INFO          CA: 3 rows
+2026-04-22 00:38:51  INFO          TX: 3 rows
+2026-04-22 00:38:52  INFO          FL: 3 rows
+2026-04-22 00:38:52  INFO          NY: 3 rows
+2026-04-22 00:38:52  INFO          WA: 3 rows
+2026-04-22 00:38:53  INFO          CO: 3 rows
+2026-04-22 00:38:54  INFO          AZ: 3 rows
+2026-04-22 00:38:54  INFO          NV: 3 rows
+2026-04-22 00:38:55  INFO          OR: 3 rows
+2026-04-22 00:38:55  INFO          GA: 3 rows
+2026-04-22 00:38:56  INFO          NC: 3 rows
+2026-04-22 00:38:56  INFO          SC: 3 rows
+2026-04-22 00:38:57  INFO          TN: 3 rows
+2026-04-22 00:38:57  INFO          OH: 3 rows
+2026-04-22 00:38:58  INFO          MI: 3 rows
+2026-04-22 00:38:58  INFO          IL: 3 rows
+2026-04-22 00:38:59  INFO          PA: 3 rows
+2026-04-22 00:38:59  INFO          NJ: 3 rows
+2026-04-22 00:39:00  INFO          MA: 3 rows
+2026-04-22 00:39:01  INFO          VA: 3 rows
+2026-04-22 00:39:01  INFO          MD: 3 rows
+2026-04-22 00:39:02  INFO          MN: 3 rows
+2026-04-22 00:39:04  INFO          WI: 3 rows
+2026-04-22 00:39:04  INFO          UT: 3 rows
+2026-04-22 00:39:05  INFO          ID: 3 rows
+2026-04-22 00:39:05  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-04-22 00:39:05  INFO      Run complete — 21 OK, 0 failed
+/Users/angadvirpaintal/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+2026-04-22 00:50:36  INFO      Database initialised → /Users/angadvirpaintal/Downloads/Mortgage_Bond_Analyzer_App/signals.db
+2026-04-22 00:50:36  INFO      Database initialised → /Users/angadvirpaintal/Downloads/Mortgage_Bond_Analyzer_App/signals.db
+2026-04-22 00:50:36  INFO      ============================================================
+2026-04-22 00:50:36  INFO      ============================================================
+2026-04-22 00:50:36  INFO      MortgageIQ Pipeline — fetch run starting (2026-04-22 00:50)
+2026-04-22 00:50:36  INFO      MortgageIQ Pipeline — fetch run starting (2026-04-22 00:50)
+2026-04-22 00:50:36  INFO      ============================================================
+2026-04-22 00:50:36  INFO      ============================================================
+2026-04-22 00:50:36  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-04-22 00:50:36  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-04-22 00:50:36  INFO          → 24 observations saved
+2026-04-22 00:50:36  INFO          → 24 observations saved
+2026-04-22 00:50:37  INFO        Fetching sofr (SOFR)…
+2026-04-22 00:50:37  INFO        Fetching sofr (SOFR)…
+2026-04-22 00:50:37  INFO          → 113 observations saved
+2026-04-22 00:50:37  INFO          → 113 observations saved
+2026-04-22 00:50:37  INFO        Fetching tenYrTsy (DGS10)…
+2026-04-22 00:50:37  INFO        Fetching tenYrTsy (DGS10)…
+2026-04-22 00:50:37  INFO          → 114 observations saved
+2026-04-22 00:50:37  INFO          → 114 observations saved
+2026-04-22 00:50:37  INFO        Fetching twoYrTsy (DGS2)…
+2026-04-22 00:50:37  INFO        Fetching twoYrTsy (DGS2)…
+2026-04-22 00:50:38  INFO          → 114 observations saved
+2026-04-22 00:50:38  INFO          → 114 observations saved
+2026-04-22 00:50:38  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-04-22 00:50:38  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-04-22 00:50:38  INFO          → 106 observations saved
+2026-04-22 00:50:38  INFO          → 106 observations saved
+2026-04-22 00:50:38  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-04-22 00:50:38  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-04-22 00:50:38  INFO          → 106 observations saved
+2026-04-22 00:50:38  INFO          → 106 observations saved
+2026-04-22 00:50:39  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-04-22 00:50:39  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-04-22 00:50:39  INFO          → 112 observations saved
+2026-04-22 00:50:39  INFO          → 112 observations saved
+2026-04-22 00:50:39  INFO        Fetching cpi (CPIAUCSL)…
+2026-04-22 00:50:39  INFO        Fetching cpi (CPIAUCSL)…
+2026-04-22 00:50:39  INFO          → 11 observations saved
+2026-04-22 00:50:39  INFO          → 11 observations saved
+2026-04-22 00:50:39  INFO        Fetching corePce (PCEPILFE)…
+2026-04-22 00:50:39  INFO        Fetching corePce (PCEPILFE)…
+2026-04-22 00:50:40  INFO          → 11 observations saved
+2026-04-22 00:50:40  INFO          → 11 observations saved
+2026-04-22 00:50:40  INFO        Fetching ppi (PPIACO)…
+2026-04-22 00:50:40  INFO        Fetching ppi (PPIACO)…
+2026-04-22 00:50:40  INFO          → 12 observations saved
+2026-04-22 00:50:40  INFO          → 12 observations saved
+2026-04-22 00:50:40  INFO        Fetching unemployment (UNRATE)…
+2026-04-22 00:50:40  INFO        Fetching unemployment (UNRATE)…
+2026-04-22 00:50:40  INFO          → 23 observations saved
+2026-04-22 00:50:40  INFO          → 23 observations saved
+2026-04-22 00:50:41  INFO        Fetching nfp (PAYEMS)…
+2026-04-22 00:50:41  INFO        Fetching nfp (PAYEMS)…
+2026-04-22 00:50:41  INFO          → 23 observations saved
+2026-04-22 00:50:41  INFO          → 23 observations saved
+2026-04-22 00:50:41  INFO        Fetching jolts (JTSJOL)…
+2026-04-22 00:50:41  INFO        Fetching jolts (JTSJOL)…
+2026-04-22 00:50:41  INFO          → 23 observations saved
+2026-04-22 00:50:41  INFO          → 23 observations saved
+2026-04-22 00:50:41  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-04-22 00:50:41  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-04-22 00:50:42  INFO          → 10 observations saved
+2026-04-22 00:50:42  INFO          → 10 observations saved
+2026-04-22 00:50:42  INFO        Fetching housingStarts (HOUST)…
+2026-04-22 00:50:42  INFO        Fetching housingStarts (HOUST)…
+2026-04-22 00:50:42  INFO          → 22 observations saved
+2026-04-22 00:50:42  INFO          → 22 observations saved
+2026-04-22 00:50:42  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-04-22 00:50:42  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-04-22 00:50:42  INFO          → 13 observations saved
+2026-04-22 00:50:42  INFO          → 13 observations saved
+2026-04-22 00:50:43  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-04-22 00:50:43  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-04-22 00:50:43  INFO          → 7 observations saved
+2026-04-22 00:50:43  INFO          → 7 observations saved
+2026-04-22 00:50:43  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-04-22 00:50:43  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-04-22 00:50:43  INFO          → 106 observations saved
+2026-04-22 00:50:43  INFO          → 106 observations saved
+2026-04-22 00:50:43  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-04-22 00:50:43  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-04-22 00:50:44  INFO          → 118 observations saved
+2026-04-22 00:50:44  INFO          → 118 observations saved
+2026-04-22 00:50:44  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-04-22 00:50:44  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-04-22 00:50:44  INFO          → 118 observations saved
+2026-04-22 00:50:44  INFO          → 118 observations saved
+2026-04-22 00:50:44  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-04-22 00:50:44  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-04-22 00:50:44  INFO          → 106 observations saved
+2026-04-22 00:50:44  INFO          → 106 observations saved
+2026-04-22 00:50:45  INFO        Fetching HPI by state…
+2026-04-22 00:50:45  INFO        Fetching HPI by state…
+2026-04-22 00:50:45  INFO          CA: 3 rows
+2026-04-22 00:50:45  INFO          CA: 3 rows
+2026-04-22 00:50:45  INFO          TX: 3 rows
+2026-04-22 00:50:45  INFO          TX: 3 rows
+2026-04-22 00:50:45  INFO          FL: 3 rows
+2026-04-22 00:50:45  INFO          FL: 3 rows
+2026-04-22 00:50:46  INFO          NY: 3 rows
+2026-04-22 00:50:46  INFO          NY: 3 rows
+2026-04-22 00:50:46  INFO          WA: 3 rows
+2026-04-22 00:50:46  INFO          WA: 3 rows
+2026-04-22 00:50:47  INFO          CO: 3 rows
+2026-04-22 00:50:47  INFO          CO: 3 rows
+2026-04-22 00:50:47  INFO          AZ: 3 rows
+2026-04-22 00:50:47  INFO          AZ: 3 rows
+2026-04-22 00:50:47  INFO          NV: 3 rows
+2026-04-22 00:50:47  INFO          NV: 3 rows
+2026-04-22 00:50:48  INFO          OR: 3 rows
+2026-04-22 00:50:48  INFO          OR: 3 rows
+2026-04-22 00:50:48  INFO          GA: 3 rows
+2026-04-22 00:50:48  INFO          GA: 3 rows
+2026-04-22 00:50:48  INFO          NC: 3 rows
+2026-04-22 00:50:48  INFO          NC: 3 rows
+2026-04-22 00:50:49  INFO          SC: 3 rows
+2026-04-22 00:50:49  INFO          SC: 3 rows
+2026-04-22 00:50:49  INFO          TN: 3 rows
+2026-04-22 00:50:49  INFO          TN: 3 rows
+2026-04-22 00:50:49  INFO          OH: 3 rows
+2026-04-22 00:50:49  INFO          OH: 3 rows
+2026-04-22 00:50:50  INFO          MI: 3 rows
+2026-04-22 00:50:50  INFO          MI: 3 rows
+2026-04-22 00:50:50  INFO          IL: 3 rows
+2026-04-22 00:50:50  INFO          IL: 3 rows
+2026-04-22 00:50:50  INFO          PA: 3 rows
+2026-04-22 00:50:50  INFO          PA: 3 rows
+2026-04-22 00:50:51  INFO          NJ: 3 rows
+2026-04-22 00:50:51  INFO          NJ: 3 rows
+2026-04-22 00:50:51  INFO          MA: 3 rows
+2026-04-22 00:50:51  INFO          MA: 3 rows
+2026-04-22 00:50:52  INFO          VA: 3 rows
+2026-04-22 00:50:52  INFO          VA: 3 rows
+2026-04-22 00:50:52  INFO          MD: 3 rows
+2026-04-22 00:50:52  INFO          MD: 3 rows
+2026-04-22 00:50:52  INFO          MN: 3 rows
+2026-04-22 00:50:52  INFO          MN: 3 rows
+2026-04-22 00:50:53  INFO          WI: 3 rows
+2026-04-22 00:50:53  INFO          WI: 3 rows
+2026-04-22 00:50:53  INFO          UT: 3 rows
+2026-04-22 00:50:53  INFO          UT: 3 rows
+2026-04-22 00:50:54  INFO          ID: 3 rows
+2026-04-22 00:50:54  INFO          ID: 3 rows
+2026-04-22 00:50:54  INFO      JSON exported → /Users/angadvirpaintal/Downloads/Mortgage_Bond_Analyzer_App/signals_live.json  (21 signals, 25 states)
+2026-04-22 00:50:54  INFO      JSON exported → /Users/angadvirpaintal/Downloads/Mortgage_Bond_Analyzer_App/signals_live.json  (21 signals, 25 states)
+2026-04-22 00:50:54  INFO      Run complete — 21 OK, 0 failed
+2026-04-22 00:50:54  INFO      Run complete — 21 OK, 0 failed
