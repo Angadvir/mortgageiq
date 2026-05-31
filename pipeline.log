@@ -518,3 +518,77 @@
 2026-05-13 22:39:26  INFO          ID: 3 rows
 2026-05-13 22:39:26  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
 2026-05-13 22:39:26  INFO      Run complete — 21 OK, 0 failed
+2026-05-30 19:02:16  INFO      Database initialised → signals.db
+2026-05-30 19:02:16  INFO      ============================================================
+2026-05-30 19:02:16  INFO      MortgageIQ Pipeline — fetch run starting (2026-05-30 19:02)
+2026-05-30 19:02:16  INFO      ============================================================
+2026-05-30 19:02:16  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-05-30 19:02:16  INFO          → 24 observations saved
+2026-05-30 19:02:16  INFO        Fetching sofr (SOFR)…
+2026-05-30 19:02:16  INFO          → 114 observations saved
+2026-05-30 19:02:16  INFO        Fetching tenYrTsy (DGS10)…
+2026-05-30 19:02:17  ERROR         ✗ tenYrTsy: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=DGS10&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:17  INFO        Fetching twoYrTsy (DGS2)…
+2026-05-30 19:02:17  INFO          → 115 observations saved
+2026-05-30 19:02:17  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-05-30 19:02:18  INFO          → 107 observations saved
+2026-05-30 19:02:18  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-05-30 19:02:18  ERROR         ✗ pmms15: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=MORTGAGE15US&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:18  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-05-30 19:02:18  INFO          → 114 observations saved
+2026-05-30 19:02:19  INFO        Fetching cpi (CPIAUCSL)…
+2026-05-30 19:02:19  INFO          → 11 observations saved
+2026-05-30 19:02:19  INFO        Fetching corePce (PCEPILFE)…
+2026-05-30 19:02:20  INFO          → 12 observations saved
+2026-05-30 19:02:20  INFO        Fetching ppi (PPIACO)…
+2026-05-30 19:02:20  INFO          → 12 observations saved
+2026-05-30 19:02:20  INFO        Fetching unemployment (UNRATE)…
+2026-05-30 19:02:21  INFO          → 23 observations saved
+2026-05-30 19:02:21  INFO        Fetching nfp (PAYEMS)…
+2026-05-30 19:02:21  INFO          → 23 observations saved
+2026-05-30 19:02:21  INFO        Fetching jolts (JTSJOL)…
+2026-05-30 19:02:22  INFO          → 23 observations saved
+2026-05-30 19:02:22  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-05-30 19:02:23  INFO          → 11 observations saved
+2026-05-30 19:02:23  INFO        Fetching housingStarts (HOUST)…
+2026-05-30 19:02:23  INFO          → 24 observations saved
+2026-05-30 19:02:24  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-05-30 19:02:24  ERROR         ✗ existingHomeSales: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=EXHOSLUSM495S&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:24  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-05-30 19:02:24  INFO          → 8 observations saved
+2026-05-30 19:02:24  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-05-30 19:02:25  INFO          → 107 observations saved
+2026-05-30 19:02:25  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-05-30 19:02:25  ERROR         ✗ igSpread: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=BAMLC0A0CM&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:25  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-05-30 19:02:26  INFO          → 118 observations saved
+2026-05-30 19:02:26  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-05-30 19:02:26  INFO          → 107 observations saved
+2026-05-30 19:02:26  INFO        Fetching HPI by state…
+2026-05-30 19:02:26  WARNING       ✗ HPI CA: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=CASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:27  INFO          TX: 4 rows
+2026-05-30 19:02:27  INFO          FL: 4 rows
+2026-05-30 19:02:28  WARNING       ✗ HPI NY: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=NYSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:28  INFO          WA: 4 rows
+2026-05-30 19:02:28  INFO          CO: 4 rows
+2026-05-30 19:02:29  WARNING       ✗ HPI AZ: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=AZSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:29  INFO          NV: 4 rows
+2026-05-30 19:02:29  INFO          OR: 4 rows
+2026-05-30 19:02:30  WARNING       ✗ HPI GA: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=GASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:30  INFO          NC: 4 rows
+2026-05-30 19:02:31  INFO          SC: 4 rows
+2026-05-30 19:02:31  WARNING       ✗ HPI TN: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=TNSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:32  INFO          OH: 4 rows
+2026-05-30 19:02:32  INFO          MI: 4 rows
+2026-05-30 19:02:33  INFO          IL: 4 rows
+2026-05-30 19:02:33  INFO          PA: 4 rows
+2026-05-30 19:02:34  INFO          NJ: 4 rows
+2026-05-30 19:02:34  INFO          MA: 4 rows
+2026-05-30 19:02:34  WARNING       ✗ HPI VA: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=VASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:35  INFO          MD: 4 rows
+2026-05-30 19:02:35  INFO          MN: 4 rows
+2026-05-30 19:02:36  WARNING       ✗ HPI WI: 429 Client Error: Too Many Requests for url: https://api.stlouisfed.org/fred/series/observations?series_id=WISTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-16
+2026-05-30 19:02:36  INFO          UT: 4 rows
+2026-05-30 19:02:36  INFO          ID: 4 rows
+2026-05-30 19:02:37  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-05-30 19:02:37  INFO      Run complete — 17 OK, 4 failed
