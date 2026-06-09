@@ -666,3 +666,77 @@
 2026-06-09 00:38:47  WARNING       ✗ HPI ID: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=IDSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
 2026-06-09 00:38:47  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
 2026-06-09 00:38:47  INFO      Run complete — 21 OK, 0 failed
+2026-06-09 00:47:42  INFO      Database initialised → signals.db
+2026-06-09 00:47:42  INFO      ============================================================
+2026-06-09 00:47:42  INFO      MortgageIQ Pipeline — fetch run starting (2026-06-09 00:47)
+2026-06-09 00:47:42  INFO      ============================================================
+2026-06-09 00:47:42  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-06-09 00:47:42  INFO          → 25 observations saved
+2026-06-09 00:47:43  INFO        Fetching sofr (SOFR)…
+2026-06-09 00:47:43  INFO          → 114 observations saved
+2026-06-09 00:47:43  INFO        Fetching tenYrTsy (DGS10)…
+2026-06-09 00:47:43  INFO          → 115 observations saved
+2026-06-09 00:47:44  INFO        Fetching twoYrTsy (DGS2)…
+2026-06-09 00:47:44  INFO          → 115 observations saved
+2026-06-09 00:47:45  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-06-09 00:47:45  INFO          → 106 observations saved
+2026-06-09 00:47:45  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-06-09 00:47:46  INFO          → 106 observations saved
+2026-06-09 00:47:46  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-06-09 00:47:47  INFO          → 114 observations saved
+2026-06-09 00:47:47  INFO        Fetching cpi (CPIAUCSL)…
+2026-06-09 00:47:47  INFO          → 11 observations saved
+2026-06-09 00:47:48  INFO        Fetching corePce (PCEPILFE)…
+2026-06-09 00:47:48  INFO          → 12 observations saved
+2026-06-09 00:47:49  INFO        Fetching ppi (PPIACO)…
+2026-06-09 00:47:49  INFO          → 12 observations saved
+2026-06-09 00:47:49  INFO        Fetching unemployment (UNRATE)…
+2026-06-09 00:47:50  INFO          → 24 observations saved
+2026-06-09 00:47:50  INFO        Fetching nfp (PAYEMS)…
+2026-06-09 00:47:50  INFO          → 24 observations saved
+2026-06-09 00:47:51  INFO        Fetching jolts (JTSJOL)…
+2026-06-09 00:47:51  INFO          → 24 observations saved
+2026-06-09 00:47:51  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-06-09 00:47:52  INFO          → 11 observations saved
+2026-06-09 00:47:52  INFO        Fetching housingStarts (HOUST)…
+2026-06-09 00:47:52  INFO          → 24 observations saved
+2026-06-09 00:47:53  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-06-09 00:47:53  INFO          → 13 observations saved
+2026-06-09 00:47:54  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-06-09 00:47:54  INFO          → 8 observations saved
+2026-06-09 00:47:54  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-06-09 00:47:54  INFO          → 106 observations saved
+2026-06-09 00:47:55  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-06-09 00:47:55  INFO          → 118 observations saved
+2026-06-09 00:47:56  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-06-09 00:47:56  INFO          → 118 observations saved
+2026-06-09 00:47:56  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-06-09 00:47:57  INFO          → 106 observations saved
+2026-06-09 00:47:57  INFO        Fetching HPI by state…
+2026-06-09 00:47:57  INFO          CA: 4 rows
+2026-06-09 00:47:58  INFO          TX: 4 rows
+2026-06-09 00:47:59  INFO          FL: 4 rows
+2026-06-09 00:47:59  INFO          NY: 4 rows
+2026-06-09 00:48:02  INFO          WA: 4 rows
+2026-06-09 00:48:03  INFO          CO: 4 rows
+2026-06-09 00:48:04  INFO          AZ: 4 rows
+2026-06-09 00:48:04  INFO          NV: 4 rows
+2026-06-09 00:48:05  INFO          OR: 4 rows
+2026-06-09 00:48:06  INFO          GA: 4 rows
+2026-06-09 00:48:06  INFO          NC: 4 rows
+2026-06-09 00:48:07  INFO          SC: 4 rows
+2026-06-09 00:48:08  INFO          TN: 4 rows
+2026-06-09 00:48:09  INFO          OH: 4 rows
+2026-06-09 00:48:09  INFO          MI: 4 rows
+2026-06-09 00:48:10  INFO          IL: 4 rows
+2026-06-09 00:48:11  INFO          PA: 4 rows
+2026-06-09 00:48:12  INFO          NJ: 4 rows
+2026-06-09 00:48:13  INFO          MA: 4 rows
+2026-06-09 00:48:14  INFO          VA: 4 rows
+2026-06-09 00:48:15  INFO          MD: 4 rows
+2026-06-09 00:48:15  INFO          MN: 4 rows
+2026-06-09 00:48:16  INFO          WI: 4 rows
+2026-06-09 00:48:17  INFO          UT: 4 rows
+2026-06-09 00:48:18  INFO          ID: 4 rows
+2026-06-09 00:48:19  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-06-09 00:48:19  INFO      Run complete — 21 OK, 0 failed
