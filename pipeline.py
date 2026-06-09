@@ -473,7 +473,7 @@ def fetch_hpi_states(backfill_months: int = 24) -> None:
             raw_obs = fred_fetch(series_id, observation_start=obs_start)
             saved = save_hpi_state(conn, state, raw_obs)
             log.info(f"    {state}: {saved} rows")
-            time.sleep(0.12)   # FRED rate limit: ~8 req/sec
+            time.sleep(0.50)   # FRED rate limit: ~8 req/sec
         except Exception as e:
             log.warning(f"    ✗ HPI {state}: {e}")
     conn.close()
@@ -495,7 +495,7 @@ def fetch_all(backfill_months: int = 24) -> None:
             ok += 1
         else:
             fail += 1
-        time.sleep(0.15)   # FRED rate limit courtesy pause
+        time.sleep(0.50)   # FRED rate limit courtesy pause
 
     fetch_hpi_states(backfill_months)
     export_json()

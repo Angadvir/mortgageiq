@@ -45,7 +45,7 @@ DEFAULT_TICKERS = [
     # EV
     "TSLA", "F", "GM", "RIVN",
     # Mortgage originators
-    "RKT", "PFSI", "UWMC", "GHLD",
+    "RKT", "PFSI", "UWMC", "BAM",
 ]
 
 def check_deps():

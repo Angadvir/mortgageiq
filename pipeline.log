@@ -592,3 +592,77 @@
 2026-05-30 19:02:36  INFO          ID: 4 rows
 2026-05-30 19:02:37  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
 2026-05-30 19:02:37  INFO      Run complete — 17 OK, 4 failed
+2026-06-09 00:38:16  INFO      Database initialised → signals.db
+2026-06-09 00:38:16  INFO      ============================================================
+2026-06-09 00:38:16  INFO      MortgageIQ Pipeline — fetch run starting (2026-06-09 00:38)
+2026-06-09 00:38:16  INFO      ============================================================
+2026-06-09 00:38:16  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-06-09 00:38:16  INFO          → 25 observations saved
+2026-06-09 00:38:17  INFO        Fetching sofr (SOFR)…
+2026-06-09 00:38:17  INFO          → 114 observations saved
+2026-06-09 00:38:17  INFO        Fetching tenYrTsy (DGS10)…
+2026-06-09 00:38:18  INFO          → 115 observations saved
+2026-06-09 00:38:18  INFO        Fetching twoYrTsy (DGS2)…
+2026-06-09 00:38:18  INFO          → 115 observations saved
+2026-06-09 00:38:19  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-06-09 00:38:19  INFO          → 106 observations saved
+2026-06-09 00:38:20  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-06-09 00:38:20  INFO          → 106 observations saved
+2026-06-09 00:38:21  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-06-09 00:38:21  INFO          → 114 observations saved
+2026-06-09 00:38:21  INFO        Fetching cpi (CPIAUCSL)…
+2026-06-09 00:38:22  INFO          → 11 observations saved
+2026-06-09 00:38:23  INFO        Fetching corePce (PCEPILFE)…
+2026-06-09 00:38:23  INFO          → 12 observations saved
+2026-06-09 00:38:24  INFO        Fetching ppi (PPIACO)…
+2026-06-09 00:38:24  INFO          → 12 observations saved
+2026-06-09 00:38:24  INFO        Fetching unemployment (UNRATE)…
+2026-06-09 00:38:24  INFO          → 24 observations saved
+2026-06-09 00:38:25  INFO        Fetching nfp (PAYEMS)…
+2026-06-09 00:38:25  INFO          → 24 observations saved
+2026-06-09 00:38:26  INFO        Fetching jolts (JTSJOL)…
+2026-06-09 00:38:26  INFO          → 24 observations saved
+2026-06-09 00:38:26  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-06-09 00:38:27  INFO          → 11 observations saved
+2026-06-09 00:38:27  INFO        Fetching housingStarts (HOUST)…
+2026-06-09 00:38:27  INFO          → 24 observations saved
+2026-06-09 00:38:28  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-06-09 00:38:28  INFO          → 13 observations saved
+2026-06-09 00:38:29  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-06-09 00:38:29  INFO          → 8 observations saved
+2026-06-09 00:38:29  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-06-09 00:38:30  INFO          → 106 observations saved
+2026-06-09 00:38:30  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-06-09 00:38:30  INFO          → 118 observations saved
+2026-06-09 00:38:31  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-06-09 00:38:31  INFO          → 118 observations saved
+2026-06-09 00:38:32  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-06-09 00:38:32  INFO          → 106 observations saved
+2026-06-09 00:38:32  INFO        Fetching HPI by state…
+2026-06-09 00:38:33  INFO          CA: 4 rows
+2026-06-09 00:38:33  INFO          TX: 4 rows
+2026-06-09 00:38:34  INFO          FL: 4 rows
+2026-06-09 00:38:35  INFO          NY: 4 rows
+2026-06-09 00:38:36  INFO          WA: 4 rows
+2026-06-09 00:38:37  INFO          CO: 4 rows
+2026-06-09 00:38:37  INFO          AZ: 4 rows
+2026-06-09 00:38:38  INFO          NV: 4 rows
+2026-06-09 00:38:39  INFO          OR: 4 rows
+2026-06-09 00:38:40  INFO          GA: 4 rows
+2026-06-09 00:38:41  INFO          NC: 4 rows
+2026-06-09 00:38:41  INFO          SC: 4 rows
+2026-06-09 00:38:42  INFO          TN: 4 rows
+2026-06-09 00:38:43  INFO          OH: 4 rows
+2026-06-09 00:38:44  INFO          MI: 4 rows
+2026-06-09 00:38:45  INFO          IL: 4 rows
+2026-06-09 00:38:47  WARNING       ✗ HPI PA: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=PASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI NJ: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=NJSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI MA: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=MASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI VA: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=VASTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI MD: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=MDSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI MN: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=MNSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI WI: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=WISTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI UT: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=UTSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  WARNING       ✗ HPI ID: HTTPSConnectionPool(host='api.stlouisfed.org', port=443): Max retries exceeded with url: /fred/series/observations?series_id=IDSTHPI&api_key=4876db465a18771018c031f8a39db725&file_type=json&sort_order=desc&limit=120&observation_start=2024-05-26 (Caused by NewConnectionError("HTTPSConnection(host='api.stlouisfed.org', port=443): Failed to establish a new connection: [Errno 61] Connection refused"))
+2026-06-09 00:38:47  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-06-09 00:38:47  INFO      Run complete — 21 OK, 0 failed
