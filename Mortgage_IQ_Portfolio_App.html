@@ -3598,29 +3598,77 @@ async function loadDocLibrary() {
   }
   el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Loading…</div>';
   try {
-    // Query with zero vector to sample metadata
-    var url = docState.pineconeHost.replace(/\/$/, '') + '/query';
-    var res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey },
-      body: JSON.stringify({ vector: new Array(1024).fill(0), topK: 100, includeMetadata: true, includeValues: false })
-    });
-    if(!res.ok) throw new Error('Pinecone query failed: ' + res.status);
-    var data = await res.json();
-    var matches = data.matches || [];
+    var host = docState.pineconeHost.replace(/\/$/, '');
+    var headers = { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey };
 
-    // Deduplicate by doc_id
+    // Strategy 1: Use /vectors/list endpoint (more reliable than zero-vector query)
     var docs = {};
-    matches.forEach(function(m) {
-      var meta = m.metadata || {};
-      var id = meta.doc_id || meta.filename || '?';
-      if(!docs[id]) docs[id] = { title: meta.title || meta.filename || '?', company: meta.company || '', doc_type: meta.doc_type || '', period: meta.period || '', chunks: 0 };
-      docs[id].chunks++;
+    var listRes = await fetch(host + '/vectors/list?limit=100', {
+      method: 'GET', headers: headers
     });
+
+    if(listRes.ok) {
+      var listData = await listRes.json();
+      var vectorIds = (listData.vectors || []).map(function(v){ return typeof v === 'string' ? v : v.id; });
+
+      if(vectorIds.length > 0) {
+        // Fetch metadata for found vectors in batches of 10
+        var batch = vectorIds.slice(0, 10);
+        var fetchRes = await fetch(host + '/vectors/fetch?ids=' + batch.map(encodeURIComponent).join('&ids='), {
+          method: 'GET', headers: headers
+        });
+        if(fetchRes.ok) {
+          var fetchData = await fetchRes.json();
+          var vectors = fetchData.vectors || {};
+          Object.values(vectors).forEach(function(v) {
+            var meta = v.metadata || {};
+            var id = meta.doc_id || meta.filename || v.id;
+            if(!docs[id]) docs[id] = { title: meta.title || meta.filename || v.id, company: meta.company || '', doc_type: meta.doc_type || '', period: meta.period || '', chunks: 0 };
+            docs[id].chunks++;
+          });
+        }
+      }
+    }
+
+    // Strategy 2: Fallback — use a meaningful search query instead of zero vector
+    if(!Object.keys(docs).length) {
+      var searchTerms = ['document', 'ETF', 'earnings', 'prospectus', 'fund', 'financial'];
+      for(var si = 0; si < searchTerms.length; si++) {
+        var qvec = simpleEmbed(searchTerms[si]);
+        var qRes = await fetch(host + '/query', {
+          method: 'POST', headers: headers,
+          body: JSON.stringify({ vector: qvec, topK: 50, includeMetadata: true, includeValues: false })
+        });
+        if(qRes.ok) {
+          var qData = await qRes.json();
+          var matches = qData.matches || [];
+          if(matches.length) {
+            matches.forEach(function(m) {
+              var meta = m.metadata || {};
+              var id = meta.doc_id || meta.filename || '?';
+              if(!docs[id]) docs[id] = { title: meta.title || meta.filename || '?', company: meta.company || '', doc_type: meta.doc_type || '', period: meta.period || '', chunks: 0 };
+              docs[id].chunks++;
+            });
+            break; // found results, stop trying
+          }
+        }
+        await new Promise(function(r){ setTimeout(r, 300); });
+      }
+    }
 
     var keys = Object.keys(docs);
     if(!keys.length) {
-      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No documents indexed yet. Use ingest_docs.py to add documents.</div>';
+      // Show index stats to help diagnose
+      var statsRes = await fetch(host + '/describe_index_stats', { method: 'POST', headers: headers, body: '{}' });
+      var statsMsg = '';
+      if(statsRes.ok) {
+        var stats = await statsRes.json();
+        var total = stats.totalVectorCount || stats.total_vector_count || 0;
+        if(total > 0) {
+          statsMsg = '<div style="margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--amber)">ℹ ' + total + ' vectors found in index but metadata could not be retrieved. Try clicking Search with a keyword like "ETF" or "fund".</div>';
+        }
+      }
+      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No documents found in library.' + statsMsg + '</div>';
       return;
     }
 
@@ -3638,6 +3686,7 @@ async function loadDocLibrary() {
         '</div>'
       ].join('');
     }).join('');
+
   } catch(e) {
     el.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + e.message + '</div>';
   }
