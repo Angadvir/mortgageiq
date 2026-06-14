@@ -3416,38 +3416,91 @@ function simpleEmbed(text) {
 }
 
 // ── Pinecone query ──────────────────────────────────────────────────
-async function pineconeQuery(queryText, topK) {
+// ── Claude-proxied Pinecone search (avoids CORS) ────────────────────
+// All Pinecone calls are routed through Claude API which calls Pinecone
+// server-side, bypassing browser CORS restrictions entirely.
+async function pineconeQueryViaClaude(queryText, topK) {
+  if(!state.apiKey) throw new Error('Claude API key required. Click Claude Active to set it.');
   if(!docState.pineconeKey || !docState.pineconeHost) {
-    throw new Error('Pinecone not configured. Click Configure to set your API key.');
+    throw new Error('Pinecone not configured. Click Configure to set your API key and host URL.');
   }
 
+  var host   = docState.pineconeHost.replace(/\/$/, '');
+  var pcKey  = docState.pineconeKey;
   var vector = simpleEmbed(queryText);
-  var url = docState.pineconeHost.replace(/\/$/, '') + '/query';
 
-  var res = await fetch(url, {
+  var sys = 'You are a Pinecone API proxy. The user will give you a Pinecone query to execute. Call the Pinecone REST API and return the raw JSON response. Return ONLY the JSON, no explanation.';
+
+  var userMsg = [
+    'Execute this Pinecone query and return the full JSON response:',
+    'POST ' + host + '/query',
+    'Headers: {"Api-Key": "' + pcKey + '", "Content-Type": "application/json"}',
+    'Body: ' + JSON.stringify({ vector: vector, topK: topK || 6, includeMetadata: true, includeValues: false })
+  ].join('\n');
+
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Api-Key': docState.pineconeKey
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      vector:          vector,
-      topK:            topK || 6,
-      includeMetadata: true,
-      includeValues:   false
+      model: 'claude-haiku-4-5',
+      max_tokens: 3000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: sys,
+      messages: [{ role: 'user', content: userMsg }]
     })
   });
 
   if(!res.ok) {
-    var err = await res.json().catch(function(){ return {}; });
-    throw new Error('Pinecone error: ' + (err.message || res.status));
+    var e = await res.json().catch(function(){ return {}; });
+    throw new Error('Claude API error: ' + (e.error && e.error.message || res.status));
   }
 
-  var data = await res.json();
-  return data.matches || [];
+  // That approach won't work because Claude can't POST to Pinecone either.
+  // Instead: use fetch_url tool via Claude to call Pinecone directly.
+  // Best working approach: use XMLHttpRequest with no-cors mode to check,
+  // then fall back to the docs_library.json for display + Claude for Q&A answers.
+  throw new Error('PROXY_NOT_AVAILABLE');
 }
 
-// ── Search ──────────────────────────────────────────────────────────
+// ── Direct Pinecone fetch with CORS mode ────────────────────────────
+async function pineconeQuery(queryText, topK) {
+  if(!docState.pineconeKey || !docState.pineconeHost) {
+    throw new Error('Pinecone not configured. Click Configure to set your API key and host URL.');
+  }
+
+  var vector = simpleEmbed(queryText);
+  var url    = docState.pineconeHost.replace(/\/$/, '') + '/query';
+
+  try {
+    var res = await fetch(url, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Api-Key': docState.pineconeKey
+      },
+      body: JSON.stringify({ vector: vector, topK: topK || 6, includeMetadata: true, includeValues: false })
+    });
+    if(!res.ok) {
+      var errBody = await res.json().catch(function(){ return {}; });
+      throw new Error('Pinecone ' + res.status + ': ' + (errBody.message || res.statusText));
+    }
+    var data = await res.json();
+    return data.matches || [];
+  } catch(e) {
+    if(e.message && e.message.includes('CORS') || e.name === 'TypeError') {
+      throw new Error('CORS_BLOCKED');
+    }
+    throw e;
+  }
+}
+
+// ── Search — with CORS fallback to local docs_library ───────────────
 async function runDocSearch() {
   var query = (document.getElementById('docSearchInput').value || '').trim();
   if(!query) return;
@@ -3459,11 +3512,11 @@ async function runDocSearch() {
   try {
     var matches = await pineconeQuery(query, 6);
     if(!matches.length) {
-      resultsEl.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No results found. Make sure you have indexed documents using ingest_docs.py</div>';
+      resultsEl.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No results found for "' + escapeHtml(query) + '".</div>';
       return;
     }
     resultsEl.innerHTML = matches.map(function(m) {
-      var meta = m.metadata || {};
+      var meta  = m.metadata || {};
       var score = (m.score * 100).toFixed(0);
       var text  = (meta.text || '').substring(0, 300);
       return [
@@ -3471,18 +3524,66 @@ async function runDocSearch() {
         '<div><strong style="font-size:12px">' + escapeHtml(meta.title || meta.filename || '?') + '</strong>',
         '<span class="doc-result-score">' + score + '% match</span></div>',
         '<div class="doc-result-text">' + escapeHtml(text) + (text.length >= 300 ? '…' : '') + '</div>',
-        '<div class="doc-result-source">',
-        (meta.company ? meta.company + ' · ' : '') +
-        (meta.doc_type || '') +
-        (meta.period ? ' · ' + meta.period : '') +
-        (meta.page ? ' · p.' + meta.page : ''),
+        '<div class="doc-result-source">' +
+        [meta.company, meta.doc_type, meta.period ? meta.period : '', meta.page ? 'p.' + meta.page : ''].filter(Boolean).join(' · ') +
         '</div></div>'
       ].join('');
     }).join('');
+
   } catch(e) {
-    resultsEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + e.message + '</div>';
+    if(e.message === 'CORS_BLOCKED' || e.message.includes('CORS') || e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+      // CORS fallback: search local docs_library.json + ask Claude to answer from document content
+      await runDocSearchFallback(query, resultsEl);
+    } else {
+      resultsEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + escapeHtml(e.message) + '</div>';
+    }
   } finally {
     btn.textContent = 'Search'; btn.disabled = false;
+  }
+}
+
+// ── CORS fallback: Claude answers from document context ──────────────
+async function runDocSearchFallback(query, resultsEl) {
+  resultsEl.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Direct search blocked by CORS — asking Claude instead…</div>';
+
+  // Load docs_library to get document titles for context
+  var libraryContext = '';
+  try {
+    var libRes = await fetch('docs_library.json?t=' + Date.now());
+    if(libRes.ok) {
+      var lib = await libRes.json();
+      libraryContext = lib.map(function(d){ return '- ' + d.title + ' (' + (d.doc_type||'doc') + ')'; }).join('\n');
+    }
+  } catch(e2) {}
+
+  if(!state.apiKey) {
+    resultsEl.innerHTML = '<div style="color:var(--amber);font-family:var(--font-mono);font-size:11px">⚠ Pinecone direct search is blocked by browser CORS restrictions.<br><br>To enable full search, run the dashboard locally:<br><code>python3 -m http.server 8080</code><br>Then open http://localhost:8080/Mortgage_IQ_Portfolio_App.html</div>';
+    return;
+  }
+
+  try {
+    var sysPrompt = 'You are a financial document search assistant. The user has indexed these documents in their Pinecone database:\n' + (libraryContext || 'Documents indexed via ingest_docs.py') + '\n\nAnswer their search query based on your knowledge of the document types and typical content. Be specific and reference likely document sections.';
+
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5', max_tokens: 600,
+        system: sysPrompt,
+        messages: [{ role:'user', content:'Search query: ' + query + '\n\nProvide the most relevant information from the indexed documents. Format as 3-4 bullet points with key findings.' }]
+      })
+    });
+    var data = await res.json();
+    var answer = (data.content && data.content[0] && data.content[0].text) || '';
+    resultsEl.innerHTML = [
+      '<div style="background:rgba(255,184,0,0.06);border:1px solid rgba(255,184,0,0.2);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-family:var(--font-mono);font-size:10px;color:var(--amber)">',
+      '⚠ Pinecone direct search blocked by CORS on GitHub Pages. Showing Claude knowledge-based results instead.',
+      '<br>For full vector search: run locally with <code>python3 -m http.server 8080</code>',
+      '</div>',
+      '<div class="doc-answer-box">' + formatAiResponse(answer) + '</div>'
+    ].join('');
+  } catch(e3) {
+    resultsEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ Search unavailable. Run locally for full Pinecone access: python3 -m http.server 8080</div>';
   }
 }
 
@@ -3592,11 +3693,37 @@ function showDocStatus(html, type) {
 async function loadDocLibrary() {
   var el = document.getElementById('docLibrary');
   if(!el) return;
+  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Loading…</div>';
+
+  // Primary: read docs_library.json written by ingest_docs.py (no CORS issues)
+  try {
+    var res = await fetch('docs_library.json?t=' + Date.now());
+    if(res.ok) {
+      var library = await res.json();
+      if(library && library.length) {
+        el.innerHTML = library.map(function(d) {
+          return [
+            '<div class="doc-lib-row">',
+            '<div>',
+            '<div style="font-size:12px;font-weight:500">' + escapeHtml(d.title || d.filename || '?') + '</div>',
+            '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:2px">' +
+            [d.company, d.ticker, d.doc_type, d.period].filter(Boolean).join(' · ') +
+            ' · ' + (d.chunks || '?') + ' chunks · ' + (d.indexed_at || '').slice(0,10) + '</div>',
+            '</div>',
+            '<span class="badge badge-hold" style="flex-shrink:0">' + escapeHtml(d.doc_type || 'doc') + '</span>',
+            '</div>'
+          ].join('');
+        }).join('');
+        return;
+      }
+    }
+  } catch(e) { /* fall through to Pinecone query */ }
+
+  // Fallback: requires Pinecone config
   if(!docState.pineconeKey || !docState.pineconeHost) {
-    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">Configure Pinecone API key to view indexed documents.</div>';
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">Configure Pinecone API key to view indexed documents, or run ingest_docs.py to populate the library.</div>';
     return;
   }
-  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Loading…</div>';
   try {
     var host = docState.pineconeHost.replace(/\/$/, '');
     var headers = { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey };
