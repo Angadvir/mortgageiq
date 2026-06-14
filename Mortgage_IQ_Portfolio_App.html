@@ -1659,29 +1659,19 @@ let state = {
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-06-13T05:42:59.560286Z
 const SEED_SIGNALS = {
-  fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.64, unit:"%", zscore:-1.32, hist:[4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63] },
-  sofr: { label:"SOFR", value:3.6, prev:3.59, unit:"%", zscore:0.22, hist:[3.63, 3.62, 3.63, 3.65, 3.63, 3.61, 3.62, 3.63, 3.63, 3.6, 3.59, 3.6] },
-  tenYrTsy: { label:"10Y Treasury", value:4.45, prev:4.55, unit:"%", zscore:0.42, hist:[4.48, 4.45, 4.45, 4.47, 4.46, 4.49, 4.47, 4.55, 4.56, 4.53, 4.55, 4.45] },
-  twoYrTsy: { label:"2Y Treasury", value:4.05, prev:4.13, unit:"%", zscore:1.05, hist:[4.0, 3.99, 3.98, 4.05, 4.05, 4.08, 4.05, 4.17, 4.15, 4.13, 4.13, 4.05] },
-  pmms30: { label:"PMMS 30Y Rate", value:6.52, prev:6.48, unit:"%", zscore:0.43, hist:[6.38, 6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52] },
-  pmms15: { label:"PMMS 15Y Rate", value:5.84, prev:5.79, unit:"%", zscore:0.93, hist:[5.75, 5.77, 5.74, 5.65, 5.58, 5.64, 5.72, 5.71, 5.85, 5.87, 5.79, 5.84] },
-  mba30: { label:"MBA 30Y Rate", value:6.532, prev:6.526, unit:"%", zscore:1.09, hist:[6.483, 6.449, 6.438, 6.472, 6.428, 6.462, 6.472, 6.512, 6.501, 6.528, 6.526, 6.532] },
-  cpi: { label:"CPI YoY", value:4.27, prev:3.947, unit:"%", zscore:2.34, hist:[2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202, 3.947, 4.27] },
-  corePce: { label:"Core PCE", value:3.2892, prev:3.2363, unit:"%", zscore:1.96, hist:[2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0862, 3.0325, 3.2363, 3.2892] },
-  ppi: { label:"PPI", value:13.0765, prev:9.4074, unit:"%", zscore:2.72, hist:[1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1213, 2.4277, 3.8748, 6.7514, 9.4074, 13.0765] },
-  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.3, unit:"%", zscore:0.6, hist:[4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3] },
-  nfp: { label:"NFP (000s)", value:172.0, prev:179.0, unit:"k", zscore:1.15, hist:[-20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 179.0, 172.0] },
-  jolts: { label:"JOLTS Openings", value:7.618, prev:6.887, unit:"M", zscore:1.4, hist:[7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.618] },
-  hpiNational: { label:"HPI National YoY", value:0.6646, prev:0.7358, unit:"%", zscore:-1.29, hist:[2.8198, 2.3467, 1.9335, 1.6422, 1.4822, 1.3084, 1.3225, 1.2882, 1.143, 0.8663, 0.7358, 0.6646] },
-  housingStarts: { label:"Housing Starts (000s)", value:1465.0, prev:1507.0, unit:"k", zscore:1.46, hist:[1289.0, 1379.0, 1432.0, 1291.0, 1319.0, 1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1507.0, 1465.0] },
-  existingHomeSales: { label:"Existing Home Sales", value:4170.0, prev:4040.0, unit:"M", zscore:1.38, hist:[3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 4010.0, 4040.0, 4170.0] },
-  mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.89, prev:1.79, unit:"%", zscore:2.38, hist:[1.73, 1.74, 1.78, 1.77, 1.78, 1.78, 1.79, 1.89] },
-  refiBoomster: { label:"Refi App Index (proxy)", value:6.52, prev:6.48, unit:"", zscore:1.94, hist:[6.38, 6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52] },
-  igSpread: { label:"IG Corp OAS", value:75.0, prev:75.0, unit:"bps", zscore:-0.9, hist:[73.0, 73.0, 74.0, 73.0, 74.0, 74.0, 74.0, 74.0, 75.0, 75.0, 75.0, 75.0] },
-  hySpread: { label:"HY Corp OAS", value:278.0, prev:280.0, unit:"bps", zscore:-0.58, hist:[272.0, 272.0, 274.0, 272.0, 271.0, 275.0, 274.0, 276.0, 275.0, 278.0, 280.0, 278.0] },
-  mbsSpread: { label:"MBS OAS (est.)", value:177.0, prev:173.0, unit:"bps", zscore:1.94, hist:[163.0, 171.0, 162.0, 155.0, 148.0, 155.0, 162.0, 161.0, 176.0, 178.0, 173.0, 177.0] },
+  fedFunds:    { label:'Fed Funds Rate', value:5.33, prev:5.33, unit:'%', zscore:2.1, hist:[0.08,0.08,0.25,1.58,3.08,4.33,5.08,5.33,5.33,5.33,5.33,5.33] },
+  pmms30:      { label:'PMMS 30Y Rate',  value:7.09, prev:6.95, unit:'%', zscore:1.8, hist:[3.10,3.22,3.55,4.67,6.29,6.94,6.65,6.79,7.23,7.09,6.88,7.09] },
+  cpi:         { label:'CPI YoY',        value:3.2,  prev:3.4,  unit:'%', zscore:1.4, hist:[1.4,4.2,7.7,8.0,6.4,5.0,4.0,3.7,3.2,3.4,3.1,3.2] },
+  unemployment:{ label:'Unemployment',   value:3.9,  prev:3.7,  unit:'%', zscore:-0.3,hist:[5.4,4.2,3.6,3.5,3.4,3.5,3.6,3.8,3.9,3.7,3.9,3.9] },
+  corePce:     { label:'Core PCE',       value:2.8,  prev:2.9,  unit:'%', zscore:1.1, hist:[1.5,3.7,5.4,5.2,4.6,4.2,3.7,3.2,2.9,2.8,2.8,2.8] },
+  nfp:         { label:'NFP (000s)',      value:187,  prev:256,  unit:'k', zscore:-0.6,hist:[520,550,490,420,380,350,290,240,210,256,187,187] },
+  tenYrTsy:    { label:'10Y Treasury',   value:4.48, prev:4.25, unit:'%', zscore:1.6, hist:[1.35,1.82,3.95,3.88,3.62,3.88,4.23,4.58,4.85,4.25,4.48,4.48] },
+  mbsSpread:   { label:'MBS OAS Spread', value:148,  prev:142,  unit:'bps',zscore:0.9, hist:[60,85,110,175,145,130,120,138,155,142,148,148] },
+  hpiNational: { label:'HPI National YoY',value:5.1, prev:5.8,  unit:'%', zscore:0.4, hist:[10.4,18.8,18.1,12.2,7.4,4.9,3.1,3.8,4.6,5.8,5.1,5.1] },
+  mba30:       { label:'MBA 30Y Rate',   value:7.18, prev:7.04, unit:'%', zscore:1.7, hist:[3.15,3.36,4.40,5.99,6.51,6.85,7.16,7.44,7.79,7.04,7.18,7.18] },
+  refiBoomster:{ label:'Refi App Index', value:427,  prev:389,  unit:'',  zscore:-1.8,hist:[4584,2890,1540,610,390,400,410,380,405,389,427,427] },
+  sofr:        { label:'SOFR',           value:5.30, prev:5.30, unit:'%', zscore:2.0, hist:[0.05,0.05,0.30,2.30,3.80,4.55,5.05,5.30,5.30,5.30,5.30,5.30] },
 };
 // @@SIGNALS_END@@
 
@@ -1722,31 +1712,12 @@ const SEED_ALERTS = [
 
 // @@HPI_START@@
 const HPI_STATE_DATA = [
-  {state:"CA", val:1.8, chg:"+1.8"},
-  {state:"TX", val:1.2, chg:"+1.2"},
-  {state:"FL", val:1.9, chg:"+1.9"},
-  {state:"NY", val:6.1, chg:"+6.1"},
-  {state:"WA", val:1.7, chg:"+1.7"},
-  {state:"CO", val:0.8, chg:"+0.8"},
-  {state:"AZ", val:2.3, chg:"+2.3"},
-  {state:"NV", val:1.8, chg:"+1.8"},
-  {state:"OR", val:2.0, chg:"+2.0"},
-  {state:"GA", val:2.5, chg:"+2.5"},
-  {state:"NC", val:2.4, chg:"+2.4"},
-  {state:"SC", val:3.4, chg:"+3.4"},
-  {state:"TN", val:3.5, chg:"+3.5"},
-  {state:"OH", val:4.8, chg:"+4.8"},
-  {state:"MI", val:5.0, chg:"+5.0"},
-  {state:"IL", val:5.8, chg:"+5.8"},
-  {state:"PA", val:5.3, chg:"+5.3"},
-  {state:"NJ", val:5.4, chg:"+5.4"},
-  {state:"MA", val:4.2, chg:"+4.2"},
-  {state:"VA", val:3.8, chg:"+3.8"},
-  {state:"MD", val:3.4, chg:"+3.4"},
-  {state:"MN", val:3.8, chg:"+3.8"},
-  {state:"WI", val:4.9, chg:"+4.9"},
-  {state:"UT", val:3.0, chg:"+3.0"},
-  {state:"ID", val:1.8, chg:"+1.8"},
+  {state:'CA',val:4.2,chg:'-0.8'},{state:'TX',val:3.8,chg:'-0.4'},{state:'FL',val:7.1,chg:'+0.3'},{state:'NY',val:3.1,chg:'-0.2'},
+  {state:'WA',val:5.9,chg:'+0.6'},{state:'CO',val:4.4,chg:'-1.1'},{state:'AZ',val:6.8,chg:'+1.2'},{state:'NV',val:7.4,chg:'+0.9'},
+  {state:'OR',val:3.2,chg:'-0.7'},{state:'GA',val:5.5,chg:'+0.4'},{state:'NC',val:6.2,chg:'+0.8'},{state:'SC',val:6.9,chg:'+1.0'},
+  {state:'TN',val:5.7,chg:'+0.3'},{state:'OH',val:4.8,chg:'+0.2'},{state:'MI',val:3.9,chg:'-0.3'},{state:'IL',val:2.8,chg:'-0.5'},
+  {state:'PA',val:4.1,chg:'+0.1'},{state:'NJ',val:5.3,chg:'+0.6'},{state:'MA',val:4.7,chg:'+0.4'},{state:'VA',val:4.5,chg:'+0.2'},
+  {state:'MD',val:3.6,chg:'-0.2'},{state:'MN',val:3.3,chg:'-0.4'},{state:'WI',val:4.0,chg:'+0.0'},{state:'UT',val:5.1,chg:'+0.5'},{state:'ID',val:5.8,chg:'+0.7'},
 ];
 // @@HPI_END@@
 
@@ -3374,6 +3345,7 @@ function openPineconeModal() {
     '3. Copy API Key from API Keys section<br>',
     '4. Copy Host URL from your index details page<br>',
     '5. Run <code>python3 ingest_docs.py --file your.pdf</code> to index documents',
+    '6. For full local search: run <code>python3 proxy_server.py</code> instead of http.server',
     '</div>',
     '<div style="display:flex;gap:10px">',
     '<button class="btn btn-primary" onclick="savePineconeConfig()" style="flex:1">Save & Connect</button>',
@@ -3486,35 +3458,59 @@ async function pineconeQueryViaClaude(queryText, topK) {
 }
 
 // ── Direct Pinecone fetch with CORS mode ────────────────────────────
+// ── Detect environment — proxy vs direct vs GitHub Pages ────────────
+function isLocalhost() {
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+}
+
+function isProxyServer() {
+  // proxy_server.py serves on localhost and adds /pinecone/ route
+  // Detect by checking if we were served from localhost (not file://)
+  return isLocalhost() && window.location.protocol === 'http:';
+}
+
 async function pineconeQuery(queryText, topK) {
   if(!docState.pineconeKey || !docState.pineconeHost) {
     throw new Error('Pinecone not configured. Click Configure to set your API key and host URL.');
   }
 
-  var vector = simpleEmbed(queryText);
-  var url    = docState.pineconeHost.replace(/\/$/, '') + '/query';
+  // When running via proxy_server.py on localhost, use the /smart-query route
+  // which embeds the query text via Voyage Finance server-side and queries Pinecone
+  if(isProxyServer()) {
+    try {
+      var proxyRes = await fetch('/smart-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: queryText, topK: topK || 6 })
+      });
+      if(proxyRes.ok) {
+        var proxyData = await proxyRes.json();
+        return proxyData.matches || [];
+      }
+      var proxyErr = await proxyRes.json().catch(function(){ return {}; });
+      throw new Error('Proxy error ' + proxyRes.status + ': ' + (proxyErr.error || proxyRes.statusText));
+    } catch(e) {
+      throw new Error(e.message || 'Proxy request failed');
+    }
+  }
 
+  // On GitHub Pages — direct Pinecone call (CORS-blocked, falls back to Claude)
   try {
+    var vector = simpleEmbed(queryText);
+    var url    = docState.pineconeHost.replace(/\/$/, '') + '/query';
     var res = await fetch(url, {
       method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        'Api-Key': docState.pineconeKey
-      },
+      headers: { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey },
       body: JSON.stringify({ vector: vector, topK: topK || 6, includeMetadata: true, includeValues: false })
     });
-    if(!res.ok) {
-      var errBody = await res.json().catch(function(){ return {}; });
-      throw new Error('Pinecone ' + res.status + ': ' + (errBody.message || res.statusText));
+    if(res.ok) {
+      var data = await res.json();
+      return data.matches || [];
     }
-    var data = await res.json();
-    return data.matches || [];
+    var errBody = await res.json().catch(function(){ return {}; });
+    throw new Error('Pinecone ' + res.status + ': ' + (errBody.message || res.statusText));
   } catch(e) {
-    if(e.message && e.message.includes('CORS') || e.name === 'TypeError') {
-      throw new Error('CORS_BLOCKED');
-    }
-    throw e;
+    throw new Error('CORS_BLOCKED');
   }
 }
 

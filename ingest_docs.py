@@ -47,6 +47,7 @@ log = logging.getLogger("ingest_docs")
 # ─────────────────────────────────────────────────────────────────────────────
 PINECONE_API_KEY   = os.environ.get("PINECONE_API_KEY", "")
 ANTHROPIC_API_KEY  = os.environ.get("ANTHROPIC_API_KEY", "")
+VOYAGE_API_KEY     = os.environ.get("VOYAGE_API_KEY", "")
 INDEX_NAME         = os.environ.get("PINECONE_INDEX", "mortgageiq-docs")
 EMBED_MODEL        = "voyage-finance-2"   # Voyage Finance model via Anthropic (best for financial docs)
 EMBED_DIMENSIONS   = 1024
@@ -204,7 +205,7 @@ def _embed_via_voyage(texts: list[str]) -> list[list[float]]:
         data=payload,
         headers={
             "Content-Type":  "application/json",
-            "Authorization": f"Bearer {ANTHROPIC_API_KEY}",
+            "Authorization": f"Bearer {VOYAGE_API_KEY}",
         }
     )
     try:
