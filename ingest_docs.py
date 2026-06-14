@@ -348,7 +348,35 @@ def ingest_pdf(pdf_path: str, doc_type: str = "auto", ticker: str = "", index=No
         log.info(f"  Upserted batch {i//batch_size + 1}/{(len(vectors)-1)//batch_size + 1}")
 
     log.info(f"  ✓ Ingested {len(chunks)} chunks for '{doc_meta.get('title', path.name)}'")
+
+    # Update docs_library.json so dashboard can display without CORS issues
+    _update_library(doc_id, doc_meta, path.name, len(chunks))
     return len(chunks)
+
+
+def _update_library(doc_id: str, doc_meta: dict, filename: str, chunk_count: int) -> None:
+    """Write/update docs_library.json alongside other pipeline JSON files."""
+    import json as _json
+    library_path = Path(__file__).parent / "docs_library.json"
+    try:
+        library = _json.loads(library_path.read_text()) if library_path.exists() else []
+    except Exception:
+        library = []
+    # Remove existing entry for same doc_id
+    library = [d for d in library if d.get("doc_id") != doc_id]
+    library.append({
+        "doc_id":    doc_id,
+        "title":     doc_meta.get("title", filename),
+        "company":   doc_meta.get("company", ""),
+        "ticker":    doc_meta.get("ticker", ""),
+        "doc_type":  doc_meta.get("doc_type", ""),
+        "period":    doc_meta.get("period", ""),
+        "filename":  filename,
+        "chunks":    chunk_count,
+        "indexed_at": datetime.utcnow().isoformat() + "Z"
+    })
+    library_path.write_text(_json.dumps(library, indent=2))
+    log.info(f"  Updated docs_library.json ({len(library)} document(s))")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SEMANTIC SEARCH
