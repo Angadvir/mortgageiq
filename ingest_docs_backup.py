@@ -219,30 +219,25 @@ def _embed_via_voyage(texts: list[str]) -> list[list[float]]:
 
 def _simple_embed_fallback(texts: list[str]) -> list[list[float]]:
     """
-    Fallback embedding using FNV-1a hash + TF weighting.
-    Must stay in sync with the browser simpleEmbed() function in the dashboard
-    so that query vectors match stored vectors for cosine similarity search.
+    Fallback embedding using a simple TF-IDF-like approach.
+    Not as good as Voyage but works without an extra API key.
+    Replace with OpenAI or Cohere if you have those keys.
     """
     import math
-
-    def fnv1a(word: str) -> int:
-        h = 0x811c9dc5
-        for ch in word.encode():
-            h ^= ch
-            h = (h * 0x01000193) & 0xFFFFFFFF
-        return h
-
     embeddings = []
     for text in texts:
         words = text.lower().split()
-        freq: dict[str, int] = {}
+        freq = {}
         for w in words:
             freq[w] = freq.get(w, 0) + 1
+        # Create a deterministic 1024-dim vector from word hashes
         vec = [0.0] * EMBED_DIMENSIONS
         for word, count in freq.items():
-            idx = fnv1a(word) % EMBED_DIMENSIONS
+            h = int(hashlib.md5(word.encode()).hexdigest(), 16)
+            idx = h % EMBED_DIMENSIONS
             vec[idx] += math.log(1 + count)
-        norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+        # Normalise
+        norm = math.sqrt(sum(x*x for x in vec)) or 1.0
         vec = [x / norm for x in vec]
         embeddings.append(vec)
     return embeddings
