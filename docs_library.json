@@ -20,5 +20,16 @@
     "filename": "UFO_20advisor_20report.pdf",
     "chunks": 2,
     "indexed_at": "2026-06-21T06:47:13.715339Z"
+  },
+  {
+    "doc_id": "doc_074d05e02f1c",
+    "title": "iShares U.S. Aerospace & Defense ETF",
+    "company": "BlackRock",
+    "ticker": "",
+    "doc_type": "prospectus",
+    "period": "August 1, 2025",
+    "filename": "sp-ishares-us-aerospace-and-defense-etf-3-31.pdf",
+    "chunks": 18,
+    "indexed_at": "2026-06-21T07:04:11.400149Z"
   }
 ]

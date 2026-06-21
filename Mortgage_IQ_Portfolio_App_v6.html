@@ -1246,15 +1246,12 @@ body::before {
         <!-- LEFT: upload + library -->
         <div>
           <div class="panel" style="margin-bottom:14px">
-            <div class="panel-header">
-              <div class="panel-title">Upload Financial Document</div>
-              <div id="uploadModeTag" style="font-family:var(--font-mono);font-size:9px;color:var(--text3)">detecting…</div>
-            </div>
+            <div class="panel-header"><div class="panel-title">Upload Financial Document</div></div>
             <div class="panel-body">
               <div class="doc-upload-zone" id="docUploadZone"
                 onclick="document.getElementById('docFileInput').click()"
-                ondragover="event.preventDefault();this.style.borderColor='#c084fc';this.style.background='rgba(147,51,234,0.08)'"
-                ondragleave="this.style.borderColor='rgba(147,51,234,0.35)';this.style.background='rgba(147,51,234,0.03)'"
+                ondragover="event.preventDefault();this.style.borderColor='#c084fc'"
+                ondragleave="this.style.borderColor='rgba(147,51,234,0.35)'"
                 ondrop="handleDocDrop(event)">
                 <div style="font-size:32px;margin-bottom:10px">📑</div>
                 <div style="font-family:var(--font-display);font-size:12px;color:var(--text);margin-bottom:4px">Drop PDF here or click to browse</div>
@@ -1273,16 +1270,6 @@ body::before {
                     <option value="statement">Account Statement</option>
                     <option value="other">Other</option>
                   </select>
-                </div>
-              </div>
-              <!-- Progress bar (hidden until upload starts) -->
-              <div id="uploadProgressWrap" style="display:none;margin-top:12px">
-                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-                  <span style="font-family:var(--font-mono);font-size:10px;color:var(--text2)" id="uploadProgressLabel">Processing…</span>
-                  <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent)" id="uploadProgressPct">0%</span>
-                </div>
-                <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden">
-                  <div id="uploadProgressBar" style="height:4px;background:var(--accent);border-radius:2px;width:0%;transition:width 0.4s"></div>
                 </div>
               </div>
               <div id="docUploadStatus" style="display:none;margin-top:10px"></div>
@@ -3341,7 +3328,6 @@ var docState = {
 function initDocsPage() {
   updatePineconeBanner();
   loadDocLibrary();
-  initUploadMode();
 }
 
 function updatePineconeBanner() {
@@ -3706,172 +3692,43 @@ async function runDocQA() {
 }
 
 // ── Document upload (triggers ingest_docs.py instructions) ──────────
-// ── Upload mode detection ────────────────────────────────────────────
-function initUploadMode() {
-  var tag = document.getElementById('uploadModeTag');
-  if(!tag) return;
-  if(isProxyServer()) {
-    tag.textContent = '✓ Direct upload enabled';
-    tag.style.color = 'var(--accent)';
-  } else {
-    tag.textContent = 'CLI mode — proxy required for direct upload';
-    tag.style.color = 'var(--text3)';
-  }
-}
-
 function handleDocDrop(event) {
   event.preventDefault();
-  var dz = document.getElementById('docUploadZone');
-  if(dz) { dz.style.borderColor='rgba(147,51,234,0.35)'; dz.style.background='rgba(147,51,234,0.03)'; }
+  document.getElementById('docUploadZone').style.borderColor = 'rgba(147,51,234,0.35)';
   var file = event.dataTransfer.files[0];
-  if(file && file.type === 'application/pdf') processDocUpload(file);
+  if(file && file.type === 'application/pdf') showUploadInstructions(file.name);
   else showDocStatus('Please drop a PDF file.', 'error');
 }
 
 function handleDocFileSelect(event) {
   var file = event.target.files[0];
-  if(file) processDocUpload(file);
+  if(file) showUploadInstructions(file.name);
 }
 
-async function processDocUpload(file) {
-  if(isProxyServer()) {
-    await ingestDocViaProxy(file);
-  } else {
-    showCLIInstructions(file.name);
-  }
-}
-
-// ── Direct browser ingest via proxy /ingest route ────────────────────
-async function ingestDocViaProxy(file) {
-  if(file.size > 30 * 1024 * 1024) {
-    showDocStatus('File too large (max 30MB).', 'error'); return;
-  }
-
-  // Read file as base64
-  var base64 = await new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload  = function(e){ resolve(e.target.result.split(',')[1]); };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-
-  var ticker  = (document.getElementById('docTicker').value || '').trim().toUpperCase();
-  var docType = document.getElementById('docType').value;
-
-  // Show progress
-  setUploadProgress(5, 'Sending to proxy…');
-
-  try {
-    // Simulate progress stages while waiting
-    var progressInterval = setInterval(function() {
-      var bar = document.getElementById('uploadProgressBar');
-      var pct = document.getElementById('uploadProgressPct');
-      if(bar) {
-        var cur = parseInt(bar.style.width) || 5;
-        if(cur < 85) {
-          var next = cur + Math.random() * 8;
-          bar.style.width = Math.min(next, 85) + '%';
-          if(pct) pct.textContent = Math.round(Math.min(next, 85)) + '%';
-        }
-      }
-    }, 800);
-
-    // Stage labels
-    var stages = ['Extracting text…', 'Detecting metadata…', 'Chunking document…', 'Generating embeddings…', 'Upserting to Pinecone…'];
-    var stageIdx = 0;
-    var stageInterval = setInterval(function() {
-      if(stageIdx < stages.length) {
-        setUploadLabel(stages[stageIdx++]);
-      }
-    }, 3000);
-
-    var res = await fetch('/ingest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        pdf_base64: base64,
-        filename:   file.name,
-        doc_type:   docType,
-        ticker:     ticker
-      })
-    });
-
-    clearInterval(progressInterval);
-    clearInterval(stageInterval);
-
-    if(!res.ok) {
-      var err = await res.json().catch(function(){ return {}; });
-      throw new Error(err.error || 'Ingest failed: ' + res.status);
-    }
-
-    var result = await res.json();
-    setUploadProgress(100, 'Complete!');
-
-    setTimeout(function() {
-      document.getElementById('uploadProgressWrap').style.display = 'none';
-      showDocStatus([
-        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">',
-        '<div style="font-size:20px">✓</div>',
-        '<div><div style="font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--accent)">' + escapeHtml(result.title) + '</div>',
-        '<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px">' +
-        [result.doc_type, result.company, result.period].filter(Boolean).join(' · ') +
-        ' · ' + result.chunks + ' chunks · ' + result.upserted + ' vectors indexed</div></div></div>',
-        '<div style="font-size:11px;color:var(--text2)">Ready to search and ask questions. <strong>↻ Refresh</strong> the library to see it listed below.</div>'
-      ].join(''), 'success');
-      loadDocLibrary();
-    }, 600);
-
-  } catch(e) {
-    document.getElementById('uploadProgressWrap').style.display = 'none';
-    showDocStatus('✗ ' + (e.message || 'Upload failed. Is proxy_server.py running?'), 'error');
-  }
-}
-
-function setUploadProgress(pct, label) {
-  var wrap = document.getElementById('uploadProgressWrap');
-  var bar  = document.getElementById('uploadProgressBar');
-  var pctEl = document.getElementById('uploadProgressPct');
-  var lblEl = document.getElementById('uploadProgressLabel');
-  if(wrap) wrap.style.display = 'block';
-  if(bar)  bar.style.width = pct + '%';
-  if(pctEl) pctEl.textContent = pct + '%';
-  if(lblEl && label) lblEl.textContent = label;
-  document.getElementById('docUploadStatus').style.display = 'none';
-}
-
-function setUploadLabel(label) {
-  var el = document.getElementById('uploadProgressLabel');
-  if(el) el.textContent = label;
-}
-
-// ── CLI fallback instructions (when proxy not running) ───────────────
-function showCLIInstructions(filename) {
-  var ticker  = (document.getElementById('docTicker').value || '').trim().toUpperCase();
+function showUploadInstructions(filename) {
+  var ticker = (document.getElementById('docTicker').value || '').trim().toUpperCase();
   var docType = document.getElementById('docType').value;
   var tickerFlag = ticker ? ' --ticker ' + ticker : '';
-  var typeFlag   = docType !== 'auto' ? ' --doc-type ' + docType : '';
+  var typeFlag = docType !== 'auto' ? ' --doc-type ' + docType : '';
   var cmd = 'python3 ingest_docs.py --file "' + filename + '"' + typeFlag + tickerFlag;
 
   showDocStatus([
-    '<div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-bottom:8px">',
-    '⚠ Proxy not running — direct upload unavailable. Run <code>python3 proxy_server.py</code> to enable in-browser upload, or use Terminal:',
-    '</div>',
+    '<div style="font-family:var(--font-mono);font-size:10px;color:var(--accent);margin-bottom:8px">📋 To index this document, run in Terminal:</div>',
     '<div style="background:var(--bg);border:1px solid var(--border2);border-radius:3px;padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text);word-break:break-all">',
-    'cd ~/Downloads/Mortgage_Bond_Analyzer_App<br>', cmd,
-    '</div>'
-  ].join(''), 'warn');
+    'cd ~/Downloads/Mortgage_Bond_Analyzer_App<br>',
+    cmd,
+    '</div>',
+    '<div style="font-size:11px;color:var(--text2);margin-top:8px">After indexing, click <strong>↻ Refresh</strong> in the Document Library to see it appear, then use Search or Q&amp;A to query it.</div>'
+  ].join(''), 'info');
 }
 
 function showDocStatus(html, type) {
   var el = document.getElementById('docUploadStatus');
   if(!el) return;
-  var bg     = type === 'error'   ? 'rgba(255,59,92,0.07)'  :
-               type === 'warn'    ? 'rgba(255,184,0,0.07)'  :
-               type === 'success' ? 'rgba(0,212,170,0.07)'  : 'rgba(0,212,170,0.06)';
-  var border = type === 'error'   ? 'rgba(255,59,92,0.2)'   :
-               type === 'warn'    ? 'rgba(255,184,0,0.2)'   :
-               type === 'success' ? 'rgba(0,212,170,0.2)'   : 'rgba(0,212,170,0.15)';
-  el.style.cssText = 'display:block;background:'+bg+';border:1px solid '+border+';border-radius:3px;padding:12px 14px;font-size:12px;';
+  el.style.display = 'block';
+  var bg = type === 'error' ? 'rgba(255,59,92,0.07)' : 'rgba(0,212,170,0.06)';
+  var border = type === 'error' ? 'rgba(255,59,92,0.2)' : 'rgba(0,212,170,0.15)';
+  el.style.cssText = 'display:block;background:' + bg + ';border:1px solid ' + border + ';border-radius:3px;padding:12px 14px;font-size:12px;';
   el.innerHTML = html;
 }
 

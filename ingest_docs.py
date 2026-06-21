@@ -51,8 +51,8 @@ VOYAGE_API_KEY     = os.environ.get("VOYAGE_API_KEY", "")
 INDEX_NAME         = os.environ.get("PINECONE_INDEX", "mortgageiq-docs")
 EMBED_MODEL        = "voyage-finance-2"   # Voyage Finance model via Anthropic (best for financial docs)
 EMBED_DIMENSIONS   = 1024
-CHUNK_SIZE         = 600    # tokens approx — ~450 words per chunk
-CHUNK_OVERLAP      = 80     # overlap to preserve context across chunk boundaries
+CHUNK_SIZE         = 200    # tokens approx — ~450 words per chunk
+CHUNK_OVERLAP      = 40     # overlap to preserve context across chunk boundaries
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DEPENDENCIES CHECK
