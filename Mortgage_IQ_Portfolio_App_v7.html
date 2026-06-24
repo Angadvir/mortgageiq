@@ -1304,8 +1304,7 @@ body::before {
               <div class="panel-title">Search & Ask</div>
               <div style="display:flex;gap:4px">
                 <button class="window-tab active" id="mode-search-btn" onclick="setDocMode('search')">Search</button>
-                <button class="window-tab" id="mode-ask-btn"    onclick="setDocMode('ask')">Q&amp;A</button>
-                <button class="window-tab" id="mode-web-btn"    onclick="setDocMode('web')">🌐 Web Research</button>
+                <button class="window-tab" id="mode-ask-btn" onclick="setDocMode('ask')">Q&amp;A</button>
               </div>
             </div>
             <div class="panel-body">
@@ -1334,46 +1333,6 @@ body::before {
                 <button class="btn btn-primary" style="width:100%" onclick="runDocQA()" id="docAskBtn">Ask Claude</button>
                 <div id="docAskResult" style="margin-top:12px"></div>
               </div>
-
-              <!-- ── WEB RESEARCH PANEL ─────────────────────── -->
-              <div id="doc-panel-web" style="display:none">
-                <div style="background:linear-gradient(135deg,rgba(41,121,255,0.06),rgba(147,51,234,0.06));border:1px solid rgba(41,121,255,0.15);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.6">
-                  <strong style="color:var(--accent)">✦ Combined Research</strong> — Claude searches the web for current information <em>and</em> cross-references your indexed documents to produce a unified research brief with citations from both sources.
-                </div>
-
-                <textarea id="webResearchInput" style="width:100%;height:88px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;line-height:1.6;margin-bottom:10px"
-                  placeholder="Research question combining web + your documents…&#10;e.g. How does Rocket Lab's latest earnings compare to industry peers?&#10;e.g. What is the current OAS on agency MBS vs the FNMA deal in my library?&#10;e.g. Summarise recent Fed statements and compare to the rate assumptions in my uploaded research"></textarea>
-
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
-                  <span class="pair-chip" onclick="webResearchPreset('Compare current MBS spreads to historical levels in my uploaded documents')">MBS spreads vs docs</span>
-                  <span class="pair-chip" onclick="webResearchPreset('Latest Fed policy and how it affects the rate assumptions in my research reports')">Fed vs my docs</span>
-                  <span class="pair-chip" onclick="webResearchPreset('Recent earnings and analyst outlook for mortgage originators in my document library')">Earnings research</span>
-                  <span class="pair-chip" onclick="webResearchPreset('Current space economy news and how it relates to the ETFs in my document library')">Space ETF research</span>
-                </div>
-
-                <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
-                  <div style="flex:1">
-                    <label class="form-label" style="margin-bottom:4px">Include indexed documents</label>
-                    <select class="form-select" id="webResearchDocScope" style="font-size:11px">
-                      <option value="all">All indexed documents</option>
-                      <option value="none">Web only — skip my documents</option>
-                    </select>
-                  </div>
-                  <div style="flex:1">
-                    <label class="form-label" style="margin-bottom:4px">Research depth</label>
-                    <select class="form-select" id="webResearchDepth" style="font-size:11px">
-                      <option value="brief">Brief (faster)</option>
-                      <option value="deep" selected>Deep (comprehensive)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#2979ff,#7c3aed)" onclick="runWebResearch()" id="webResearchBtn">
-                  🌐 Research with Web + Documents
-                </button>
-                <div id="webResearchResult" style="margin-top:14px"></div>
-              </div>
-
             </div>
           </div>
         </div>
@@ -3399,12 +3358,10 @@ function updatePineconeBanner() {
 // ── Mode switching ──────────────────────────────────────────────────
 function setDocMode(mode) {
   docState.docMode = mode;
-  ['search','ask','web'].forEach(function(m) {
-    var panel = document.getElementById('doc-panel-' + m);
-    var btn   = document.getElementById('mode-' + m + '-btn');
-    if(panel) panel.style.display = (m === mode) ? 'block' : 'none';
-    if(btn)   btn.classList.toggle('active', m === mode);
-  });
+  document.getElementById('doc-panel-search').style.display = mode === 'search' ? 'block' : 'none';
+  document.getElementById('doc-panel-ask').style.display    = mode === 'ask'    ? 'block' : 'none';
+  document.getElementById('mode-search-btn').classList.toggle('active', mode === 'search');
+  document.getElementById('mode-ask-btn').classList.toggle('active',    mode === 'ask');
 }
 
 // ── Pinecone modal ──────────────────────────────────────────────────
@@ -4045,139 +4002,6 @@ async function loadDocLibrary() {
 
   } catch(e) {
     el.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + e.message + '</div>';
-  }
-}
-
-
-// ═══════════════════════════════════════════════════════════════════
-// WEB RESEARCH — combines live web search with indexed documents
-// ═══════════════════════════════════════════════════════════════════
-
-function webResearchPreset(q) {
-  document.getElementById('webResearchInput').value = q;
-  setDocMode('web');
-}
-
-async function runWebResearch() {
-  if(!state.apiKey) { openApiKeyModal(); return; }
-
-  var question  = (document.getElementById('webResearchInput').value || '').trim();
-  if(!question) return;
-
-  var docScope  = document.getElementById('webResearchDocScope').value;
-  var depth     = document.getElementById('webResearchDepth').value;
-  var btn       = document.getElementById('webResearchBtn');
-  var resultEl  = document.getElementById('webResearchResult');
-
-  btn.textContent = '⟳ Researching…'; btn.disabled = true;
-  resultEl.innerHTML = [
-    '<div style="display:flex;flex-direction:column;gap:10px">',
-    '<div class="ai-loading"><div class="ai-spinner"></div><span id="webResearchStatus">Searching the web…</span></div>',
-    '</div>'
-  ].join('');
-
-  try {
-    // ── Step 1: Retrieve relevant document chunks (if scope = all) ──
-    var docContext = '';
-    var docSources = [];
-
-    if(docScope === 'all' && (docState.pineconeKey || isProxyServer())) {
-      document.getElementById('webResearchStatus').textContent = 'Searching indexed documents…';
-      try {
-        var matches = await pineconeQuery(question, 5);
-        if(matches.length) {
-          docContext = matches.map(function(m, i) {
-            var meta = m.metadata || {};
-            docSources.push((meta.title || meta.filename || '?') + (meta.page ? ' p.' + meta.page : ''));
-            return '[DOC ' + (i+1) + ': ' + (meta.title||'?') + (meta.page?' p.'+meta.page:'') + ']\n' + (meta.text||'');
-          }).join('\n\n---\n\n');
-        }
-      } catch(e2) { /* Pinecone unavailable — continue with web only */ }
-    }
-
-    // ── Step 2: Ask Claude with web search tool + doc context ──────
-    document.getElementById('webResearchStatus').textContent = 'Searching the web and synthesising…';
-
-    var maxTokens = depth === 'deep' ? 2500 : 1200;
-
-    var systemPrompt = [
-      'You are a financial research analyst. Search the web for current information, then synthesise findings with the provided document excerpts into a comprehensive research brief.',
-      'Format your response with clear sections:',
-      '## Web Research Findings',
-      '## From Your Document Library', docContext ? '' : '(skip this section if no documents provided)',
-      '## Synthesis & Key Takeaways',
-      '',
-      'Always cite sources — use [Web: Source Name] for web results and [Doc: Title p.N] for document excerpts.',
-      'Be specific with data points, dates, and figures.',
-      docContext ? ('\n\nRelevant document excerpts from user library:\n' + docContext) : ''
-    ].filter(function(l){ return l !== null; }).join('\n');
-
-    var userMsg = question + (depth === 'deep' ? ' Please provide a comprehensive analysis with specific data points and citations.' : '');
-
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': state.apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta': 'web-search-2025-03-05',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: maxTokens,
-        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: depth === 'deep' ? 4 : 2 }],
-        tool_choice: { type: 'auto' },
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }]
-      })
-    });
-
-    if(!res.ok) {
-      var err = await res.json();
-      throw new Error((err.error && err.error.message) || 'API error ' + res.status);
-    }
-
-    var data   = await res.json();
-    var blocks = data.content || [];
-
-    // Extract final text block (last text block after tool use)
-    var textBlocks = blocks.filter(function(b){ return b.type === 'text'; });
-    var answer     = textBlocks.length ? textBlocks[textBlocks.length-1].text : '';
-
-    // Count web searches used
-    var searchCount = blocks.filter(function(b){ return b.type === 'tool_use' && b.name === 'web_search'; }).length;
-
-    if(!answer) throw new Error('No response received. Try again.');
-
-    // ── Render result ───────────────────────────────────────────────
-    var md = answer
-      .replace(/^## (.+)$/gm, '<div style="font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--accent);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid rgba(0,212,170,0.15);padding-bottom:4px">$1</div>')
-      .replace(/^### (.+)$/gm, '<div style="font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--text);margin:10px 0 4px">$1</div>')
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\[Web: ([^\]]+)\]/g, '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(41,121,255,0.12);color:#66aaff;padding:1px 5px;border-radius:2px;margin-left:4px">[Web: $1]</span>')
-      .replace(/\[Doc: ([^\]]+)\]/g, '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(147,51,234,0.12);color:#c084fc;padding:1px 5px;border-radius:2px;margin-left:4px">[Doc: $1]</span>')
-      .replace(/^- (.+)$/gm, '<div style="display:flex;gap:8px;margin-bottom:6px"><div style="color:var(--accent);flex-shrink:0">•</div><div>$1</div></div>')
-      .replace(/\n/g, '<br>');
-
-    var metaLine = [
-      searchCount + ' web search' + (searchCount !== 1 ? 'es' : ''),
-      docSources.length ? docSources.length + ' document passage' + (docSources.length !== 1 ? 's' : '') : null,
-      depth === 'deep' ? 'deep analysis' : 'brief'
-    ].filter(Boolean).join(' · ');
-
-    resultEl.innerHTML = [
-      '<div class="doc-answer-box" style="font-size:12px;line-height:1.75">' + md + '</div>',
-      '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:6px">',
-      '<span style="color:#66aaff">🌐</span> ' + metaLine,
-      docSources.length ? '<span style="color:#c084fc">· Docs: ' + docSources.slice(0,3).map(escapeHtml).join(', ') + (docSources.length>3?' +'+( docSources.length-3)+' more':'') + '</span>' : '',
-      '</div>'
-    ].join('');
-
-  } catch(e) {
-    resultEl.innerHTML = '<div style="color:var(--red);font-family:var(--font-mono);font-size:11px">✗ ' + escapeHtml(e.message || 'Research failed. Try again.') + '</div>';
-  } finally {
-    btn.textContent = '🌐 Research with Web + Documents'; btn.disabled = false;
   }
 }
 
