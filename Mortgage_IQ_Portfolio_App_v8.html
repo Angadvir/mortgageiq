@@ -498,32 +498,6 @@ body::before {
 .spark-bar { width: 4px; border-radius: 1px; background: rgba(0,212,170,0.3); transition: background 0.2s; }
 .spark-bar:hover { background: var(--accent); }
 
-/* RSS Feeds */
-.rss-feed-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
-.rss-feed-tab {
-  padding:6px 14px; border-radius:3px; cursor:pointer;
-  font-family:var(--font-mono); font-size:10px; letter-spacing:0.05em;
-  border:1px solid var(--border2); color:var(--text2);
-  transition:all 0.15s; background:var(--bg3);
-}
-.rss-feed-tab:hover { border-color:var(--accent); color:var(--accent); }
-.rss-feed-tab.active {
-  background:rgba(0,212,170,0.1); border-color:var(--accent);
-  color:var(--accent);
-}
-.rss-feed-tab .rss-dot {
-  display:inline-block; width:6px; height:6px; border-radius:50%;
-  margin-right:6px; vertical-align:middle;
-}
-.rss-iframe-wrap {
-  border:1px solid var(--border); border-radius:4px; overflow:hidden;
-  background:var(--bg2);
-}
-.rss-iframe-wrap iframe {
-  display:block; width:100%; border:none;
-  transition:opacity 0.3s;
-}
-
 /* Document Intelligence */
 .doc-upload-zone {
   border:2px dashed rgba(147,51,234,0.35);border-radius:4px;
@@ -714,10 +688,6 @@ body::before {
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="9" x2="10" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       Latest News
     </div>
-    <div class="nav-item" onclick="navTo('rss')">
-      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="12" r="1.5" fill="currentColor"/><path d="M2 8.5A5.5 5.5 0 0 1 13.5 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 4A9 9 0 0 1 14 16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
-      RSS Feeds
-    </div>
 
     <div class="nav-section">Portfolio</div>
     <div class="nav-item" onclick="navTo('positions')">
@@ -771,11 +741,6 @@ body::before {
       <div class="last-update" id="lastUpdate">Loading signals…</div>
       <button class="btn btn-ghost btn-sm" onclick="refreshData()">↻ Refresh</button>
       <div class="api-key-prompt" onclick="openApiKeyModal()" id="apiKeyStatus">⚙ Set Claude API Key</div>
-      <div id="costSaverToggle" onclick="toggleCostSaver()"
-        style="cursor:pointer;padding:4px 10px;border-radius:3px;border:1px solid var(--border2);font-family:var(--font-mono);font-size:9px;letter-spacing:0.06em;transition:all 0.15s;user-select:none"
-        title="Cost Saver — disable auto-loading AI features">
-        💰 COST SAVER: OFF
-      </div>
       <button class="btn btn-primary btn-sm" onclick="openAddPositionModal()">+ Add Position</button>
     </div>
   </div>
@@ -1416,41 +1381,6 @@ body::before {
     </div>
 
     <!-- ══════════════════════════════════════════════════ -->
-    <!-- RSS FEEDS PAGE -->
-    <!-- ══════════════════════════════════════════════════ -->
-    <div class="page" id="page-rss">
-
-      <!-- Feed selector tabs -->
-      <div class="rss-feed-tabs" id="rssFeedTabs"></div>
-
-      <!-- Active feed label + controls -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div>
-          <span style="font-family:var(--font-display);font-size:14px;font-weight:600" id="rssFeedLabel">—</span>
-          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-left:10px">Live RSS feed via rss.app</span>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <select class="form-select" id="rssHeightSelect" style="width:130px;font-size:11px" onchange="setRssHeight(this.value)">
-            <option value="600">Compact (600px)</option>
-            <option value="900" selected>Standard (900px)</option>
-            <option value="1300">Tall (1300px)</option>
-            <option value="1600">Full (1600px)</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" onclick="reloadRssFeed()">↻ Reload</button>
-        </div>
-      </div>
-
-      <!-- iFrame container -->
-      <div class="rss-iframe-wrap" id="rssIframeWrap">
-        <iframe id="rssIframe" src="" height="900" scrolling="yes"
-          style="opacity:0;transition:opacity 0.4s"
-          onload="this.style.opacity='1'">
-        </iframe>
-      </div>
-
-    </div>
-
-    <!-- ══════════════════════════════════════════════════ -->
     <!-- ALERTS PAGE -->
     <!-- ══════════════════════════════════════════════════ -->
     <div class="page" id="page-alerts">
@@ -1777,7 +1707,6 @@ let state = {
   hedges: [],
   alerts: [],
   apiKey: localStorage.getItem('mortgageiq_key') || window._mortgageiqKey || '',
-  costSaver: localStorage.getItem('miq_cost_saver') === 'true',
   currentPage: 'dashboard',
   charts: {}
 };
@@ -1885,7 +1814,7 @@ const presets = [
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════════════
 const PAGE_TITLES = {
-  dashboard:'Dashboard', signals:'Market Signals', hpi:'HPI by State', news:'Latest News', rss:'RSS Feeds', docs:'Document Intelligence',
+  dashboard:'Dashboard', signals:'Market Signals', hpi:'HPI by State', news:'Latest News', docs:'Document Intelligence',
   positions:'Positions', blotter:'Trade Blotter', hedges:'Hedge Book',
   scenario:'Scenario Analysis', alerts:'Alerts', aibrief:'AI Brief'
 };
@@ -1905,7 +1834,6 @@ function navTo(page) {
   }
   if(page==='hpi') renderHpiGrid();
   if(page==='news') initNewsPage();
-  if(page==='rss')  initRssPage();
   if(page==='docs') initDocsPage();
   if(page==='positions') renderFullPositions();
   if(page==='blotter') renderBlotter();
@@ -2476,66 +2404,7 @@ function saveApiKey() {
   var text    = document.getElementById('briefText');
   if(loading) { loading.style.display='flex'; var sp=loading.querySelector('span'); if(sp) sp.textContent='Generating brief…'; }
   if(text) text.style.display='none';
-  if(!state.costSaver) setTimeout(runDailyBrief, 200);
-  else showBriefCostSaverMsg();
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// COST SAVER — disables AI auto-loads to reduce API usage
-// ═══════════════════════════════════════════════════════════════════
-function applyCostSaverState() {
-  state.costSaver = localStorage.getItem('miq_cost_saver') === 'true';
-  updateCostSaverUI();
-}
-
-function toggleCostSaver() {
-  state.costSaver = !state.costSaver;
-  localStorage.setItem('miq_cost_saver', state.costSaver ? 'true' : 'false');
-  updateCostSaverUI();
-  if(state.costSaver) {
-    // Show paused message in brief if visible
-    showBriefCostSaverMsg();
-    // Reset news initialized flag so next visit respects cost saver
-    _newsInitialized = false;
-  } else {
-    // If turning OFF cost saver, trigger brief if on dashboard
-    if(state.currentPage === 'dashboard' && state.apiKey) {
-      var briefText = document.getElementById('briefText');
-      if(!briefText || !briefText.textContent.trim()) runDailyBrief();
-    }
-  }
-}
-
-function updateCostSaverUI() {
-  var el = document.getElementById('costSaverToggle');
-  if(!el) return;
-  if(state.costSaver) {
-    el.textContent = '💰 COST SAVER: ON';
-    el.style.background     = 'rgba(255,184,0,0.1)';
-    el.style.color          = 'var(--amber)';
-    el.style.borderColor    = 'rgba(255,184,0,0.3)';
-  } else {
-    el.textContent = '💰 COST SAVER: OFF';
-    el.style.background     = '';
-    el.style.color          = 'var(--text3)';
-    el.style.borderColor    = 'var(--border2)';
-  }
-}
-
-function showBriefCostSaverMsg() {
-  var bl = document.getElementById('briefLoading');
-  var bt = document.getElementById('briefText');
-  if(bt && bt.textContent.trim()) return; // already has content
-  if(bl) {
-    bl.style.display = 'flex';
-    bl.innerHTML = [
-      '<span style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">',
-      '💰 Cost Saver is ON — AI Macro Brief paused. ',
-      '<span style="cursor:pointer;text-decoration:underline" onclick="runDailyBrief()">Load now</span>',
-      ' or toggle Cost Saver OFF in the top bar.',
-      '</span>'
-    ].join('');
-  }
+  setTimeout(runDailyBrief, 200);
 }
 
 function updateApiKeyStatus() {
@@ -2707,21 +2576,17 @@ function init() {
   updateApiKeyStatus();
   refreshDashboard();
 
-  // Apply cost saver state from localStorage
-  applyCostSaverState();
-
   if(state.apiKey) {
-    if(!state.costSaver) setTimeout(runDailyBrief, 400);
-    else showBriefCostSaverMsg();
+    setTimeout(runDailyBrief, 400);
   } else {
+    // Try sessionStorage as fallback (survives page refresh but not file replacement)
     var ssKey = '';
     try { ssKey = sessionStorage.getItem('mortgageiq_key') || ''; } catch(e){}
     if(ssKey) {
       state.apiKey = ssKey;
       localStorage.setItem('mortgageiq_key', ssKey);
       updateApiKeyStatus();
-      if(!state.costSaver) setTimeout(runDailyBrief, 400);
-      else showBriefCostSaverMsg();
+      setTimeout(runDailyBrief, 400);
     } else {
       var bl = document.getElementById('briefLoading');
       if(bl) bl.innerHTML = '<span style="cursor:pointer;color:var(--amber);font-family:var(--font-mono);font-size:11px" onclick="openApiKeyModal()">⚙ Click to set your Claude API key and enable AI briefs →</span>';
@@ -3311,16 +3176,9 @@ var _newsInitialized = false;
 function initNewsPage() {
   if(_newsInitialized) return;
   _newsInitialized = true;
-  if(state.apiKey && !state.costSaver) {
+  // Auto-load on first visit if API key is set
+  if(state.apiKey) {
     refreshAllNews();
-  } else if(state.costSaver) {
-    // Show cost saver message in each section
-    Object.keys(NEWS_SECTIONS).forEach(function(key) {
-      var el = document.getElementById('news-' + key);
-      if(el) el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);padding:12px 0">💰 Cost Saver is ON — click <strong>↻ Refresh</strong> to load this section manually.</div>';
-      var te = document.getElementById('news-' + key + '-time');
-      if(te) te.textContent = 'Paused';
-    });
   }
 }
 
@@ -4321,85 +4179,6 @@ async function runWebResearch() {
   } finally {
     btn.textContent = '🌐 Research with Web + Documents'; btn.disabled = false;
   }
-}
-
-
-// ═══════════════════════════════════════════════════════════════════
-// RSS FEEDS — imageboard embeds from rss.app
-// ═══════════════════════════════════════════════════════════════════
-
-var RSS_FEEDS = [
-  { id:'ai-labs',    label:'AI Labs',              color:'#c084fc', src:'https://rss.app/embed/v1/imageboard/tt6hbH68UfNQdmZh' },
-  { id:'mort-cap',   label:'Mortgage Cap Markets', color:'#00d4aa', src:'https://rss.app/embed/v1/imageboard/tL79CLcofDDovdtt' },
-  { id:'mort-news',  label:'Mortgage News',        color:'#2979ff', src:'https://rss.app/embed/v1/imageboard/OfibIkZ0XF37Da2k' },
-  { id:'imf',        label:'Inside Mortgage Fin.', color:'#00b8d9', src:'https://rss.app/embed/v1/imageboard/trwv4OUEiLML29tp' },
-  { id:'gen-ai',     label:'General AI',           color:'#a855f7', src:'https://rss.app/embed/v1/imageboard/tvOo2bLOy0wseM3t' },
-  { id:'hedge',      label:'Hedge Funds',          color:'#ffb800', src:'https://rss.app/embed/v1/imageboard/tbmCO9TT6DafqvQa' },
-  { id:'google',     label:'Google News',          color:'#4285f4', src:'https://rss.app/embed/v1/imageboard/oe1aJOcDX4fRY2Se' }
-];
-
-var _rssInitialized = false;
-var _rssActiveFeed  = 0;
-
-function initRssPage() {
-  if(!_rssInitialized) {
-    _rssInitialized = true;
-    renderRssTabs();
-  }
-  switchRssFeed(_rssActiveFeed);
-}
-
-function renderRssTabs() {
-  var tabsEl = document.getElementById('rssFeedTabs');
-  if(!tabsEl) return;
-  tabsEl.innerHTML = RSS_FEEDS.map(function(feed, idx) {
-    return [
-      '<div class="rss-feed-tab' + (idx === 0 ? ' active' : '') + '"',
-      ' data-idx="' + idx + '"',
-      ' onclick="switchRssFeed(' + idx + ')">',
-      '<span class="rss-dot" style="background:' + feed.color + '"></span>',
-      feed.label,
-      '</div>'
-    ].join('');
-  }).join('');
-}
-
-function switchRssFeed(idx) {
-  _rssActiveFeed = idx;
-  var feed = RSS_FEEDS[idx];
-  if(!feed) return;
-
-  // Update tab active state
-  document.querySelectorAll('.rss-feed-tab').forEach(function(t, i) {
-    t.classList.toggle('active', i === idx);
-  });
-
-  // Update label
-  var label = document.getElementById('rssFeedLabel');
-  if(label) label.textContent = feed.label;
-
-  // Load iframe — fade out, swap src, fade in on load
-  var iframe = document.getElementById('rssIframe');
-  if(!iframe) return;
-  iframe.style.opacity = '0';
-  // Small delay so fade-out is visible
-  setTimeout(function() {
-    iframe.src = feed.src;
-  }, 150);
-}
-
-function setRssHeight(h) {
-  var iframe = document.getElementById('rssIframe');
-  if(iframe) iframe.height = h;
-}
-
-function reloadRssFeed() {
-  var iframe = document.getElementById('rssIframe');
-  if(!iframe) return;
-  iframe.style.opacity = '0';
-  var src = iframe.src;
-  iframe.src = '';
-  setTimeout(function(){ iframe.src = src; }, 100);
 }
 
 // ═══════════════════════════════════════════════════════════════════
