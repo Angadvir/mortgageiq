@@ -23,8 +23,14 @@ def load_signals(json_path):
 
 
 def build_signals_js(signals, exported_at):
+    # Determine the "as of" date for the trailing-12-month hist arrays.
+    # Prefer the most recent per-signal obs_date; fall back to exported_at's date.
+    obs_dates = [s.get("obs_date") for s in signals.values() if s.get("obs_date")]
+    as_of = max(obs_dates) if obs_dates else str(exported_at)[:10]
+
     lines = [
         f"// Live data — {exported_at}",
+        f'const SIGNALS_AS_OF = "{as_of}"; // last observation date backing hist[] trailing windows',
         "const SEED_SIGNALS = {"
     ]
     for key, s in signals.items():

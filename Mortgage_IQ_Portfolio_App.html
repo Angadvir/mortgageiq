@@ -1784,29 +1784,30 @@ let state = {
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-06-20T05:23:16.018780Z
+// Live data — 2026-07-04T22:37:37.318504Z
+const SIGNALS_AS_OF = "2026-07-02"; // last observation date backing hist[] trailing windows
 const SEED_SIGNALS = {
-  fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.64, unit:"%", zscore:-1.32, hist:[4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63] },
-  sofr: { label:"SOFR", value:3.63, prev:3.63, unit:"%", zscore:0.62, hist:[3.63, 3.61, 3.62, 3.63, 3.63, 3.6, 3.59, 3.6, 3.65, 3.69, 3.63, 3.63] },
-  tenYrTsy: { label:"10Y Treasury", value:4.49, prev:4.43, unit:"%", zscore:0.75, hist:[4.46, 4.49, 4.47, 4.55, 4.56, 4.53, 4.55, 4.45, 4.48, 4.47, 4.43, 4.49] },
-  twoYrTsy: { label:"2Y Treasury", value:4.2, prev:4.05, unit:"%", zscore:2.0, hist:[4.05, 4.08, 4.05, 4.17, 4.15, 4.13, 4.13, 4.05, 4.09, 4.07, 4.05, 4.2] },
-  pmms30: { label:"PMMS 30Y Rate", value:6.47, prev:6.52, unit:"%", zscore:0.27, hist:[6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47] },
-  pmms15: { label:"PMMS 15Y Rate", value:5.81, prev:5.84, unit:"%", zscore:0.8, hist:[5.77, 5.74, 5.65, 5.58, 5.64, 5.72, 5.71, 5.85, 5.87, 5.79, 5.84, 5.81] },
-  mba30: { label:"MBA 30Y Rate", value:6.483, prev:6.429, unit:"%", zscore:0.46, hist:[6.428, 6.462, 6.472, 6.512, 6.501, 6.528, 6.526, 6.532, 6.476, 6.448, 6.429, 6.483] },
+  fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.63, unit:"%", zscore:-1.26, hist:[4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63, 3.63] },
+  sofr: { label:"SOFR", value:3.66, prev:3.68, unit:"%", zscore:1.34, hist:[3.69, 3.63, 3.63, 3.62, 3.61, 3.62, 3.62, 3.64, 3.62, 3.62, 3.68, 3.66] },
+  tenYrTsy: { label:"10Y Treasury", value:4.48, prev:4.44, unit:"%", zscore:0.53, hist:[4.47, 4.43, 4.49, 4.46, 4.51, 4.5, 4.41, 4.4, 4.38, 4.38, 4.44, 4.48] },
+  twoYrTsy: { label:"2Y Treasury", value:4.17, prev:4.14, unit:"%", zscore:1.32, hist:[4.07, 4.05, 4.2, 4.19, 4.24, 4.16, 4.11, 4.09, 4.07, 4.1, 4.14, 4.17] },
+  pmms30: { label:"PMMS 30Y Rate", value:6.43, prev:6.49, unit:"%", zscore:0.15, hist:[6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47, 6.49, 6.43] },
+  pmms15: { label:"PMMS 15Y Rate", value:5.79, prev:5.84, unit:"%", zscore:0.72, hist:[5.65, 5.58, 5.64, 5.72, 5.71, 5.85, 5.87, 5.79, 5.84, 5.81, 5.84, 5.79] },
+  mba30: { label:"MBA 30Y Rate", value:6.474, prev:6.452, unit:"%", zscore:0.0, hist:[6.448, 6.429, 6.483, 6.454, 6.511, 6.504, 6.449, 6.416, 6.411, 6.419, 6.452, 6.474] },
   cpi: { label:"CPI YoY", value:4.27, prev:3.947, unit:"%", zscore:2.34, hist:[2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202, 3.947, 4.27] },
-  corePce: { label:"Core PCE", value:3.2892, prev:3.2363, unit:"%", zscore:1.96, hist:[2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0862, 3.0325, 3.2363, 3.2892] },
+  corePce: { label:"Core PCE", value:3.412, prev:3.3187, unit:"%", zscore:1.99, hist:[2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.1047, 3.0493, 3.2538, 3.3187, 3.412] },
   ppi: { label:"PPI", value:13.0765, prev:9.4074, unit:"%", zscore:2.72, hist:[1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1213, 2.4277, 3.8748, 6.7514, 9.4074, 13.0765] },
-  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.3, unit:"%", zscore:0.6, hist:[4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3] },
-  nfp: { label:"NFP (000s)", value:172.0, prev:179.0, unit:"k", zscore:1.15, hist:[-20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 179.0, 172.0] },
-  jolts: { label:"JOLTS Openings", value:7.618, prev:6.887, unit:"M", zscore:1.4, hist:[7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.618] },
-  hpiNational: { label:"HPI National YoY", value:0.6646, prev:0.7358, unit:"%", zscore:-1.29, hist:[2.8198, 2.3467, 1.9335, 1.6422, 1.4822, 1.3084, 1.3225, 1.2882, 1.143, 0.8663, 0.7358, 0.6646] },
+  unemployment: { label:"Unemployment Rate", value:4.2, prev:4.3, unit:"%", zscore:-0.08, hist:[4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3, 4.2] },
+  nfp: { label:"NFP (000s)", value:57.0, prev:129.0, unit:"k", zscore:0.01, hist:[64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 148.0, 129.0, 57.0] },
+  jolts: { label:"JOLTS Openings", value:7.594, prev:7.585, unit:"M", zscore:1.26, hist:[7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.585, 7.594] },
+  hpiNational: { label:"HPI National YoY", value:0.8427, prev:0.725, unit:"%", zscore:-0.98, hist:[2.3467, 1.9317, 1.6448, 1.4878, 1.3134, 1.3277, 1.3045, 1.1615, 0.9344, 0.7708, 0.725, 0.8427] },
   housingStarts: { label:"Housing Starts (000s)", value:1177.0, prev:1392.0, unit:"k", zscore:-2.45, hist:[1379.0, 1432.0, 1291.0, 1319.0, 1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1522.0, 1392.0, 1177.0] },
   existingHomeSales: { label:"Existing Home Sales", value:4170.0, prev:4040.0, unit:"M", zscore:1.38, hist:[3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 4010.0, 4040.0, 4170.0] },
   mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.89, prev:1.79, unit:"%", zscore:2.38, hist:[1.73, 1.74, 1.78, 1.77, 1.78, 1.78, 1.79, 1.89] },
-  refiBoomster: { label:"Refi App Index (proxy)", value:6.47, prev:6.52, unit:"", zscore:1.52, hist:[6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47] },
-  igSpread: { label:"IG Corp OAS", value:74.0, prev:75.0, unit:"bps", zscore:-0.97, hist:[74.0, 74.0, 74.0, 74.0, 75.0, 75.0, 75.0, 75.0, 74.0, 73.0, 75.0, 74.0] },
-  hySpread: { label:"HY Corp OAS", value:263.0, prev:271.0, unit:"bps", zscore:-1.32, hist:[271.0, 275.0, 274.0, 276.0, 275.0, 278.0, 280.0, 278.0, 271.0, 266.0, 271.0, 263.0] },
-  mbsSpread: { label:"MBS OAS (est.)", value:172.0, prev:177.0, unit:"bps", zscore:1.52, hist:[171.0, 162.0, 155.0, 148.0, 155.0, 162.0, 161.0, 176.0, 178.0, 173.0, 177.0, 172.0] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:6.43, prev:6.49, unit:"", zscore:1.11, hist:[6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47, 6.49, 6.43] },
+  igSpread: { label:"IG Corp OAS", value:75.0, prev:76.0, unit:"bps", zscore:-0.57, hist:[74.0, 74.0, 74.0, 74.0, 74.0, 75.0, 76.0, 77.0, 76.0, 76.0, 76.0, 75.0] },
+  hySpread: { label:"HY Corp OAS", value:275.0, prev:274.0, unit:"bps", zscore:-0.41, hist:[263.0, 266.0, 266.0, 265.0, 271.0, 276.0, 278.0, 283.0, 280.0, 275.0, 274.0, 275.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:168.0, prev:174.0, unit:"bps", zscore:1.11, hist:[155.0, 148.0, 155.0, 162.0, 161.0, 176.0, 178.0, 173.0, 177.0, 172.0, 174.0, 168.0] },
 };
 // @@SIGNALS_END@@
 
@@ -1918,6 +1919,22 @@ function navTo(page) {
 // CHARTS
 // ═══════════════════════════════════════════════════════════════════
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Generates real "Mon 'YY" labels for the trailing `n` months ending at
+// SIGNALS_AS_OF (injected by inject_signals.py from the pipeline's latest
+// observation date). Falls back to today's date if not present, so charts
+// never mislabel a trailing window with a fixed Jan–Dec axis.
+function trailingMonthLabels(n) {
+  const asOfStr = (typeof SIGNALS_AS_OF !== 'undefined' && SIGNALS_AS_OF) ? SIGNALS_AS_OF : null;
+  const asOf = asOfStr ? new Date(asOfStr + 'T00:00:00Z') : new Date();
+  const labels = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(asOf.getUTCFullYear(), asOf.getUTCMonth() - i, 1));
+    labels.push(MONTHS[d.getUTCMonth()] + " '" + String(d.getUTCFullYear()).slice(-2));
+  }
+  return labels;
+}
+
 const CHART_DEFAULTS = {
   responsive:true, maintainAspectRatio:false,
   plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#1a2030', titleColor:'#8a909e', bodyColor:'#e8eaf0', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, padding:10 }},
@@ -1936,7 +1953,7 @@ function buildRateChart() {
   if(state.charts.rate) state.charts.rate.destroy();
   state.charts.rate = new Chart(ctx, {
     type:'line',
-    data:{ labels:MONTHS, datasets:[{ data:hist, borderColor:'#00d4aa', backgroundColor:'rgba(0,212,170,0.06)', borderWidth:1.5, tension:0.4, fill:true, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#00d4aa' }]},
+    data:{ labels:trailingMonthLabels(hist.length), datasets:[{ data:hist, borderColor:'#00d4aa', backgroundColor:'rgba(0,212,170,0.06)', borderWidth:1.5, tension:0.4, fill:true, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#00d4aa' }]},
     options:{ ...CHART_DEFAULTS, plugins:{ ...CHART_DEFAULTS.plugins }, scales:{ ...CHART_DEFAULTS.scales } }
   });
 }
@@ -1980,8 +1997,8 @@ function buildMbsChart() {
     if(state.charts.mbs) { state.charts.mbs.destroy(); state.charts.mbs = null; }
     const spread = (state.signals.mbsSpread && state.signals.mbsSpread.hist) ? state.signals.mbsSpread.hist : [60,85,110,175,145,130,120,138,155,142,148,148];
     const pmms   = (state.signals.pmms30   && state.signals.pmms30.hist)   ? state.signals.pmms30.hist   : [3.10,3.22,3.55,4.67,6.29,6.94,6.65,6.79,7.23,7.09,6.88,7.09];
-    const len    = Math.min(spread.length, pmms.length, MONTHS.length);
-    const labels = MONTHS.slice(0, len);
+    const len    = Math.min(spread.length, pmms.length, 12);
+    const labels = trailingMonthLabels(len);
     state.charts.mbs = new Chart(ctx, {
       type: 'line',
       data: {

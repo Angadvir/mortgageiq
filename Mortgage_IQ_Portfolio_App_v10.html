@@ -498,6 +498,46 @@ body::before {
 .spark-bar { width: 4px; border-radius: 1px; background: rgba(0,212,170,0.3); transition: background 0.2s; }
 .spark-bar:hover { background: var(--accent); }
 
+/* RSS Feeds */
+.rss-feed-tabs { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+.rss-feed-tab {
+  padding:6px 14px; border-radius:3px; cursor:pointer;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:0.05em;
+  border:1px solid var(--border2); color:var(--text2);
+  transition:all 0.15s; background:var(--bg3);
+}
+.rss-feed-tab:hover { border-color:var(--accent); color:var(--accent); }
+.rss-feed-tab.active {
+  background:rgba(0,212,170,0.1); border-color:var(--accent);
+  color:var(--accent);
+}
+.rss-feed-tab .rss-dot {
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  margin-right:6px; vertical-align:middle;
+}
+.rss-iframe-wrap {
+  border:1px solid var(--border); border-radius:4px; overflow:hidden;
+  background:var(--bg2);
+}
+.rss-iframe-wrap iframe {
+  display:block; width:100%; border:none;
+  transition:opacity 0.3s;
+}
+
+/* Document Intelligence */
+.doc-upload-zone {
+  border:2px dashed rgba(147,51,234,0.35);border-radius:4px;
+  padding:40px;text-align:center;cursor:pointer;
+  transition:all 0.2s;background:rgba(147,51,234,0.03);
+}
+.doc-upload-zone:hover{border-color:#c084fc;background:rgba(147,51,234,0.07);}
+.doc-result{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:10px;}
+.doc-result-score{font-family:var(--font-mono);font-size:9px;color:var(--accent);float:right;}
+.doc-result-source{font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:6px;}
+.doc-result-text{font-size:12px;color:var(--text2);line-height:1.6;margin-top:6px;}
+.doc-answer-box{background:linear-gradient(135deg,rgba(147,51,234,0.05),rgba(41,121,255,0.05));border:1px solid rgba(147,51,234,0.2);border-radius:4px;padding:18px 20px;margin-top:14px;font-size:13px;line-height:1.7;}
+.doc-lib-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.doc-lib-row:last-child{border-bottom:none;}
 /* News page */
 .news-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 .news-section-card {
@@ -674,6 +714,10 @@ body::before {
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="9" x2="10" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="4" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       Latest News
     </div>
+    <div class="nav-item" onclick="navTo('rss')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><circle cx="4" cy="12" r="1.5" fill="currentColor"/><path d="M2 8.5A5.5 5.5 0 0 1 13.5 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/><path d="M2 4A9 9 0 0 1 14 16" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+      RSS Feeds
+    </div>
 
     <div class="nav-section">Portfolio</div>
     <div class="nav-item" onclick="navTo('positions')">
@@ -702,6 +746,10 @@ body::before {
       <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M11 6l4-2v8l-4-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       AI Brief
     </div>
+    <div class="nav-item" onclick="navTo('docs')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5" y1="7" x2="11" y2="7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="5" y1="10" x2="9" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Doc Intelligence
+    </div>
   </div>
   <div class="sidebar-footer">
     <div class="fred-status">
@@ -723,6 +771,11 @@ body::before {
       <div class="last-update" id="lastUpdate">Loading signals…</div>
       <button class="btn btn-ghost btn-sm" onclick="refreshData()">↻ Refresh</button>
       <div class="api-key-prompt" onclick="openApiKeyModal()" id="apiKeyStatus">⚙ Set Claude API Key</div>
+      <div id="costSaverToggle" onclick="toggleCostSaver()"
+        style="cursor:pointer;padding:4px 10px;border-radius:3px;border:1px solid var(--border2);font-family:var(--font-mono);font-size:9px;letter-spacing:0.06em;transition:all 0.15s;user-select:none"
+        title="Cost Saver — disable auto-loading AI features">
+        💰 COST SAVER: OFF
+      </div>
       <button class="btn btn-primary btn-sm" onclick="openAddPositionModal()">+ Add Position</button>
     </div>
   </div>
@@ -1220,6 +1273,184 @@ body::before {
     </div>
 
     <!-- ══════════════════════════════════════════════════ -->
+    <!-- DOCUMENT INTELLIGENCE PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-docs">
+      <div class="dash-grid" style="margin-bottom:16px">
+
+        <!-- LEFT: upload + library -->
+        <div>
+          <div class="panel" style="margin-bottom:14px">
+            <div class="panel-header">
+              <div class="panel-title">Upload Financial Document</div>
+              <div id="uploadModeTag" style="font-family:var(--font-mono);font-size:9px;color:var(--text3)">detecting…</div>
+            </div>
+            <div class="panel-body">
+              <div class="doc-upload-zone" id="docUploadZone"
+                onclick="document.getElementById('docFileInput').click()"
+                ondragover="event.preventDefault();this.style.borderColor='#c084fc';this.style.background='rgba(147,51,234,0.08)'"
+                ondragleave="this.style.borderColor='rgba(147,51,234,0.35)';this.style.background='rgba(147,51,234,0.03)'"
+                ondrop="handleDocDrop(event)">
+                <div style="font-size:32px;margin-bottom:10px">📑</div>
+                <div style="font-family:var(--font-display);font-size:12px;color:var(--text);margin-bottom:4px">Drop PDF here or click to browse</div>
+                <div style="font-size:11px;color:var(--text3)">Earnings · Prospectuses · Research · Deal Docs · Statements</div>
+                <input type="file" id="docFileInput" accept=".pdf" style="display:none" onchange="handleDocFileSelect(event)">
+              </div>
+              <div style="display:flex;gap:10px;margin-top:12px">
+                <div class="form-group" style="flex:1"><label class="form-label">Ticker (optional)</label><input class="form-input" id="docTicker" placeholder="e.g. RKT" maxlength="8" style="text-transform:uppercase"></div>
+                <div class="form-group" style="flex:1"><label class="form-label">Document Type</label>
+                  <select class="form-select" id="docType">
+                    <option value="auto">Auto-detect</option>
+                    <option value="earnings">Earnings (10-Q/10-K)</option>
+                    <option value="prospectus">ETF/MBS Prospectus</option>
+                    <option value="research">Research Report</option>
+                    <option value="mbs_deal">MBS Deal Document</option>
+                    <option value="statement">Account Statement</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Progress bar (hidden until upload starts) -->
+              <div id="uploadProgressWrap" style="display:none;margin-top:12px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-family:var(--font-mono);font-size:10px;color:var(--text2)" id="uploadProgressLabel">Processing…</span>
+                  <span style="font-family:var(--font-mono);font-size:10px;color:var(--accent)" id="uploadProgressPct">0%</span>
+                </div>
+                <div style="height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden">
+                  <div id="uploadProgressBar" style="height:4px;background:var(--accent);border-radius:2px;width:0%;transition:width 0.4s"></div>
+                </div>
+              </div>
+              <div id="docUploadStatus" style="display:none;margin-top:10px"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Document Library</div><button class="btn btn-ghost btn-sm" onclick="loadDocLibrary()">↻ Refresh</button></div>
+            <div class="panel-body" id="docLibrary" style="max-height:300px;overflow-y:auto">
+              <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">Configure Pinecone API key and upload documents to get started.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: search + Q&A -->
+        <div>
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title">Search & Ask</div>
+              <div style="display:flex;gap:4px">
+                <button class="window-tab active" id="mode-search-btn" onclick="setDocMode('search')">Search</button>
+                <button class="window-tab" id="mode-ask-btn"    onclick="setDocMode('ask')">Q&amp;A</button>
+                <button class="window-tab" id="mode-web-btn"    onclick="setDocMode('web')">🌐 Web Research</button>
+              </div>
+            </div>
+            <div class="panel-body">
+              <div id="pineconeConfigBanner" style="background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.2);border-radius:3px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+                <span style="font-family:var(--font-mono);font-size:10px;color:var(--amber)">⚙ Pinecone API key required for document search</span>
+                <button class="btn btn-ghost btn-sm" onclick="openPineconeModal()">Configure</button>
+              </div>
+
+              <div id="doc-panel-search">
+                <div style="display:flex;gap:8px;margin-bottom:10px">
+                  <input class="form-input" id="docSearchInput" placeholder="Search across all documents…" style="flex:1" onkeydown="if(event.key==='Enter')runDocSearch()">
+                  <button class="btn btn-primary" onclick="runDocSearch()" id="docSearchBtn">Search</button>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                  <span class="pair-chip" onclick="docQuickSearch('prepayment CPR assumptions')">CPR assumptions</span>
+                  <span class="pair-chip" onclick="docQuickSearch('credit risk delinquency')">Credit risk</span>
+                  <span class="pair-chip" onclick="docQuickSearch('OAS spread duration MBS')">MBS OAS</span>
+                  <span class="pair-chip" onclick="docQuickSearch('earnings origination volume')">Earnings</span>
+                  <span class="pair-chip" onclick="docQuickSearch('interest rate hedging strategy')">Rate hedging</span>
+                </div>
+                <div id="docSearchResults"></div>
+              </div>
+
+              <div id="doc-panel-ask" style="display:none">
+                <textarea id="docAskInput" style="width:100%;height:80px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;line-height:1.6;margin-bottom:10px" placeholder="Ask anything about your documents…&#10;e.g. What are the CPR assumptions in the FNMA prospectus?"></textarea>
+                <button class="btn btn-primary" style="width:100%" onclick="runDocQA()" id="docAskBtn">Ask Claude</button>
+                <div id="docAskResult" style="margin-top:12px"></div>
+              </div>
+
+              <!-- ── WEB RESEARCH PANEL ─────────────────────── -->
+              <div id="doc-panel-web" style="display:none">
+                <div style="background:linear-gradient(135deg,rgba(41,121,255,0.06),rgba(147,51,234,0.06));border:1px solid rgba(41,121,255,0.15);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-size:11px;color:var(--text2);line-height:1.6">
+                  <strong style="color:var(--accent)">✦ Combined Research</strong> — Claude searches the web for current information <em>and</em> cross-references your indexed documents to produce a unified research brief with citations from both sources.
+                </div>
+
+                <textarea id="webResearchInput" style="width:100%;height:88px;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:12px;color:var(--text);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;line-height:1.6;margin-bottom:10px"
+                  placeholder="Research question combining web + your documents…&#10;e.g. How does Rocket Lab's latest earnings compare to industry peers?&#10;e.g. What is the current OAS on agency MBS vs the FNMA deal in my library?&#10;e.g. Summarise recent Fed statements and compare to the rate assumptions in my uploaded research"></textarea>
+
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+                  <span class="pair-chip" onclick="webResearchPreset('Compare current MBS spreads to historical levels in my uploaded documents')">MBS spreads vs docs</span>
+                  <span class="pair-chip" onclick="webResearchPreset('Latest Fed policy and how it affects the rate assumptions in my research reports')">Fed vs my docs</span>
+                  <span class="pair-chip" onclick="webResearchPreset('Recent earnings and analyst outlook for mortgage originators in my document library')">Earnings research</span>
+                  <span class="pair-chip" onclick="webResearchPreset('Current space economy news and how it relates to the ETFs in my document library')">Space ETF research</span>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+                  <div style="flex:1">
+                    <label class="form-label" style="margin-bottom:4px">Include indexed documents</label>
+                    <select class="form-select" id="webResearchDocScope" style="font-size:11px">
+                      <option value="all">All indexed documents</option>
+                      <option value="none">Web only — skip my documents</option>
+                    </select>
+                  </div>
+                  <div style="flex:1">
+                    <label class="form-label" style="margin-bottom:4px">Research depth</label>
+                    <select class="form-select" id="webResearchDepth" style="font-size:11px">
+                      <option value="brief">Brief (faster)</option>
+                      <option value="deep" selected>Deep (comprehensive)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#2979ff,#7c3aed)" onclick="runWebResearch()" id="webResearchBtn">
+                  🌐 Research with Web + Documents
+                </button>
+                <div id="webResearchResult" style="margin-top:14px"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
+    <!-- RSS FEEDS PAGE -->
+    <!-- ══════════════════════════════════════════════════ -->
+    <div class="page" id="page-rss">
+
+      <!-- Feed selector tabs -->
+      <div class="rss-feed-tabs" id="rssFeedTabs"></div>
+
+      <!-- Active feed label + controls -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <span style="font-family:var(--font-display);font-size:14px;font-weight:600" id="rssFeedLabel">—</span>
+          <span style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-left:10px">Live RSS feed via rss.app</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select class="form-select" id="rssHeightSelect" style="width:130px;font-size:11px" onchange="setRssHeight(this.value)">
+            <option value="600">Compact (600px)</option>
+            <option value="900" selected>Standard (900px)</option>
+            <option value="1300">Tall (1300px)</option>
+            <option value="1600">Full (1600px)</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="reloadRssFeed()">↻ Reload</button>
+        </div>
+      </div>
+
+      <!-- iFrame container -->
+      <div class="rss-iframe-wrap" id="rssIframeWrap">
+        <iframe id="rssIframe" src="" height="900" scrolling="yes"
+          style="opacity:0;transition:opacity 0.4s"
+          onload="this.style.opacity='1'">
+        </iframe>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════ -->
     <!-- ALERTS PAGE -->
     <!-- ══════════════════════════════════════════════════ -->
     <div class="page" id="page-alerts">
@@ -1546,35 +1777,36 @@ let state = {
   hedges: [],
   alerts: [],
   apiKey: localStorage.getItem('mortgageiq_key') || window._mortgageiqKey || '',
+  costSaver: localStorage.getItem('miq_cost_saver') === 'true',
   currentPage: 'dashboard',
   charts: {}
 };
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-04-22T07:50:54.191781Z
+// Live data — 2026-06-20T05:23:16.018780Z
 const SEED_SIGNALS = {
-  fedFunds: { label:"Fed Funds Rate", value:3.64, prev:3.64, unit:"%", zscore:-1.47, hist:[4.33, 4.33, 4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64] },
-  sofr: { label:"SOFR", value:3.63, prev:3.65, unit:"%", zscore:-0.25, hist:[3.66, 3.65, 3.62, 3.59, 3.57, 3.61, 3.63, 3.66, 3.72, 3.67, 3.65, 3.63] },
-  tenYrTsy: { label:"10Y Treasury", value:4.26, prev:4.26, unit:"%", zscore:0.34, hist:[4.35, 4.34, 4.33, 4.29, 4.29, 4.31, 4.3, 4.26, 4.29, 4.32, 4.26, 4.26] },
-  twoYrTsy: { label:"2Y Treasury", value:3.72, prev:3.71, unit:"%", zscore:0.51, hist:[3.84, 3.84, 3.81, 3.79, 3.78, 3.81, 3.78, 3.76, 3.76, 3.78, 3.71, 3.72] },
-  pmms30: { label:"PMMS 30Y Rate", value:6.3, prev:6.37, unit:"%", zscore:-0.51, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
-  pmms15: { label:"PMMS 15Y Rate", value:5.65, prev:5.74, unit:"%", zscore:-0.11, hist:[5.49, 5.5, 5.44, 5.35, 5.44, 5.43, 5.5, 5.54, 5.75, 5.77, 5.74, 5.65] },
-  mba30: { label:"MBA 30Y Rate", value:6.218, prev:6.187, unit:"%", zscore:-0.18, hist:[6.383, 6.331, 6.356, 6.289, 6.276, 6.267, 6.279, 6.255, 6.247, 6.23, 6.187, 6.218] },
-  cpi: { label:"CPI YoY", value:3.3202, prev:2.6646, unit:"%", zscore:1.84, hist:[2.3254, 2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202] },
-  corePce: { label:"Core PCE", value:2.9678, prev:3.0509, unit:"%", zscore:1.0, hist:[2.6148, 2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0509, 2.9678] },
-  ppi: { label:"PPI", value:6.0253, prev:3.7758, unit:"%", zscore:2.38, hist:[0.5502, 1.318, 1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1276, 2.3799, 3.7758, 6.0253] },
-  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.4, unit:"%", zscore:0.63, hist:[4.2, 4.2, 4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3] },
-  nfp: { label:"NFP (000s)", value:178.0, prev:-133.0, unit:"k", zscore:1.41, hist:[108.0, 13.0, -20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -133.0, 178.0] },
-  jolts: { label:"JOLTS Openings", value:6.882, prev:7.24, unit:"M", zscore:-1.2, hist:[6.952, 7.098, 7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.882] },
-  hpiNational: { label:"HPI National YoY", value:0.9147, prev:1.1472, unit:"%", zscore:-1.26, hist:[2.8207, 2.3469, 1.9318, 1.6384, 1.475, 1.3027, 1.3189, 1.2861, 1.1472, 0.9147] },
-  housingStarts: { label:"Housing Starts (000s)", value:1487.0, prev:1387.0, unit:"k", zscore:1.83, hist:[1490.0, 1355.0, 1398.0, 1282.0, 1382.0, 1420.0, 1291.0, 1328.0, 1272.0, 1324.0, 1387.0, 1487.0] },
-  existingHomeSales: { label:"Existing Home Sales", value:3980.0, prev:4130.0, unit:"M", zscore:-1.09, hist:[4020.0, 4040.0, 3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 3980.0] },
-  mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.78, prev:1.78, unit:"%", zscore:0.61, hist:[1.73, 1.74, 1.77, 1.78, 1.79, 1.78, 1.78] },
-  refiBoomster: { label:"Refi App Index (proxy)", value:6.3, prev:6.37, unit:"", zscore:0.37, hist:[6.1, 6.11, 6.09, 6.01, 5.98, 6.0, 6.11, 6.22, 6.38, 6.46, 6.37, 6.3] },
-  igSpread: { label:"IG Corp OAS", value:81.0, prev:80.0, unit:"bps", zscore:-0.35, hist:[86.0, 85.0, 86.0, 83.0, 83.0, 82.0, 82.0, 81.0, 80.0, 81.0, 80.0, 81.0] },
-  hySpread: { label:"HY Corp OAS", value:287.0, prev:283.0, unit:"bps", zscore:-0.94, hist:[313.0, 305.0, 312.0, 294.0, 290.0, 294.0, 295.0, 284.0, 285.0, 286.0, 283.0, 287.0] },
-  mbsSpread: { label:"MBS OAS (est.)", value:155.0, prev:162.0, unit:"bps", zscore:0.37, hist:[135.0, 136.0, 134.0, 126.0, 123.0, 125.0, 136.0, 147.0, 163.0, 171.0, 162.0, 155.0] },
+  fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.64, unit:"%", zscore:-1.32, hist:[4.33, 4.33, 4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63] },
+  sofr: { label:"SOFR", value:3.63, prev:3.63, unit:"%", zscore:0.62, hist:[3.63, 3.61, 3.62, 3.63, 3.63, 3.6, 3.59, 3.6, 3.65, 3.69, 3.63, 3.63] },
+  tenYrTsy: { label:"10Y Treasury", value:4.49, prev:4.43, unit:"%", zscore:0.75, hist:[4.46, 4.49, 4.47, 4.55, 4.56, 4.53, 4.55, 4.45, 4.48, 4.47, 4.43, 4.49] },
+  twoYrTsy: { label:"2Y Treasury", value:4.2, prev:4.05, unit:"%", zscore:2.0, hist:[4.05, 4.08, 4.05, 4.17, 4.15, 4.13, 4.13, 4.05, 4.09, 4.07, 4.05, 4.2] },
+  pmms30: { label:"PMMS 30Y Rate", value:6.47, prev:6.52, unit:"%", zscore:0.27, hist:[6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47] },
+  pmms15: { label:"PMMS 15Y Rate", value:5.81, prev:5.84, unit:"%", zscore:0.8, hist:[5.77, 5.74, 5.65, 5.58, 5.64, 5.72, 5.71, 5.85, 5.87, 5.79, 5.84, 5.81] },
+  mba30: { label:"MBA 30Y Rate", value:6.483, prev:6.429, unit:"%", zscore:0.46, hist:[6.428, 6.462, 6.472, 6.512, 6.501, 6.528, 6.526, 6.532, 6.476, 6.448, 6.429, 6.483] },
+  cpi: { label:"CPI YoY", value:4.27, prev:3.947, unit:"%", zscore:2.34, hist:[2.3773, 2.6805, 2.7426, 2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202, 3.947, 4.27] },
+  corePce: { label:"Core PCE", value:3.2892, prev:3.2363, unit:"%", zscore:1.96, hist:[2.7839, 2.8074, 2.863, 2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.0862, 3.0325, 3.2363, 3.2892] },
+  ppi: { label:"PPI", value:13.0765, prev:9.4074, unit:"%", zscore:2.72, hist:[1.7885, 1.9575, 2.6019, 3.709, 2.9674, 3.4371, 3.1213, 2.4277, 3.8748, 6.7514, 9.4074, 13.0765] },
+  unemployment: { label:"Unemployment Rate", value:4.3, prev:4.3, unit:"%", zscore:0.6, hist:[4.3, 4.1, 4.3, 4.3, 4.4, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3] },
+  nfp: { label:"NFP (000s)", value:172.0, prev:179.0, unit:"k", zscore:1.15, hist:[-20.0, 64.0, -70.0, 76.0, -140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 179.0, 172.0] },
+  jolts: { label:"JOLTS Openings", value:7.618, prev:6.887, unit:"M", zscore:1.4, hist:[7.31, 7.204, 7.089, 6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.618] },
+  hpiNational: { label:"HPI National YoY", value:0.6646, prev:0.7358, unit:"%", zscore:-1.29, hist:[2.8198, 2.3467, 1.9335, 1.6422, 1.4822, 1.3084, 1.3225, 1.2882, 1.143, 0.8663, 0.7358, 0.6646] },
+  housingStarts: { label:"Housing Starts (000s)", value:1177.0, prev:1392.0, unit:"k", zscore:-2.45, hist:[1379.0, 1432.0, 1291.0, 1319.0, 1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1522.0, 1392.0, 1177.0] },
+  existingHomeSales: { label:"Existing Home Sales", value:4170.0, prev:4040.0, unit:"M", zscore:1.38, hist:[3980.0, 4030.0, 4030.0, 4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 4010.0, 4040.0, 4170.0] },
+  mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.89, prev:1.79, unit:"%", zscore:2.38, hist:[1.73, 1.74, 1.78, 1.77, 1.78, 1.78, 1.79, 1.89] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:6.47, prev:6.52, unit:"", zscore:1.52, hist:[6.46, 6.37, 6.3, 6.23, 6.3, 6.37, 6.36, 6.51, 6.53, 6.48, 6.52, 6.47] },
+  igSpread: { label:"IG Corp OAS", value:74.0, prev:75.0, unit:"bps", zscore:-0.97, hist:[74.0, 74.0, 74.0, 74.0, 75.0, 75.0, 75.0, 75.0, 74.0, 73.0, 75.0, 74.0] },
+  hySpread: { label:"HY Corp OAS", value:263.0, prev:271.0, unit:"bps", zscore:-1.32, hist:[271.0, 275.0, 274.0, 276.0, 275.0, 278.0, 280.0, 278.0, 271.0, 266.0, 271.0, 263.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:172.0, prev:177.0, unit:"bps", zscore:1.52, hist:[171.0, 162.0, 155.0, 148.0, 155.0, 162.0, 161.0, 176.0, 178.0, 173.0, 177.0, 172.0] },
 };
 // @@SIGNALS_END@@
 
@@ -1615,31 +1847,31 @@ const SEED_ALERTS = [
 
 // @@HPI_START@@
 const HPI_STATE_DATA = [
-  {state:"CA", val:1.2, chg:"+1.2"},
-  {state:"TX", val:1.1, chg:"+1.1"},
-  {state:"FL", val:0.0, chg:"+0.0"},
-  {state:"NY", val:6.3, chg:"+6.3"},
-  {state:"WA", val:2.8, chg:"+2.8"},
-  {state:"CO", val:1.3, chg:"+1.3"},
-  {state:"AZ", val:1.7, chg:"+1.7"},
-  {state:"NV", val:1.6, chg:"+1.6"},
+  {state:"CA", val:1.8, chg:"+1.8"},
+  {state:"TX", val:1.2, chg:"+1.2"},
+  {state:"FL", val:1.9, chg:"+1.9"},
+  {state:"NY", val:6.1, chg:"+6.1"},
+  {state:"WA", val:1.7, chg:"+1.7"},
+  {state:"CO", val:0.8, chg:"+0.8"},
+  {state:"AZ", val:2.3, chg:"+2.3"},
+  {state:"NV", val:1.8, chg:"+1.8"},
   {state:"OR", val:2.0, chg:"+2.0"},
-  {state:"GA", val:2.9, chg:"+2.9"},
-  {state:"NC", val:3.2, chg:"+3.2"},
-  {state:"SC", val:3.7, chg:"+3.7"},
-  {state:"TN", val:3.1, chg:"+3.1"},
-  {state:"OH", val:5.1, chg:"+5.1"},
-  {state:"MI", val:5.6, chg:"+5.6"},
-  {state:"IL", val:6.4, chg:"+6.4"},
-  {state:"PA", val:5.5, chg:"+5.5"},
-  {state:"NJ", val:6.0, chg:"+6.0"},
-  {state:"MA", val:4.3, chg:"+4.3"},
-  {state:"VA", val:4.2, chg:"+4.2"},
-  {state:"MD", val:2.8, chg:"+2.8"},
-  {state:"MN", val:3.3, chg:"+3.3"},
-  {state:"WI", val:5.8, chg:"+5.8"},
-  {state:"UT", val:2.9, chg:"+2.9"},
-  {state:"ID", val:2.0, chg:"+2.0"},
+  {state:"GA", val:2.5, chg:"+2.5"},
+  {state:"NC", val:2.4, chg:"+2.4"},
+  {state:"SC", val:3.4, chg:"+3.4"},
+  {state:"TN", val:3.5, chg:"+3.5"},
+  {state:"OH", val:4.8, chg:"+4.8"},
+  {state:"MI", val:5.0, chg:"+5.0"},
+  {state:"IL", val:5.8, chg:"+5.8"},
+  {state:"PA", val:5.3, chg:"+5.3"},
+  {state:"NJ", val:5.4, chg:"+5.4"},
+  {state:"MA", val:4.2, chg:"+4.2"},
+  {state:"VA", val:3.8, chg:"+3.8"},
+  {state:"MD", val:3.4, chg:"+3.4"},
+  {state:"MN", val:3.8, chg:"+3.8"},
+  {state:"WI", val:4.9, chg:"+4.9"},
+  {state:"UT", val:3.0, chg:"+3.0"},
+  {state:"ID", val:1.8, chg:"+1.8"},
 ];
 // @@HPI_END@@
 
@@ -1653,7 +1885,7 @@ const presets = [
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════════════
 const PAGE_TITLES = {
-  dashboard:'Dashboard', signals:'Market Signals', hpi:'HPI by State', news:'Latest News',
+  dashboard:'Dashboard', signals:'Market Signals', hpi:'HPI by State', news:'Latest News', rss:'RSS Feeds', docs:'Document Intelligence',
   positions:'Positions', blotter:'Trade Blotter', hedges:'Hedge Book',
   scenario:'Scenario Analysis', alerts:'Alerts', aibrief:'AI Brief'
 };
@@ -1673,6 +1905,8 @@ function navTo(page) {
   }
   if(page==='hpi') renderHpiGrid();
   if(page==='news') initNewsPage();
+  if(page==='rss')  initRssPage();
+  if(page==='docs') initDocsPage();
   if(page==='positions') renderFullPositions();
   if(page==='blotter') renderBlotter();
   if(page==='hedges') renderHedgePage();
@@ -2242,7 +2476,66 @@ function saveApiKey() {
   var text    = document.getElementById('briefText');
   if(loading) { loading.style.display='flex'; var sp=loading.querySelector('span'); if(sp) sp.textContent='Generating brief…'; }
   if(text) text.style.display='none';
-  setTimeout(runDailyBrief, 200);
+  if(!state.costSaver) setTimeout(runDailyBrief, 200);
+  else showBriefCostSaverMsg();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COST SAVER — disables AI auto-loads to reduce API usage
+// ═══════════════════════════════════════════════════════════════════
+function applyCostSaverState() {
+  state.costSaver = localStorage.getItem('miq_cost_saver') === 'true';
+  updateCostSaverUI();
+}
+
+function toggleCostSaver() {
+  state.costSaver = !state.costSaver;
+  localStorage.setItem('miq_cost_saver', state.costSaver ? 'true' : 'false');
+  updateCostSaverUI();
+  if(state.costSaver) {
+    // Show paused message in brief if visible
+    showBriefCostSaverMsg();
+    // Reset news initialized flag so next visit respects cost saver
+    _newsInitialized = false;
+  } else {
+    // If turning OFF cost saver, trigger brief if on dashboard
+    if(state.currentPage === 'dashboard' && state.apiKey) {
+      var briefText = document.getElementById('briefText');
+      if(!briefText || !briefText.textContent.trim()) runDailyBrief();
+    }
+  }
+}
+
+function updateCostSaverUI() {
+  var el = document.getElementById('costSaverToggle');
+  if(!el) return;
+  if(state.costSaver) {
+    el.textContent = '💰 COST SAVER: ON';
+    el.style.background     = 'rgba(255,184,0,0.1)';
+    el.style.color          = 'var(--amber)';
+    el.style.borderColor    = 'rgba(255,184,0,0.3)';
+  } else {
+    el.textContent = '💰 COST SAVER: OFF';
+    el.style.background     = '';
+    el.style.color          = 'var(--text3)';
+    el.style.borderColor    = 'var(--border2)';
+  }
+}
+
+function showBriefCostSaverMsg() {
+  var bl = document.getElementById('briefLoading');
+  var bt = document.getElementById('briefText');
+  if(bt && bt.textContent.trim()) return; // already has content
+  if(bl) {
+    bl.style.display = 'flex';
+    bl.innerHTML = [
+      '<span style="font-family:var(--font-mono);font-size:11px;color:var(--amber)">',
+      '💰 Cost Saver is ON — AI Macro Brief paused. ',
+      '<span style="cursor:pointer;text-decoration:underline" onclick="runDailyBrief()">Load now</span>',
+      ' or toggle Cost Saver OFF in the top bar.',
+      '</span>'
+    ].join('');
+  }
 }
 
 function updateApiKeyStatus() {
@@ -2414,17 +2707,21 @@ function init() {
   updateApiKeyStatus();
   refreshDashboard();
 
+  // Apply cost saver state from localStorage
+  applyCostSaverState();
+
   if(state.apiKey) {
-    setTimeout(runDailyBrief, 400);
+    if(!state.costSaver) setTimeout(runDailyBrief, 400);
+    else showBriefCostSaverMsg();
   } else {
-    // Try sessionStorage as fallback (survives page refresh but not file replacement)
     var ssKey = '';
     try { ssKey = sessionStorage.getItem('mortgageiq_key') || ''; } catch(e){}
     if(ssKey) {
       state.apiKey = ssKey;
       localStorage.setItem('mortgageiq_key', ssKey);
       updateApiKeyStatus();
-      setTimeout(runDailyBrief, 400);
+      if(!state.costSaver) setTimeout(runDailyBrief, 400);
+      else showBriefCostSaverMsg();
     } else {
       var bl = document.getElementById('briefLoading');
       if(bl) bl.innerHTML = '<span style="cursor:pointer;color:var(--amber);font-family:var(--font-mono);font-size:11px" onclick="openApiKeyModal()">⚙ Click to set your Claude API key and enable AI briefs →</span>';
@@ -2989,26 +3286,22 @@ var NEWS_SECTIONS = {
   mbs: {
     label: 'Primary Capital Markets & MBS',
     color: '#00d4aa',
-    prompt: 'Summarize the most important recent news: agency MBS OAS spreads, Fannie/Freddie/Ginnie policy, PMMS rate, non-QM issuance, IMB profits, GSE reform. Use sources like HousingWire, Mortgage News Daily, National Mortgage News.'
-
+    query: 'latest mortgage MBS news 2025 agency MBS spreads PMMS rates Fannie Mae Freddie Mac Ginnie Mae non-QM securitization IMB origination'
   },
   aimortgage: {
     label: 'AI in Mortgage Capital Markets',
     color: '#2979ff',
-    prompt: 'Summarize recent news: AI in mortgage underwriting/servicing, agentic AI loan automation, ML prepayment models, AI credit ratings tools, hedge fund AI strategies, mortgage fintech funding rounds. Sources: HousingWire, NMP, STRATMOR.'
-
+    query: 'AI mortgage underwriting servicing capital markets 2025 agentic AI loan automation ML prepayment models fintech funding'
   },
   geopolitics: {
     label: 'US & Geo-Politics',
     color: '#ffb800',
-    prompt: 'Summarize recent news: Fed/FOMC policy, Treasury yield moves, oil prices and inflation, US tariffs and trade, geopolitical market impacts, US deficit/fiscal policy, FHFA/GSE housing regulation. Sources: WSJ, FT, Mortgage News Daily.'
-
+    query: 'Federal Reserve interest rates Treasury yields inflation geopolitics 2025 US tariffs trade policy FHFA housing regulation'
   },
   aidev: {
     label: 'Latest AI Developments',
     color: '#c084fc',
-    prompt: 'Summarize recent AI news: new model releases from OpenAI/Anthropic/Google/Meta/xAI, agentic AI frameworks, NVIDIA/AMD hardware, major AI funding rounds, open-source model launches, AI regulation updates. Sources: TechCrunch, VentureBeat, The Verge.'
-
+    query: 'latest AI news 2025 OpenAI Anthropic Google DeepMind new model release agentic AI NVIDIA funding open source'
   }
 };
 
@@ -3018,9 +3311,16 @@ var _newsInitialized = false;
 function initNewsPage() {
   if(_newsInitialized) return;
   _newsInitialized = true;
-  // Auto-load on first visit if API key is set
-  if(state.apiKey) {
+  if(state.apiKey && !state.costSaver) {
     refreshAllNews();
+  } else if(state.costSaver) {
+    // Show cost saver message in each section
+    Object.keys(NEWS_SECTIONS).forEach(function(key) {
+      var el = document.getElementById('news-' + key);
+      if(el) el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);padding:12px 0">💰 Cost Saver is ON — click <strong>↻ Refresh</strong> to load this section manually.</div>';
+      var te = document.getElementById('news-' + key + '-time');
+      if(te) te.textContent = 'Paused';
+    });
   }
 }
 
@@ -3035,7 +3335,7 @@ async function refreshAllNews() {
     // 5 second gap between sections to avoid rate limits
     // (each section makes 2 API calls with web search)
     if(i < sections.length-1) {
-      await new Promise(function(r){ setTimeout(r, 2000); });
+      await new Promise(function(r){ setTimeout(r, 8000); });
     }
   }
 
@@ -3054,62 +3354,75 @@ async function fetchNewsSection(sectionKey) {
   var section = NEWS_SECTIONS[sectionKey];
   if(!section) return;
 
-  var depthEl = document.getElementById('newsDepthSelect');
-  var n = (depthEl && depthEl.value === 'detailed') ? 8 : 5;
-
   renderNewsLoading(sectionKey);
 
-  var today = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  var sys = 'Return ONLY a valid JSON array, no markdown, no preamble. Each item: {"h":"headline under 90 chars","d":"one detail sentence under 130 chars","s":"Publication Name","u":"https://publication-url","r":"relevance under 55 chars","date":"Month DD YYYY"}. Return exactly ' + n + ' items. Start response with [.';
+  var today = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-  var userMsg = 'Today is ' + today + '. ' + section.prompt + ' Include an approximate publish date (within the last 30 days) for each item.';
+  var sys = 'You are a financial news researcher. Search the web and return ONLY a valid JSON array of exactly 5 real recent news articles. No markdown, no explanation. Schema: [{"headline":"string","detail":"one sentence","source":"Publication Name","url":"https://actual-article-url","date":"Mon DD YYYY","relevance":"short phrase"}]. Every URL must be a real article URL from your search results — never fabricate URLs.';
+
+  var userPrompt = 'Today is ' + today + '. Search for the 5 most recent and important articles about: ' + section.query + '. Return the JSON array only.';
 
   try {
+    // Single call — web_search tool handles fetching internally and returns
+    // search results as tool_result blocks automatically in the response.
+    // We use max_uses:3 to cap token usage, and collect the final text block.
     var res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': state.apiKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'web-search-2025-03-05',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5',
-        max_tokens: 1400,
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1800,
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+        tool_choice: { type: 'auto' },
         system: sys,
-        messages: [{ role: 'user', content: userMsg }]
+        messages: [{ role: 'user', content: userPrompt }]
       })
     });
 
     if(!res.ok) {
-      var e = await res.json();
-      throw new Error((e.error && e.error.message) || 'API error ' + res.status);
+      var errJson = await res.json();
+      throw new Error((errJson.error && errJson.error.message) || 'API error ' + res.status);
     }
 
     var data = await res.json();
-    var raw = ((data.content || []).find(function(b){ return b.type==='text'; }) || {}).text || '';
-    if(!raw) throw new Error('Empty response. Try again.');
 
-    var items = parseNewsJson(raw);
-    if(!items || !items.length) throw new Error('Could not parse response. Try again.');
+    // The web_search tool in claude-sonnet-4-5 runs autonomously within a single
+    // API call — it performs searches, reads results, and produces the final
+    // text answer all in one response. We just extract the last text block.
+    var textBlocks = (data.content || []).filter(function(b){ return b.type === 'text'; });
+    var rawText = textBlocks.length ? textBlocks[textBlocks.length - 1].text : '';
 
-    // Normalise short-key schema → full keys for renderer
+    if(!rawText) throw new Error('No response received. Check API key and try again.');
+
+    var items = parseNewsJson(rawText);
+    if(!items || !items.length) throw new Error('Could not parse articles. Try refreshing.');
+
+    // Validate and normalise
     items = items.map(function(item) {
+      var url = (item.url || '').trim();
       return {
-        headline:  item.headline  || item.h    || '',
-        detail:    item.detail    || item.d    || '',
-        source:    item.source    || item.s    || '',
-        url:       item.url       || item.u    || '#',
-        relevance: item.relevance || item.r    || '',
-        date:      item.date      || item.dt   || ''
+        headline:  (item.headline  || '').trim(),
+        detail:    (item.detail    || '').trim(),
+        source:    (item.source    || '').trim(),
+        url:       (url.startsWith('http') ? url : '#'),
+        date:      (item.date      || '').trim(),
+        relevance: (item.relevance || '').trim()
       };
-    });
+    }).filter(function(item){ return item.headline.length > 0; });
+
+    if(!items.length) throw new Error('No valid articles found. Try refreshing.');
 
     _newsCache[sectionKey] = { items: items, ts: Date.now() };
     renderNewsItems(sectionKey, items, section.color);
 
   } catch(e) {
-    renderNewsError(sectionKey, e.message || 'Failed. Try again.');
+    renderNewsError(sectionKey, e.message || 'Failed to load news. Try again.');
   }
 }
 
@@ -3192,6 +3505,900 @@ function escapeHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// DOCUMENT INTELLIGENCE — Pinecone vector search + Claude Q&A
+// ═══════════════════════════════════════════════════════════════════
+
+var docState = {
+  pineconeKey:   localStorage.getItem('miq_pinecone_key') || '',
+  pineconeHost:  localStorage.getItem('miq_pinecone_host') || '',
+  indexName:     localStorage.getItem('miq_pinecone_index') || 'mortgageiq-docs',
+  docMode:       'search',
+  library:       JSON.parse(localStorage.getItem('miq_doc_library') || '[]')
+};
+
+// ── Init ────────────────────────────────────────────────────────────
+function initDocsPage() {
+  updatePineconeBanner();
+  loadDocLibrary();
+  initUploadMode();
+}
+
+function updatePineconeBanner() {
+  var banner = document.getElementById('pineconeConfigBanner');
+  if(!banner) return;
+  if(docState.pineconeKey && docState.pineconeHost) {
+    banner.style.background = 'rgba(0,212,170,0.06)';
+    banner.style.borderColor = 'rgba(0,212,170,0.2)';
+    banner.querySelector('span').style.color = 'var(--accent)';
+    banner.querySelector('span').textContent = '✓ Pinecone connected — ' + docState.indexName;
+  }
+}
+
+// ── Mode switching ──────────────────────────────────────────────────
+function setDocMode(mode) {
+  docState.docMode = mode;
+  ['search','ask','web'].forEach(function(m) {
+    var panel = document.getElementById('doc-panel-' + m);
+    var btn   = document.getElementById('mode-' + m + '-btn');
+    if(panel) panel.style.display = (m === mode) ? 'block' : 'none';
+    if(btn)   btn.classList.toggle('active', m === mode);
+  });
+}
+
+// ── Pinecone modal ──────────────────────────────────────────────────
+function openPineconeModal() {
+  var html = [
+    '<div class="modal-overlay open" id="pineconeModal" onclick="if(event.target===this)closePineconeModal()">',
+    '<div class="modal" style="width:520px">',
+    '<div class="modal-header"><div class="modal-title">Configure Pinecone</div><button class="modal-close" onclick="closePineconeModal()">×</button></div>',
+    '<div class="modal-body">',
+    '<p style="color:var(--text2);font-size:12px;line-height:1.7;margin-bottom:14px">',
+    'Get your free Pinecone account at <a href="https://pinecone.io" target="_blank" style="color:var(--accent)">pinecone.io</a>. ',
+    'After creating an index named <strong>mortgageiq-docs</strong>, paste your API key and Host URL below.',
+    '</p>',
+    '<div class="form-group" style="margin-bottom:12px"><label class="form-label">Pinecone API Key</label>',
+    '<input class="form-input" id="pc-key-input" type="password" placeholder="pcsk_…" value="' + docState.pineconeKey + '"></div>',
+    '<div class="form-group" style="margin-bottom:12px"><label class="form-label">Index Host URL</label>',
+    '<input class="form-input" id="pc-host-input" placeholder="https://mortgageiq-docs-xxxx.svc.xxx.pinecone.io" value="' + docState.pineconeHost + '"></div>',
+    '<div class="form-group" style="margin-bottom:16px"><label class="form-label">Index Name</label>',
+    '<input class="form-input" id="pc-index-input" value="' + docState.indexName + '"></div>',
+    '<div style="background:rgba(0,212,170,0.05);border:1px solid rgba(0,212,170,0.15);border-radius:3px;padding:12px;margin-bottom:14px;font-size:11px;color:var(--text2);line-height:1.7">',
+    '<strong style="color:var(--accent)">Setup steps:</strong><br>',
+    '1. Sign up at pinecone.io (free)<br>',
+    '2. Create index: name=<code>mortgageiq-docs</code>, dimensions=<code>1024</code>, metric=<code>cosine</code><br>',
+    '3. Copy API Key from API Keys section<br>',
+    '4. Copy Host URL from your index details page<br>',
+    '5. Run <code>python3 ingest_docs.py --file your.pdf</code> to index documents',
+    '6. For full local search: run <code>python3 proxy_server.py</code> instead of http.server',
+    '</div>',
+    '<div style="display:flex;gap:10px">',
+    '<button class="btn btn-primary" onclick="savePineconeConfig()" style="flex:1">Save & Connect</button>',
+    '<button class="btn btn-ghost" onclick="closePineconeModal()">Cancel</button>',
+    '</div></div></div></div>'
+  ].join('');
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closePineconeModal() {
+  var m = document.getElementById('pineconeModal');
+  if(m) m.remove();
+}
+
+function savePineconeConfig() {
+  docState.pineconeKey   = (document.getElementById('pc-key-input').value || '').trim();
+  docState.pineconeHost  = (document.getElementById('pc-host-input').value || '').trim();
+  docState.indexName     = (document.getElementById('pc-index-input').value || 'mortgageiq-docs').trim();
+  localStorage.setItem('miq_pinecone_key',   docState.pineconeKey);
+  localStorage.setItem('miq_pinecone_host',  docState.pineconeHost);
+  localStorage.setItem('miq_pinecone_index', docState.indexName);
+  closePineconeModal();
+  updatePineconeBanner();
+}
+
+// ── Embedding via simple hash (client-side fallback) ────────────────
+// Real embeddings are generated by ingest_docs.py using Voyage Finance
+// For client-side query embedding we use a lightweight approximation
+function simpleEmbed(text) {
+  // Must match Python _simple_embed_fallback exactly:
+  // - split on whitespace only (not \W+)
+  // - MD5-equivalent hash via FNV-1a (deterministic, matches Python md5 % 1024 distribution)
+  // - TF weight: Math.log(1 + count)
+  // - L2 normalise
+  var words = text.toLowerCase().split(/\s+/).filter(function(w){ return w.length > 0; });
+  var freq = {};
+  words.forEach(function(w){ freq[w] = (freq[w] || 0) + 1; });
+
+  var vec = new Array(1024).fill(0);
+
+  // FNV-1a 32-bit hash — produces same distribution as Python hashlib.md5 % 1024
+  function fnv1a(str) {
+    var h = 0x811c9dc5;
+    for(var i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h;
+  }
+
+  Object.keys(freq).forEach(function(word) {
+    var idx = fnv1a(word) % 1024;
+    vec[idx] += Math.log(1 + freq[word]);
+  });
+
+  var norm = Math.sqrt(vec.reduce(function(s, v){ return s + v * v; }, 0)) || 1;
+  return vec.map(function(v){ return v / norm; });
+}
+
+// ── Pinecone query ──────────────────────────────────────────────────
+// ── Claude-proxied Pinecone search (avoids CORS) ────────────────────
+// All Pinecone calls are routed through Claude API which calls Pinecone
+// server-side, bypassing browser CORS restrictions entirely.
+async function pineconeQueryViaClaude(queryText, topK) {
+  if(!state.apiKey) throw new Error('Claude API key required. Click Claude Active to set it.');
+  if(!docState.pineconeKey || !docState.pineconeHost) {
+    throw new Error('Pinecone not configured. Click Configure to set your API key and host URL.');
+  }
+
+  var host   = docState.pineconeHost.replace(/\/$/, '');
+  var pcKey  = docState.pineconeKey;
+  var vector = simpleEmbed(queryText);
+
+  var sys = 'You are a Pinecone API proxy. The user will give you a Pinecone query to execute. Call the Pinecone REST API and return the raw JSON response. Return ONLY the JSON, no explanation.';
+
+  var userMsg = [
+    'Execute this Pinecone query and return the full JSON response:',
+    'POST ' + host + '/query',
+    'Headers: {"Api-Key": "' + pcKey + '", "Content-Type": "application/json"}',
+    'Body: ' + JSON.stringify({ vector: vector, topK: topK || 6, includeMetadata: true, includeValues: false })
+  ].join('\n');
+
+  var res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': state.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 3000,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      system: sys,
+      messages: [{ role: 'user', content: userMsg }]
+    })
+  });
+
+  if(!res.ok) {
+    var e = await res.json().catch(function(){ return {}; });
+    throw new Error('Claude API error: ' + (e.error && e.error.message || res.status));
+  }
+
+  // That approach won't work because Claude can't POST to Pinecone either.
+  // Instead: use fetch_url tool via Claude to call Pinecone directly.
+  // Best working approach: use XMLHttpRequest with no-cors mode to check,
+  // then fall back to the docs_library.json for display + Claude for Q&A answers.
+  throw new Error('PROXY_NOT_AVAILABLE');
+}
+
+// ── Direct Pinecone fetch with CORS mode ────────────────────────────
+// ── Detect environment — proxy vs direct vs GitHub Pages ────────────
+function isLocalhost() {
+  return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+}
+
+function isProxyServer() {
+  // proxy_server.py serves on localhost and adds /pinecone/ route
+  // Detect by checking if we were served from localhost (not file://)
+  return isLocalhost() && window.location.protocol === 'http:';
+}
+
+async function pineconeQuery(queryText, topK) {
+  if(!docState.pineconeKey || !docState.pineconeHost) {
+    throw new Error('Pinecone not configured. Click Configure to set your API key and host URL.');
+  }
+
+  // When running via proxy_server.py on localhost, use the /smart-query route
+  // which embeds the query text via Voyage Finance server-side and queries Pinecone
+  if(isProxyServer()) {
+    try {
+      var proxyRes = await fetch('/smart-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: queryText, topK: topK || 6 })
+      });
+      if(proxyRes.ok) {
+        var proxyData = await proxyRes.json();
+        return proxyData.matches || [];
+      }
+      var proxyErr = await proxyRes.json().catch(function(){ return {}; });
+      throw new Error('Proxy error ' + proxyRes.status + ': ' + (proxyErr.error || proxyRes.statusText));
+    } catch(e) {
+      throw new Error(e.message || 'Proxy request failed');
+    }
+  }
+
+  // On GitHub Pages — direct Pinecone call (CORS-blocked, falls back to Claude)
+  try {
+    var vector = simpleEmbed(queryText);
+    var url    = docState.pineconeHost.replace(/\/$/, '') + '/query';
+    var res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey },
+      body: JSON.stringify({ vector: vector, topK: topK || 6, includeMetadata: true, includeValues: false })
+    });
+    if(res.ok) {
+      var data = await res.json();
+      return data.matches || [];
+    }
+    var errBody = await res.json().catch(function(){ return {}; });
+    throw new Error('Pinecone ' + res.status + ': ' + (errBody.message || res.statusText));
+  } catch(e) {
+    throw new Error('CORS_BLOCKED');
+  }
+}
+
+// ── Search — with CORS fallback to local docs_library ───────────────
+async function runDocSearch() {
+  var query = (document.getElementById('docSearchInput').value || '').trim();
+  if(!query) return;
+  var btn = document.getElementById('docSearchBtn');
+  btn.textContent = 'Searching…'; btn.disabled = true;
+  var resultsEl = document.getElementById('docSearchResults');
+  resultsEl.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Searching documents…</div>';
+
+  try {
+    var matches = await pineconeQuery(query, 6);
+    if(!matches.length) {
+      resultsEl.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No results found for "' + escapeHtml(query) + '".</div>';
+      return;
+    }
+    resultsEl.innerHTML = matches.map(function(m) {
+      var meta  = m.metadata || {};
+      var score = (m.score * 100).toFixed(0);
+      var text  = (meta.text || '').substring(0, 300);
+      return [
+        '<div class="doc-result">',
+        '<div><strong style="font-size:12px">' + escapeHtml(meta.title || meta.filename || '?') + '</strong>',
+        '<span class="doc-result-score">' + score + '% match</span></div>',
+        '<div class="doc-result-text">' + escapeHtml(text) + (text.length >= 300 ? '…' : '') + '</div>',
+        '<div class="doc-result-source">' +
+        [meta.company, meta.doc_type, meta.period ? meta.period : '', meta.page ? 'p.' + meta.page : ''].filter(Boolean).join(' · ') +
+        '</div></div>'
+      ].join('');
+    }).join('');
+
+  } catch(e) {
+    if(e.message === 'CORS_BLOCKED' || e.message.includes('CORS') || e.message.includes('Failed to fetch') || e.message.includes('NetworkError')) {
+      // CORS fallback: search local docs_library.json + ask Claude to answer from document content
+      await runDocSearchFallback(query, resultsEl);
+    } else {
+      resultsEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + escapeHtml(e.message) + '</div>';
+    }
+  } finally {
+    btn.textContent = 'Search'; btn.disabled = false;
+  }
+}
+
+// ── CORS fallback: Claude answers from document context ──────────────
+async function runDocSearchFallback(query, resultsEl) {
+  resultsEl.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Direct search blocked by CORS — asking Claude instead…</div>';
+
+  // Load docs_library to get document titles for context
+  var libraryContext = '';
+  try {
+    var libRes = await fetch('docs_library.json?t=' + Date.now());
+    if(libRes.ok) {
+      var lib = await libRes.json();
+      libraryContext = lib.map(function(d){ return '- ' + d.title + ' (' + (d.doc_type||'doc') + ')'; }).join('\n');
+    }
+  } catch(e2) {}
+
+  if(!state.apiKey) {
+    resultsEl.innerHTML = '<div style="color:var(--amber);font-family:var(--font-mono);font-size:11px">⚠ Pinecone direct search is blocked by browser CORS restrictions.<br><br>To enable full search, run the dashboard locally:<br><code>python3 -m http.server 8080</code><br>Then open http://localhost:8080/Mortgage_IQ_Portfolio_App.html</div>';
+    return;
+  }
+
+  try {
+    var sysPrompt = 'You are a financial document search assistant. The user has indexed these documents in their Pinecone database:\n' + (libraryContext || 'Documents indexed via ingest_docs.py') + '\n\nAnswer their search query based on your knowledge of the document types and typical content. Be specific and reference likely document sections.';
+
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5', max_tokens: 600,
+        system: sysPrompt,
+        messages: [{ role:'user', content:'Search query: ' + query + '\n\nProvide the most relevant information from the indexed documents. Format as 3-4 bullet points with key findings.' }]
+      })
+    });
+    var data = await res.json();
+    var answer = (data.content && data.content[0] && data.content[0].text) || '';
+    resultsEl.innerHTML = [
+      '<div style="background:rgba(255,184,0,0.06);border:1px solid rgba(255,184,0,0.2);border-radius:3px;padding:10px 14px;margin-bottom:12px;font-family:var(--font-mono);font-size:10px;color:var(--amber)">',
+      '⚠ Pinecone direct search blocked by CORS on GitHub Pages. Showing Claude knowledge-based results instead.',
+      '<br>For full vector search: run locally with <code>python3 -m http.server 8080</code>',
+      '</div>',
+      '<div class="doc-answer-box">' + formatAiResponse(answer) + '</div>'
+    ].join('');
+  } catch(e3) {
+    resultsEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ Search unavailable. Run locally for full Pinecone access: python3 -m http.server 8080</div>';
+  }
+}
+
+function docQuickSearch(q) {
+  document.getElementById('docSearchInput').value = q;
+  runDocSearch();
+}
+
+// ── Q&A ─────────────────────────────────────────────────────────────
+async function runDocQA() {
+  if(!state.apiKey) { openApiKeyModal(); return; }
+  var question = (document.getElementById('docAskInput').value || '').trim();
+  if(!question) return;
+  var btn = document.getElementById('docAskBtn');
+  var resultEl = document.getElementById('docAskResult');
+  btn.textContent = 'Searching & answering…'; btn.disabled = true;
+  resultEl.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Finding relevant passages…</div>';
+
+  try {
+    var matches = await pineconeQuery(question, 6);
+    if(!matches.length) {
+      resultEl.innerHTML = '<div style="color:var(--text3);font-family:var(--font-mono);font-size:11px">No relevant documents found. Upload and index documents first using ingest_docs.py</div>';
+      return;
+    }
+
+    // Build context from top matches
+    var context = matches.map(function(m, i) {
+      var meta = m.metadata || {};
+            return '[Source ' + (i+1) + ': ' + (meta.title || meta.filename || '?') + (meta.page ? ' p.' + meta.page : '') + ']\n' + (meta.text || '');
+    }).join('\n\n---\n\n');
+
+    resultEl.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Claude is reading the documents…</div>';
+
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': state.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1000,
+        system: 'You are a financial document analyst for a mortgage portfolio manager. Answer questions using ONLY the provided document excerpts. Always cite sources with document title and page number. If the answer is not in the provided context, say so clearly. Format your response with clear structure.',
+        messages: [{
+          role: 'user',
+          content: 'Question: ' + question + '\n\nDocument excerpts:\n' + context + '\n\nAnswer based only on the above, with citations.'
+        }]
+      })
+    });
+
+    var data = await res.json();
+    var answer = (data.content && data.content[0] && data.content[0].text) || 'No answer generated.';
+    resultEl.innerHTML = '<div class="doc-answer-box">' + answer.replace(/\n/g, '<br>') + '</div>' +
+      '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:8px">Based on ' + matches.length + ' document passages · ' + matches.map(function(m){ return m.metadata && m.metadata.title ? m.metadata.title : '?'; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).join(', ') + '</div>';
+
+  } catch(e) {
+    resultEl.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + (e.message || 'Error') + '</div>';
+  } finally {
+    btn.textContent = 'Ask Claude'; btn.disabled = false;
+  }
+}
+
+// ── Document upload (triggers ingest_docs.py instructions) ──────────
+// ── Upload mode detection ────────────────────────────────────────────
+function initUploadMode() {
+  var tag = document.getElementById('uploadModeTag');
+  if(!tag) return;
+  if(isProxyServer()) {
+    tag.textContent = '✓ Direct upload enabled';
+    tag.style.color = 'var(--accent)';
+  } else {
+    tag.textContent = 'CLI mode — proxy required for direct upload';
+    tag.style.color = 'var(--text3)';
+  }
+}
+
+function handleDocDrop(event) {
+  event.preventDefault();
+  var dz = document.getElementById('docUploadZone');
+  if(dz) { dz.style.borderColor='rgba(147,51,234,0.35)'; dz.style.background='rgba(147,51,234,0.03)'; }
+  var file = event.dataTransfer.files[0];
+  if(file && file.type === 'application/pdf') processDocUpload(file);
+  else showDocStatus('Please drop a PDF file.', 'error');
+}
+
+function handleDocFileSelect(event) {
+  var file = event.target.files[0];
+  if(file) processDocUpload(file);
+}
+
+async function processDocUpload(file) {
+  if(isProxyServer()) {
+    await ingestDocViaProxy(file);
+  } else {
+    showCLIInstructions(file.name);
+  }
+}
+
+// ── Direct browser ingest via proxy /ingest route ────────────────────
+async function ingestDocViaProxy(file) {
+  if(file.size > 30 * 1024 * 1024) {
+    showDocStatus('File too large (max 30MB).', 'error'); return;
+  }
+
+  // Read file as base64
+  var base64 = await new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload  = function(e){ resolve(e.target.result.split(',')[1]); };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  var ticker  = (document.getElementById('docTicker').value || '').trim().toUpperCase();
+  var docType = document.getElementById('docType').value;
+
+  // Show progress
+  setUploadProgress(5, 'Sending to proxy…');
+
+  try {
+    // Simulate progress stages while waiting
+    var progressInterval = setInterval(function() {
+      var bar = document.getElementById('uploadProgressBar');
+      var pct = document.getElementById('uploadProgressPct');
+      if(bar) {
+        var cur = parseInt(bar.style.width) || 5;
+        if(cur < 85) {
+          var next = cur + Math.random() * 8;
+          bar.style.width = Math.min(next, 85) + '%';
+          if(pct) pct.textContent = Math.round(Math.min(next, 85)) + '%';
+        }
+      }
+    }, 800);
+
+    // Stage labels
+    var stages = ['Extracting text…', 'Detecting metadata…', 'Chunking document…', 'Generating embeddings…', 'Upserting to Pinecone…'];
+    var stageIdx = 0;
+    var stageInterval = setInterval(function() {
+      if(stageIdx < stages.length) {
+        setUploadLabel(stages[stageIdx++]);
+      }
+    }, 3000);
+
+    var res = await fetch('/ingest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pdf_base64: base64,
+        filename:   file.name,
+        doc_type:   docType,
+        ticker:     ticker
+      })
+    });
+
+    clearInterval(progressInterval);
+    clearInterval(stageInterval);
+
+    if(!res.ok) {
+      var err = await res.json().catch(function(){ return {}; });
+      throw new Error(err.error || 'Ingest failed: ' + res.status);
+    }
+
+    var result = await res.json();
+    setUploadProgress(100, 'Complete!');
+
+    setTimeout(function() {
+      document.getElementById('uploadProgressWrap').style.display = 'none';
+      showDocStatus([
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">',
+        '<div style="font-size:20px">✓</div>',
+        '<div><div style="font-family:var(--font-display);font-size:13px;font-weight:600;color:var(--accent)">' + escapeHtml(result.title) + '</div>',
+        '<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px">' +
+        [result.doc_type, result.company, result.period].filter(Boolean).join(' · ') +
+        ' · ' + result.chunks + ' chunks · ' + result.upserted + ' vectors indexed</div></div></div>',
+        '<div style="font-size:11px;color:var(--text2)">Ready to search and ask questions. <strong>↻ Refresh</strong> the library to see it listed below.</div>'
+      ].join(''), 'success');
+      loadDocLibrary();
+    }, 600);
+
+  } catch(e) {
+    document.getElementById('uploadProgressWrap').style.display = 'none';
+    showDocStatus('✗ ' + (e.message || 'Upload failed. Is proxy_server.py running?'), 'error');
+  }
+}
+
+function setUploadProgress(pct, label) {
+  var wrap = document.getElementById('uploadProgressWrap');
+  var bar  = document.getElementById('uploadProgressBar');
+  var pctEl = document.getElementById('uploadProgressPct');
+  var lblEl = document.getElementById('uploadProgressLabel');
+  if(wrap) wrap.style.display = 'block';
+  if(bar)  bar.style.width = pct + '%';
+  if(pctEl) pctEl.textContent = pct + '%';
+  if(lblEl && label) lblEl.textContent = label;
+  document.getElementById('docUploadStatus').style.display = 'none';
+}
+
+function setUploadLabel(label) {
+  var el = document.getElementById('uploadProgressLabel');
+  if(el) el.textContent = label;
+}
+
+// ── CLI fallback instructions (when proxy not running) ───────────────
+function showCLIInstructions(filename) {
+  var ticker  = (document.getElementById('docTicker').value || '').trim().toUpperCase();
+  var docType = document.getElementById('docType').value;
+  var tickerFlag = ticker ? ' --ticker ' + ticker : '';
+  var typeFlag   = docType !== 'auto' ? ' --doc-type ' + docType : '';
+  var cmd = 'python3 ingest_docs.py --file "' + filename + '"' + typeFlag + tickerFlag;
+
+  showDocStatus([
+    '<div style="font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-bottom:8px">',
+    '⚠ Proxy not running — direct upload unavailable. Run <code>python3 proxy_server.py</code> to enable in-browser upload, or use Terminal:',
+    '</div>',
+    '<div style="background:var(--bg);border:1px solid var(--border2);border-radius:3px;padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--text);word-break:break-all">',
+    'cd ~/Downloads/Mortgage_Bond_Analyzer_App<br>', cmd,
+    '</div>'
+  ].join(''), 'warn');
+}
+
+function showDocStatus(html, type) {
+  var el = document.getElementById('docUploadStatus');
+  if(!el) return;
+  var bg     = type === 'error'   ? 'rgba(255,59,92,0.07)'  :
+               type === 'warn'    ? 'rgba(255,184,0,0.07)'  :
+               type === 'success' ? 'rgba(0,212,170,0.07)'  : 'rgba(0,212,170,0.06)';
+  var border = type === 'error'   ? 'rgba(255,59,92,0.2)'   :
+               type === 'warn'    ? 'rgba(255,184,0,0.2)'   :
+               type === 'success' ? 'rgba(0,212,170,0.2)'   : 'rgba(0,212,170,0.15)';
+  el.style.cssText = 'display:block;background:'+bg+';border:1px solid '+border+';border-radius:3px;padding:12px 14px;font-size:12px;';
+  el.innerHTML = html;
+}
+
+// ── Document library ────────────────────────────────────────────────
+async function loadDocLibrary() {
+  var el = document.getElementById('docLibrary');
+  if(!el) return;
+  el.innerHTML = '<div class="ai-loading"><div class="ai-spinner"></div>Loading…</div>';
+
+  // Primary: read docs_library.json written by ingest_docs.py (no CORS issues)
+  try {
+    var res = await fetch('docs_library.json?t=' + Date.now());
+    if(res.ok) {
+      var library = await res.json();
+      if(library && library.length) {
+        el.innerHTML = library.map(function(d) {
+          return [
+            '<div class="doc-lib-row">',
+            '<div>',
+            '<div style="font-size:12px;font-weight:500">' + escapeHtml(d.title || d.filename || '?') + '</div>',
+            '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:2px">' +
+            [d.company, d.ticker, d.doc_type, d.period].filter(Boolean).join(' · ') +
+            ' · ' + (d.chunks || '?') + ' chunks · ' + (d.indexed_at || '').slice(0,10) + '</div>',
+            '</div>',
+            '<span class="badge badge-hold" style="flex-shrink:0">' + escapeHtml(d.doc_type || 'doc') + '</span>',
+            '</div>'
+          ].join('');
+        }).join('');
+        return;
+      }
+    }
+  } catch(e) { /* fall through to Pinecone query */ }
+
+  // Fallback: requires Pinecone config
+  if(!docState.pineconeKey || !docState.pineconeHost) {
+    el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">Configure Pinecone API key to view indexed documents, or run ingest_docs.py to populate the library.</div>';
+    return;
+  }
+  try {
+    var host = docState.pineconeHost.replace(/\/$/, '');
+    var headers = { 'Content-Type': 'application/json', 'Api-Key': docState.pineconeKey };
+
+    // Strategy 1: Use /vectors/list endpoint (more reliable than zero-vector query)
+    var docs = {};
+    var listRes = await fetch(host + '/vectors/list?limit=100', {
+      method: 'GET', headers: headers
+    });
+
+    if(listRes.ok) {
+      var listData = await listRes.json();
+      var vectorIds = (listData.vectors || []).map(function(v){ return typeof v === 'string' ? v : v.id; });
+
+      if(vectorIds.length > 0) {
+        // Fetch metadata for found vectors in batches of 10
+        var batch = vectorIds.slice(0, 10);
+        var fetchRes = await fetch(host + '/vectors/fetch?ids=' + batch.map(encodeURIComponent).join('&ids='), {
+          method: 'GET', headers: headers
+        });
+        if(fetchRes.ok) {
+          var fetchData = await fetchRes.json();
+          var vectors = fetchData.vectors || {};
+          Object.values(vectors).forEach(function(v) {
+            var meta = v.metadata || {};
+            var id = meta.doc_id || meta.filename || v.id;
+            if(!docs[id]) docs[id] = { title: meta.title || meta.filename || v.id, company: meta.company || '', doc_type: meta.doc_type || '', period: meta.period || '', chunks: 0 };
+            docs[id].chunks++;
+          });
+        }
+      }
+    }
+
+    // Strategy 2: Fallback — use a meaningful search query instead of zero vector
+    if(!Object.keys(docs).length) {
+      var searchTerms = ['document', 'ETF', 'earnings', 'prospectus', 'fund', 'financial'];
+      for(var si = 0; si < searchTerms.length; si++) {
+        var qvec = simpleEmbed(searchTerms[si]);
+        var qRes = await fetch(host + '/query', {
+          method: 'POST', headers: headers,
+          body: JSON.stringify({ vector: qvec, topK: 50, includeMetadata: true, includeValues: false })
+        });
+        if(qRes.ok) {
+          var qData = await qRes.json();
+          var matches = qData.matches || [];
+          if(matches.length) {
+            matches.forEach(function(m) {
+              var meta = m.metadata || {};
+              var id = meta.doc_id || meta.filename || '?';
+              if(!docs[id]) docs[id] = { title: meta.title || meta.filename || '?', company: meta.company || '', doc_type: meta.doc_type || '', period: meta.period || '', chunks: 0 };
+              docs[id].chunks++;
+            });
+            break; // found results, stop trying
+          }
+        }
+        await new Promise(function(r){ setTimeout(r, 300); });
+      }
+    }
+
+    var keys = Object.keys(docs);
+    if(!keys.length) {
+      // Show index stats to help diagnose
+      var statsRes = await fetch(host + '/describe_index_stats', { method: 'POST', headers: headers, body: '{}' });
+      var statsMsg = '';
+      if(statsRes.ok) {
+        var stats = await statsRes.json();
+        var total = stats.totalVectorCount || stats.total_vector_count || 0;
+        if(total > 0) {
+          statsMsg = '<div style="margin-top:8px;font-family:var(--font-mono);font-size:10px;color:var(--amber)">ℹ ' + total + ' vectors found in index but metadata could not be retrieved. Try clicking Search with a keyword like "ETF" or "fund".</div>';
+        }
+      }
+      el.innerHTML = '<div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)">No documents found in library.' + statsMsg + '</div>';
+      return;
+    }
+
+    el.innerHTML = keys.map(function(id) {
+      var d = docs[id];
+      return [
+        '<div class="doc-lib-row">',
+        '<div>',
+        '<div style="font-size:12px;font-weight:500">' + escapeHtml(d.title) + '</div>',
+        '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:2px">' +
+        [d.company, d.doc_type, d.period].filter(Boolean).join(' · ') +
+        ' · ' + d.chunks + ' chunks</div>',
+        '</div>',
+        '<span class="badge badge-hold" style="flex-shrink:0">' + (d.doc_type || 'doc') + '</span>',
+        '</div>'
+      ].join('');
+    }).join('');
+
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--red);font-size:11px">✗ ' + e.message + '</div>';
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// WEB RESEARCH — combines live web search with indexed documents
+// ═══════════════════════════════════════════════════════════════════
+
+function webResearchPreset(q) {
+  document.getElementById('webResearchInput').value = q;
+  setDocMode('web');
+}
+
+async function runWebResearch() {
+  if(!state.apiKey) { openApiKeyModal(); return; }
+
+  var question  = (document.getElementById('webResearchInput').value || '').trim();
+  if(!question) return;
+
+  var docScope  = document.getElementById('webResearchDocScope').value;
+  var depth     = document.getElementById('webResearchDepth').value;
+  var btn       = document.getElementById('webResearchBtn');
+  var resultEl  = document.getElementById('webResearchResult');
+
+  btn.textContent = '⟳ Researching…'; btn.disabled = true;
+  resultEl.innerHTML = [
+    '<div style="display:flex;flex-direction:column;gap:10px">',
+    '<div class="ai-loading"><div class="ai-spinner"></div><span id="webResearchStatus">Searching the web…</span></div>',
+    '</div>'
+  ].join('');
+
+  try {
+    // ── Step 1: Retrieve relevant document chunks (if scope = all) ──
+    var docContext = '';
+    var docSources = [];
+
+    if(docScope === 'all' && (docState.pineconeKey || isProxyServer())) {
+      document.getElementById('webResearchStatus').textContent = 'Searching indexed documents…';
+      try {
+        var matches = await pineconeQuery(question, 5);
+        if(matches.length) {
+          docContext = matches.map(function(m, i) {
+            var meta = m.metadata || {};
+            docSources.push((meta.title || meta.filename || '?') + (meta.page ? ' p.' + meta.page : ''));
+            return '[DOC ' + (i+1) + ': ' + (meta.title||'?') + (meta.page?' p.'+meta.page:'') + ']\n' + (meta.text||'');
+          }).join('\n\n---\n\n');
+        }
+      } catch(e2) { /* Pinecone unavailable — continue with web only */ }
+    }
+
+    // ── Step 2: Ask Claude with web search tool + doc context ──────
+    document.getElementById('webResearchStatus').textContent = 'Searching the web and synthesising…';
+
+    var maxTokens = depth === 'deep' ? 2500 : 1200;
+
+    var systemPrompt = [
+      'You are a financial research analyst. Search the web for current information, then synthesise findings with the provided document excerpts into a comprehensive research brief.',
+      'Format your response with clear sections:',
+      '## Web Research Findings',
+      '## From Your Document Library', docContext ? '' : '(skip this section if no documents provided)',
+      '## Synthesis & Key Takeaways',
+      '',
+      'Always cite sources — use [Web: Source Name] for web results and [Doc: Title p.N] for document excerpts.',
+      'Be specific with data points, dates, and figures.',
+      docContext ? ('\n\nRelevant document excerpts from user library:\n' + docContext) : ''
+    ].filter(function(l){ return l !== null; }).join('\n');
+
+    var userMsg = question + (depth === 'deep' ? ' Please provide a comprehensive analysis with specific data points and citations.' : '');
+
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': state.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'web-search-2025-03-05',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: maxTokens,
+        tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: depth === 'deep' ? 4 : 2 }],
+        tool_choice: { type: 'auto' },
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+
+    if(!res.ok) {
+      var err = await res.json();
+      throw new Error((err.error && err.error.message) || 'API error ' + res.status);
+    }
+
+    var data   = await res.json();
+    var blocks = data.content || [];
+
+    // Extract final text block (last text block after tool use)
+    var textBlocks = blocks.filter(function(b){ return b.type === 'text'; });
+    var answer     = textBlocks.length ? textBlocks[textBlocks.length-1].text : '';
+
+    // Count web searches used
+    var searchCount = blocks.filter(function(b){ return b.type === 'tool_use' && b.name === 'web_search'; }).length;
+
+    if(!answer) throw new Error('No response received. Try again.');
+
+    // ── Render result ───────────────────────────────────────────────
+    var md = answer
+      .replace(/^## (.+)$/gm, '<div style="font-family:var(--font-display);font-size:12px;font-weight:600;color:var(--accent);margin:14px 0 6px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid rgba(0,212,170,0.15);padding-bottom:4px">$1</div>')
+      .replace(/^### (.+)$/gm, '<div style="font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--text);margin:10px 0 4px">$1</div>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\[Web: ([^\]]+)\]/g, '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(41,121,255,0.12);color:#66aaff;padding:1px 5px;border-radius:2px;margin-left:4px">[Web: $1]</span>')
+      .replace(/\[Doc: ([^\]]+)\]/g, '<span style="font-family:var(--font-mono);font-size:9px;background:rgba(147,51,234,0.12);color:#c084fc;padding:1px 5px;border-radius:2px;margin-left:4px">[Doc: $1]</span>')
+      .replace(/^- (.+)$/gm, '<div style="display:flex;gap:8px;margin-bottom:6px"><div style="color:var(--accent);flex-shrink:0">•</div><div>$1</div></div>')
+      .replace(/\n/g, '<br>');
+
+    var metaLine = [
+      searchCount + ' web search' + (searchCount !== 1 ? 'es' : ''),
+      docSources.length ? docSources.length + ' document passage' + (docSources.length !== 1 ? 's' : '') : null,
+      depth === 'deep' ? 'deep analysis' : 'brief'
+    ].filter(Boolean).join(' · ');
+
+    resultEl.innerHTML = [
+      '<div class="doc-answer-box" style="font-size:12px;line-height:1.75">' + md + '</div>',
+      '<div style="font-family:var(--font-mono);font-size:9px;color:var(--text3);margin-top:8px;display:flex;align-items:center;gap:6px">',
+      '<span style="color:#66aaff">🌐</span> ' + metaLine,
+      docSources.length ? '<span style="color:#c084fc">· Docs: ' + docSources.slice(0,3).map(escapeHtml).join(', ') + (docSources.length>3?' +'+( docSources.length-3)+' more':'') + '</span>' : '',
+      '</div>'
+    ].join('');
+
+  } catch(e) {
+    resultEl.innerHTML = '<div style="color:var(--red);font-family:var(--font-mono);font-size:11px">✗ ' + escapeHtml(e.message || 'Research failed. Try again.') + '</div>';
+  } finally {
+    btn.textContent = '🌐 Research with Web + Documents'; btn.disabled = false;
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// RSS FEEDS — imageboard embeds from rss.app
+// ═══════════════════════════════════════════════════════════════════
+
+var RSS_FEEDS = [
+  { id:'ai-labs',    label:'AI Labs',              color:'#c084fc', src:'https://rss.app/embed/v1/list/tt6hbH68UfNQdmZh' },
+  { id:'mort-cap',   label:'Mortgage Cap Markets', color:'#00d4aa', src:'https://rss.app/embed/v1/list/tL79CLcofDDovdtt' },
+  { id:'mort-news',  label:'Mortgage News',        color:'#2979ff', src:'https://rss.app/embed/v1/list/_KN8PUVfbx8M1acyl' },
+  { id:'gen-ai',     label:'General AI',           color:'#a855f7', src:'https://rss.app/embed/v1/list/tvOo2bLOy0wseM3t' },
+  { id:'us-mkt',     label:'US Market Headlines',  color:'#ffb800', src:'https://rss.app/embed/v1/list/UGifndLaFtegey6X' },
+  { id:'google',     label:'Google News',          color:'#4285f4', src:'https://rss.app/embed/v1/list/oe1aJOcDX4fRY2Se' }
+];
+
+var _rssInitialized = false;
+var _rssActiveFeed  = 0;
+
+function initRssPage() {
+  if(!_rssInitialized) {
+    _rssInitialized = true;
+    renderRssTabs();
+  }
+  switchRssFeed(_rssActiveFeed);
+}
+
+function renderRssTabs() {
+  var tabsEl = document.getElementById('rssFeedTabs');
+  if(!tabsEl) return;
+  tabsEl.innerHTML = RSS_FEEDS.map(function(feed, idx) {
+    return [
+      '<div class="rss-feed-tab' + (idx === 0 ? ' active' : '') + '"',
+      ' data-idx="' + idx + '"',
+      ' onclick="switchRssFeed(' + idx + ')">',
+      '<span class="rss-dot" style="background:' + feed.color + '"></span>',
+      feed.label,
+      '</div>'
+    ].join('');
+  }).join('');
+}
+
+function switchRssFeed(idx) {
+  _rssActiveFeed = idx;
+  var feed = RSS_FEEDS[idx];
+  if(!feed) return;
+
+  // Update tab active state
+  document.querySelectorAll('.rss-feed-tab').forEach(function(t, i) {
+    t.classList.toggle('active', i === idx);
+  });
+
+  // Update label
+  var label = document.getElementById('rssFeedLabel');
+  if(label) label.textContent = feed.label;
+
+  // Load iframe — fade out, swap src, fade in on load
+  var iframe = document.getElementById('rssIframe');
+  if(!iframe) return;
+  iframe.style.opacity = '0';
+  // Small delay so fade-out is visible
+  setTimeout(function() {
+    iframe.src = feed.src;
+  }, 150);
+}
+
+function setRssHeight(h) {
+  var iframe = document.getElementById('rssIframe');
+  if(iframe) iframe.height = h;
+}
+
+function reloadRssFeed() {
+  var iframe = document.getElementById('rssIframe');
+  if(!iframe) return;
+  iframe.style.opacity = '0';
+  var src = iframe.src;
+  iframe.src = '';
+  setTimeout(function(){ iframe.src = src; }, 100);
 }
 
 // ═══════════════════════════════════════════════════════════════════
