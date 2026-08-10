@@ -31,5 +31,16 @@
     "filename": "sp-ishares-us-aerospace-and-defense-etf-3-31.pdf",
     "chunks": 18,
     "indexed_at": "2026-06-21T07:04:11.400149Z"
+  },
+  {
+    "doc_id": "doc_1e010c436d62",
+    "title": "SpaceX Reports Second Quarter 2026 Results",
+    "company": "SpaceX",
+    "ticker": "SPCX",
+    "doc_type": "earnings",
+    "period": "Q2 2026",
+    "filename": "SpaceX-Reports-Second-Quarter-2026-Results.pdf",
+    "chunks": 22,
+    "indexed_at": "2026-08-10T04:54:03.545905Z"
   }
 ]
