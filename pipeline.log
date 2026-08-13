@@ -1628,3 +1628,77 @@
 2026-08-10 01:34:53  INFO          ID: 3 rows
 2026-08-10 01:34:53  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
 2026-08-10 01:34:53  INFO      Run complete — 21 OK, 0 failed
+2026-08-13 01:08:56  INFO      Database initialised → signals.db
+2026-08-13 01:08:56  INFO      ============================================================
+2026-08-13 01:08:56  INFO      MortgageIQ Pipeline — fetch run starting (2026-08-13 01:08)
+2026-08-13 01:08:56  INFO      ============================================================
+2026-08-13 01:08:56  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-08-13 01:08:57  INFO          → 25 observations saved
+2026-08-13 01:08:57  INFO        Fetching sofr (SOFR)…
+2026-08-13 01:08:58  INFO          → 116 observations saved
+2026-08-13 01:08:58  INFO        Fetching tenYrTsy (DGS10)…
+2026-08-13 01:08:58  INFO          → 117 observations saved
+2026-08-13 01:08:59  INFO        Fetching twoYrTsy (DGS2)…
+2026-08-13 01:08:59  INFO          → 117 observations saved
+2026-08-13 01:09:00  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-08-13 01:09:01  INFO          → 106 observations saved
+2026-08-13 01:09:02  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-08-13 01:09:02  INFO          → 106 observations saved
+2026-08-13 01:09:03  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-08-13 01:09:03  INFO          → 117 observations saved
+2026-08-13 01:09:04  INFO        Fetching cpi (CPIAUCSL)…
+2026-08-13 01:09:04  INFO          → 12 observations saved
+2026-08-13 01:09:04  INFO        Fetching corePce (PCEPILFE)…
+2026-08-13 01:09:05  INFO          → 12 observations saved
+2026-08-13 01:09:05  INFO        Fetching ppi (PPIACO)…
+2026-08-13 01:09:06  INFO          → 12 observations saved
+2026-08-13 01:09:06  INFO        Fetching unemployment (UNRATE)…
+2026-08-13 01:09:06  INFO          → 24 observations saved
+2026-08-13 01:09:07  INFO        Fetching nfp (PAYEMS)…
+2026-08-13 01:09:07  INFO          → 24 observations saved
+2026-08-13 01:09:08  INFO        Fetching jolts (JTSJOL)…
+2026-08-13 01:09:08  INFO          → 24 observations saved
+2026-08-13 01:09:09  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-08-13 01:09:09  INFO          → 11 observations saved
+2026-08-13 01:09:09  INFO        Fetching housingStarts (HOUST)…
+2026-08-13 01:09:10  INFO          → 24 observations saved
+2026-08-13 01:09:10  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-08-13 01:09:11  INFO          → 13 observations saved
+2026-08-13 01:09:11  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-08-13 01:09:12  INFO          → 7 observations saved
+2026-08-13 01:09:12  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-08-13 01:09:12  INFO          → 106 observations saved
+2026-08-13 01:09:13  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-08-13 01:09:13  INFO          → 120 observations saved
+2026-08-13 01:09:14  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-08-13 01:09:14  INFO          → 120 observations saved
+2026-08-13 01:09:14  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-08-13 01:09:15  INFO          → 106 observations saved
+2026-08-13 01:09:15  INFO        Fetching HPI by state…
+2026-08-13 01:09:16  INFO          CA: 3 rows
+2026-08-13 01:09:17  INFO          TX: 3 rows
+2026-08-13 01:09:18  INFO          FL: 3 rows
+2026-08-13 01:09:18  INFO          NY: 3 rows
+2026-08-13 01:09:19  INFO          WA: 3 rows
+2026-08-13 01:09:20  INFO          CO: 3 rows
+2026-08-13 01:09:21  INFO          AZ: 3 rows
+2026-08-13 01:09:22  INFO          NV: 3 rows
+2026-08-13 01:09:23  INFO          OR: 3 rows
+2026-08-13 01:09:24  INFO          GA: 3 rows
+2026-08-13 01:09:25  INFO          NC: 3 rows
+2026-08-13 01:09:25  INFO          SC: 3 rows
+2026-08-13 01:09:26  INFO          TN: 3 rows
+2026-08-13 01:09:27  INFO          OH: 3 rows
+2026-08-13 01:09:28  INFO          MI: 3 rows
+2026-08-13 01:09:29  INFO          IL: 3 rows
+2026-08-13 01:09:30  INFO          PA: 3 rows
+2026-08-13 01:09:31  INFO          NJ: 3 rows
+2026-08-13 01:09:32  INFO          MA: 3 rows
+2026-08-13 01:09:33  INFO          VA: 3 rows
+2026-08-13 01:09:34  INFO          MD: 3 rows
+2026-08-13 01:09:35  INFO          MN: 3 rows
+2026-08-13 01:09:36  INFO          WI: 3 rows
+2026-08-13 01:09:37  INFO          UT: 3 rows
+2026-08-13 01:09:37  INFO          ID: 3 rows
+2026-08-13 01:09:38  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-08-13 01:09:38  INFO      Run complete — 21 OK, 0 failed
