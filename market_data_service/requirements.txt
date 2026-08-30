@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+apscheduler
+requests
+
+# Add once your Webull OpenAPI access is approved:
+# webullsdkcore
+# webullsdkquotescore
+# webullsdktrade

@@ -3,12 +3,6 @@ cd ~/Downloads/Mortgage_Bond_Analyzer_App
 python3 pipeline.py --run-once
 python3 fetch_stocks.py
 python3 inject_signals.py --signals signals_live.json --html Mortgage_IQ_Portfolio_App.html --inplace
-
-# Optional live intraday layer — only runs if market_data_service.py is
-# already up (cd market_data_service && python3 market_data_service.py).
-# Non-fatal: daily deploy still completes if it's not running.
-python3 fetch_intraday.py || echo "  (intraday market data service unreachable — skipping, not fatal)"
-
 git add .
 git commit -m "daily update $(date '+%Y-%m-%d')"
 git push

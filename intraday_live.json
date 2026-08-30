@@ -1,0 +1,1 @@
+{"equities":{"RKT":{"price":9.62,"bid":9.61,"ask":9.63,"ts":"2026-08-29T18:00:00Z"}},"bonds":{"FNMA 6.0 2053":{"model_price":98.71,"oas":151.0,"ts":"2026-08-29T18:00:00Z"}},"meta":{"fetched_at":"2026-08-30T02:30:54.831348+00:00","market_hours":false,"equity_count":1,"bond_count":1}}

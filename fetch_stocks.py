@@ -37,15 +37,17 @@ OUTPUT_JSON = Path(__file__).parent / "stocks_live.json"
 
 DEFAULT_TICKERS = [
     # Semiconductors / supply chain
-    "NVDA", "MU", "AMD", "TSM", "AMAT", "LRCX", "KLAC", "ASML", "INTC", "QCOM",
+    "NVDA", "MU", "AMD", "TSM", "AMAT", "LRCX", "KLAC", "ASML", "INTC", "QCOM", "AVGO", "MSFT", "GOOGL", "AMZN", "ANET", "META", "PLTR", "CRWV", "ADBE",
     # Memory / storage
-    "WD", "STX",
+    "WD", "STX", "INTC", "STX",
     # Rare earth / materials
     "MP", "ALB", "LAC",
     # EV
     "TSLA", "F", "GM", "RIVN",
     # Mortgage originators
     "RKT", "PFSI", "UWMC", "BAM",
+    # Space:
+    "SPCX", "NASA", "RKLB", "ASTS", "VSAT", "KTOS", "JEDI", "ARKX", "UFO"
 ]
 
 def check_deps():

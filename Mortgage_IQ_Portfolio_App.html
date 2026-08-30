@@ -996,6 +996,7 @@ body::before {
           <option value="Hedge">Hedges</option>
         </select>
         <button class="btn btn-ghost btn-sm" onclick="openImportModal()">⬆ Import CSV</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportPositionsForPricing()" title="Downloads positions_live.json for the live market data service to reprice">⇩ Export for Live Pricing</button>
         <button class="btn btn-primary btn-sm" onclick="openAddPositionModal()">+ Add Position</button>
       </div>
       <div class="panel">
@@ -1011,7 +1012,10 @@ body::before {
         </table>
       </div>
       <!-- ══ PORTFOLIO ANALYZER ══════════════════════════════════ -->
-      <div class="section-label" style="margin-top:24px">Portfolio Analyzer — Supply Chain & Pair Intelligence</div>
+      <div class="section-label" style="margin-top:24px;display:flex;align-items:center;justify-content:space-between">
+        <span>Portfolio Analyzer — Supply Chain & Pair Intelligence</span>
+        <button class="btn btn-ghost btn-sm" onclick="openWatchlistModal()">⭐ Manage Watchlist</button>
+      </div>
 
       <div class="analyzer-grid">
 
@@ -1564,6 +1568,38 @@ body::before {
 </div>
 
 <!-- Import Modal (CSV + PDF) -->
+<div class="modal-overlay" id="watchlistModal">
+  <div class="modal" style="width:480px">
+    <div class="modal-header">
+      <div class="modal-title">⭐ Ticker Watchlist</div>
+      <button class="modal-close" onclick="closeModal('watchlistModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px">
+        Tickers here get pulled into <strong style="color:var(--text)">fetch_stocks.py</strong> automatically on your next
+        <code style="font-size:11px">./deploy.sh</code> — no code editing required. This is separate from your
+        Positions book; add anything you want daily price history for, held or not (e.g. comparison tickers for
+        Correlation Screener).
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input class="ticker-input" id="watchlistInput" placeholder="e.g. SPCX" maxlength="10" style="flex:1"
+               onkeydown="if(event.key==='Enter')addWatchlistTicker()">
+        <button class="btn btn-primary btn-sm" onclick="addWatchlistTicker()">+ Add</button>
+      </div>
+      <div id="watchlistChips" style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;margin-bottom:16px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="exportWatchlist()">⇩ Export watchlist.json</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('watchlistModal')">Done</button>
+      </div>
+      <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.6">
+        Downloads <code>watchlist.json</code> — move it into your project folder next to <code>fetch_stocks.py</code>.
+        Any ticker typed directly into Pair Analysis / Correlation Screener / Trend Compare works immediately without
+        this step too — this is only needed for it to persist and refresh daily.
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="importModal">
   <div class="modal" style="width:680px;max-height:88vh;overflow-y:auto">
     <div class="modal-header" style="position:sticky;top:0;background:var(--bg2);z-index:10">
@@ -1776,15 +1812,16 @@ let state = {
   trades: [],
   hedges: [],
   alerts: [],
+  watchlist: JSON.parse(localStorage.getItem('miq_watchlist') || '[]'),
   apiKey: localStorage.getItem('mortgageiq_key') || window._mortgageiqKey || '',
-  costSaver: localStorage.getItem('miq_cost_saver') === 'true',
+  costSaver: localStorage.getItem('miq_cost_saver') !== 'false',
   currentPage: 'dashboard',
   charts: {}
 };
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-08-27T07:48:17.691299Z
+// Live data — 2026-08-30T23:51:30.326400Z
 const SIGNALS_AS_OF = "2026-08-25"; // last observation date backing hist[] trailing windows
 const SEED_SIGNALS = {
   fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.63, unit:"%", zscore:-1.2, hist:[4.33, 4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63, 3.63, 3.63] },
@@ -2501,7 +2538,7 @@ function saveApiKey() {
 // COST SAVER — disables AI auto-loads to reduce API usage
 // ═══════════════════════════════════════════════════════════════════
 function applyCostSaverState() {
-  state.costSaver = localStorage.getItem('miq_cost_saver') === 'true';
+  state.costSaver = localStorage.getItem('miq_cost_saver') !== 'false';
   updateCostSaverUI();
 }
 
@@ -2710,6 +2747,164 @@ function refreshDashboard() {
 // ═══════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// LIVE INTRADAY OVERLAY — market_data_service.py (Webull equities +
+// bond mark-to-model repricing). Purely additive: if intraday_live.json
+// isn't present (service not running / not deployed), this silently
+// no-ops and the dashboard behaves exactly as before.
+// @@INTRADAY_START@@
+const INTRADAY_REFRESH_MS = 120000; // 2 min, matches the service's own cadence
+let _intradayTimer = null;
+
+function _tickerFromEquityName(name) {
+  // 'RKT (Rocket)' -> 'RKT'. Falls back to the whole name, uppercased.
+  const m = /^([A-Za-z.]{1,8})/.exec(name || '');
+  return (m ? m[1] : name || '').toUpperCase();
+}
+
+async function loadIntradaySnapshot() {
+  try {
+    const resp = await fetch('intraday_live.json', { cache: 'no-store' });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch (e) {
+    return null; // service not deployed yet, or file not committed — fine
+  }
+}
+
+function applyIntradayOverlay(data) {
+  if (!data || !state.positions.length) return;
+  let changed = false;
+
+  state.positions.forEach(p => {
+    if (p.type === 'Equity' && data.equities) {
+      const tick = _tickerFromEquityName(p.name);
+      const q = data.equities[tick];
+      if (q && q.price) { p.currentPrice = q.price; changed = true; }
+    } else if (p.type !== 'Equity' && data.bonds) {
+      const b = data.bonds[p.name];
+      if (b) {
+        if (b.model_price) { p.currentPrice = b.model_price; changed = true; }
+        if (b.oas != null)  { p.oas = Math.round(b.oas); changed = true; }
+        if (b.mc_price != null) { p.mcPrice = b.mc_price; } // Monte Carlo price at the solved OAS — for reference/cross-check, not displayed by default
+      }
+    }
+  });
+
+  if (changed) {
+    renderKpis();
+    renderDashPositions();
+    if (state.currentPage === 'positions') renderFullPositions();
+    const meta = data.meta || {};
+    const el = document.getElementById('lastUpdate');
+    if (el && meta.fetched_at) {
+      el.textContent = `Updated ${new Date().toLocaleTimeString()} · live intraday ${new Date(meta.fetched_at).toLocaleTimeString()}`;
+    }
+  }
+}
+
+async function refreshIntraday() {
+  const data = await loadIntradaySnapshot();
+  if (data) applyIntradayOverlay(data);
+}
+
+function startIntradayPolling() {
+  refreshIntraday(); // fire once immediately
+  if (_intradayTimer) clearInterval(_intradayTimer);
+  _intradayTimer = setInterval(refreshIntraday, INTRADAY_REFRESH_MS);
+}
+
+// Downloads positions_live.json in the exact shape bond_repricer.py
+// expects, so the live market data service can reprice this book and
+// solve TRUE OAS (Monte Carlo, see oas_engine.py) rather than a
+// placeholder. `coupon` is required for the real OAS solve — without
+// it, that position falls back to the old directional-drift estimate.
+// NOTE: mod_duration is approximated from WAL (≈0.7×WAL for a typical
+// passthrough) since the dashboard doesn't track true modified duration
+// per position today. Only used for the fast intraday price move, not
+// for OAS itself (OAS is solved independently via cashflow simulation).
+function exportPositionsForPricing() {
+  const payload = state.positions
+    .filter(p => p.type !== 'Equity') // equities are priced by ticker, not this file
+    .map(p => ({
+      position_id: p.name,
+      price: p.currentPrice,
+      oas_bps: p.oas || 0,
+      coupon: p.coupon ? +(p.coupon / 100).toFixed(5) : null,
+      mod_duration: p.wal ? +(p.wal * 0.7).toFixed(2) : 0,
+      convexity: -1.2, // static placeholder — see bond_repricer.py notes
+      face_value: p.upb || 0,
+    }));
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'positions_live.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+// ── Ticker Watchlist ──────────────────────────────────────────────
+// Persists in localStorage; export button writes watchlist.json which
+// fetch_stocks.py merges into its ticker universe automatically — no
+// manual edits to fetch_stocks.py ever needed.
+function saveWatchlist() {
+  localStorage.setItem('miq_watchlist', JSON.stringify(state.watchlist));
+}
+
+function renderWatchlist() {
+  const el = document.getElementById('watchlistChips');
+  if (!el) return;
+  if (!state.watchlist.length) {
+    el.innerHTML = '<span style="font-size:11px;color:var(--text3)">No tickers yet — add one above.</span>';
+    return;
+  }
+  el.innerHTML = state.watchlist.map(t => `
+    <span style="display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;font-family:var(--font-mono);font-size:11px">
+      ${t}
+      <span style="cursor:pointer;color:var(--text3)" onclick="removeWatchlistTicker('${t}')">×</span>
+    </span>`).join('');
+}
+
+function addWatchlistTicker() {
+  const input = document.getElementById('watchlistInput');
+  const ticker = (input.value || '').trim().toUpperCase();
+  if (!ticker) return;
+  if (!state.watchlist.includes(ticker)) {
+    state.watchlist.push(ticker);
+    saveWatchlist();
+    renderWatchlist();
+  }
+  input.value = '';
+  input.focus();
+}
+
+function removeWatchlistTicker(ticker) {
+  state.watchlist = state.watchlist.filter(t => t !== ticker);
+  saveWatchlist();
+  renderWatchlist();
+}
+
+function openWatchlistModal() {
+  renderWatchlist();
+  openModal('watchlistModal');
+}
+
+function exportWatchlist() {
+  const blob = new Blob([JSON.stringify(state.watchlist, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'watchlist.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+// @@INTRADAY_END@@
+
 function init() {
   state.signals = SEED_SIGNALS;
   state.positions = SEED_POSITIONS;
@@ -2723,6 +2918,7 @@ function init() {
 
   updateApiKeyStatus();
   refreshDashboard();
+  startIntradayPolling();
 
   // Apply cost saver state from localStorage
   applyCostSaverState();

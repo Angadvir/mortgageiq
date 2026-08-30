@@ -1924,3 +1924,77 @@
 2026-08-27 00:48:17  INFO          ID: 4 rows
 2026-08-27 00:48:17  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
 2026-08-27 00:48:17  INFO      Run complete — 21 OK, 0 failed
+2026-08-30 16:51:19  INFO      Database initialised → signals.db
+2026-08-30 16:51:19  INFO      ============================================================
+2026-08-30 16:51:19  INFO      MortgageIQ Pipeline — fetch run starting (2026-08-30 16:51)
+2026-08-30 16:51:19  INFO      ============================================================
+2026-08-30 16:51:19  INFO        Fetching fedFunds (FEDFUNDS)…
+2026-08-30 16:51:19  ERROR         ✗ fedFunds: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:20  INFO        Fetching sofr (SOFR)…
+2026-08-30 16:51:20  ERROR         ✗ sofr: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:20  INFO        Fetching tenYrTsy (DGS10)…
+2026-08-30 16:51:20  ERROR         ✗ tenYrTsy: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:21  INFO        Fetching twoYrTsy (DGS2)…
+2026-08-30 16:51:21  ERROR         ✗ twoYrTsy: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:21  INFO        Fetching pmms30 (MORTGAGE30US)…
+2026-08-30 16:51:21  ERROR         ✗ pmms30: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:22  INFO        Fetching pmms15 (MORTGAGE15US)…
+2026-08-30 16:51:22  ERROR         ✗ pmms15: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:22  INFO        Fetching mba30 (OBMMIC30YF)…
+2026-08-30 16:51:22  ERROR         ✗ mba30: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:23  INFO        Fetching cpi (CPIAUCSL)…
+2026-08-30 16:51:23  ERROR         ✗ cpi: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:23  INFO        Fetching corePce (PCEPILFE)…
+2026-08-30 16:51:23  ERROR         ✗ corePce: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:24  INFO        Fetching ppi (PPIACO)…
+2026-08-30 16:51:24  ERROR         ✗ ppi: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:24  INFO        Fetching unemployment (UNRATE)…
+2026-08-30 16:51:24  ERROR         ✗ unemployment: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:25  INFO        Fetching nfp (PAYEMS)…
+2026-08-30 16:51:25  ERROR         ✗ nfp: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:25  INFO        Fetching jolts (JTSJOL)…
+2026-08-30 16:51:25  ERROR         ✗ jolts: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:26  INFO        Fetching hpiNational (CSUSHPISA)…
+2026-08-30 16:51:26  ERROR         ✗ hpiNational: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:26  INFO        Fetching housingStarts (HOUST)…
+2026-08-30 16:51:26  ERROR         ✗ housingStarts: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:27  INFO        Fetching existingHomeSales (EXHOSLUSM495S)…
+2026-08-30 16:51:27  ERROR         ✗ existingHomeSales: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:27  INFO        Fetching mortgageDelinquency (DRSFRMACBS)…
+2026-08-30 16:51:27  ERROR         ✗ mortgageDelinquency: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:28  INFO        Fetching refiBoomster (MORTGAGE30US)…
+2026-08-30 16:51:28  ERROR         ✗ refiBoomster: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:28  INFO        Fetching igSpread (BAMLC0A0CM)…
+2026-08-30 16:51:28  ERROR         ✗ igSpread: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:29  INFO        Fetching hySpread (BAMLH0A0HYM2)…
+2026-08-30 16:51:29  ERROR         ✗ hySpread: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:29  INFO        Fetching mbsSpread (MORTGAGE30US)…
+2026-08-30 16:51:29  ERROR         ✗ mbsSpread: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  INFO        Fetching HPI by state…
+2026-08-30 16:51:30  WARNING       ✗ HPI CA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI TX: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI FL: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI NY: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI WA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI CO: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI AZ: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI NV: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI OR: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI GA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI NC: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI SC: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI TN: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI OH: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI MI: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI IL: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI PA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI NJ: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI MA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI VA: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI MD: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI MN: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI WI: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI UT: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  WARNING       ✗ HPI ID: FRED_API_KEY not set. Get one free at fred.stlouisfed.org → My Account → API Keys
+2026-08-30 16:51:30  INFO      JSON exported → signals_live.json  (21 signals, 25 states)
+2026-08-30 16:51:30  INFO      Run complete — 0 OK, 21 failed
