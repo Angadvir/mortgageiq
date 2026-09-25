@@ -1821,16 +1821,16 @@ let state = {
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-09-16T03:31:32.708422Z
-const SIGNALS_AS_OF = "2026-09-14"; // last observation date backing hist[] trailing windows
+// Live data — 2026-09-25T07:38:33.974576Z
+const SIGNALS_AS_OF = "2026-09-24"; // last observation date backing hist[] trailing windows
 const SEED_SIGNALS = {
   fedFunds: { label:"Fed Funds Rate", value:3.63, prev:3.63, unit:"%", zscore:-1.15, hist:[4.22, 4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63, 3.63, 3.63, 3.63] },
-  sofr: { label:"SOFR", value:3.62, prev:3.62, unit:"%", zscore:-1.28, hist:[3.64, 3.65, 3.68, 3.66, 3.65, 3.66, 3.65, 3.64, 3.64, 3.62, 3.62, 3.62] },
-  tenYrTsy: { label:"10Y Treasury", value:4.97, prev:4.96, unit:"%", zscore:2.49, hist:[4.67, 4.73, 4.75, 4.79, 4.79, 4.77, 4.78, 4.8, 4.83, 4.95, 4.96, 4.97] },
-  twoYrTsy: { label:"2Y Treasury", value:4.65, prev:4.63, unit:"%", zscore:3.46, hist:[4.2, 4.34, 4.34, 4.39, 4.39, 4.34, 4.37, 4.39, 4.43, 4.56, 4.63, 4.65] },
-  pmms30: { label:"PMMS 30Y Rate", value:6.76, prev:6.71, unit:"%", zscore:1.86, hist:[6.49, 6.43, 6.49, 6.55, 6.58, 6.66, 6.69, 6.67, 6.65, 6.66, 6.71, 6.76] },
-  pmms15: { label:"PMMS 15Y Rate", value:6.09, prev:6.04, unit:"%", zscore:2.13, hist:[5.84, 5.79, 5.82, 5.93, 5.96, 6.04, 6.01, 5.96, 5.95, 5.98, 6.04, 6.09] },
-  mba30: { label:"MBA 30Y Rate", value:6.968, prev:6.945, unit:"%", zscore:3.23, hist:[6.678, 6.688, 6.719, 6.749, 6.78, 6.744, 6.766, 6.766, 6.805, 6.88, 6.945, 6.968] },
+  sofr: { label:"SOFR", value:3.87, prev:3.87, unit:"%", zscore:2.06, hist:[3.64, 3.64, 3.62, 3.62, 3.62, 3.64, 3.62, 3.85, 3.85, 3.85, 3.87, 3.87] },
+  tenYrTsy: { label:"10Y Treasury", value:5.11, prev:4.96, unit:"%", zscore:2.68, hist:[4.8, 4.83, 4.95, 4.96, 4.97, 5.0, 5.01, 4.94, 5.01, 4.96, 4.96, 5.11] },
+  twoYrTsy: { label:"2Y Treasury", value:4.85, prev:4.71, unit:"%", zscore:2.83, hist:[4.39, 4.43, 4.56, 4.63, 4.65, 4.67, 4.74, 4.67, 4.76, 4.76, 4.71, 4.85] },
+  pmms30: { label:"PMMS 30Y Rate", value:7.03, prev:6.95, unit:"%", zscore:2.83, hist:[6.49, 6.55, 6.58, 6.66, 6.69, 6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03] },
+  pmms15: { label:"PMMS 15Y Rate", value:6.42, prev:6.26, unit:"%", zscore:3.18, hist:[5.82, 5.93, 5.96, 6.04, 6.01, 5.96, 5.95, 5.98, 6.04, 6.09, 6.26, 6.42] },
+  mba30: { label:"MBA 30Y Rate", value:7.142, prev:7.028, unit:"%", zscore:2.39, hist:[6.766, 6.805, 6.88, 6.945, 6.968, 7.014, 7.047, 7.013, 7.038, 7.034, 7.028, 7.142] },
   cpi: { label:"CPI YoY", value:3.713, prev:3.5398, unit:"%", zscore:1.06, hist:[2.9386, 3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202, 3.947, 4.27, 3.7265, 3.5398, 3.713] },
   corePce: { label:"Core PCE", value:3.3441, prev:3.3436, unit:"%", zscore:1.31, hist:[2.9124, 2.8251, 2.7545, 2.8291, 2.9711, 3.1047, 3.0493, 3.2538, 3.3298, 3.4637, 3.3436, 3.3441] },
   ppi: { label:"PPI", value:9.8501, prev:8.6992, unit:"%", zscore:1.38, hist:[3.709, 2.9674, 3.4371, 3.1213, 2.4277, 3.8679, 6.8017, 9.4159, 12.1858, 9.8015, 8.6992, 9.8501] },
@@ -1838,13 +1838,13 @@ const SEED_SIGNALS = {
   nfp: { label:"NFP (000s)", value:162.0, prev:21.0, unit:"k", zscore:1.16, hist:[76.0, -140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 148.0, 63.0, 31.0, 21.0, 162.0] },
   jolts: { label:"JOLTS Openings", value:7.271, prev:7.182, unit:"M", zscore:0.15, hist:[6.919, 7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.585, 7.537, 7.182, 7.271] },
   hpiNational: { label:"HPI National YoY", value:1.5237, prev:1.2049, unit:"%", zscore:0.15, hist:[1.6483, 1.4952, 1.32, 1.3316, 1.3058, 1.1656, 0.9501, 0.8002, 0.7747, 0.9754, 1.2049, 1.5237] },
-  housingStarts: { label:"Housing Starts (000s)", value:1239.0, prev:1415.0, unit:"k", zscore:-1.56, hist:[1291.0, 1319.0, 1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1522.0, 1414.0, 1182.0, 1415.0, 1239.0] },
+  housingStarts: { label:"Housing Starts (000s)", value:1275.0, prev:1309.0, unit:"k", zscore:-1.11, hist:[1319.0, 1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1522.0, 1414.0, 1182.0, 1439.0, 1309.0, 1275.0] },
   existingHomeSales: { label:"Existing Home Sales", value:3980.0, prev:4060.0, unit:"M", zscore:-1.21, hist:[4080.0, 4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 4010.0, 4040.0, 4190.0, 4130.0, 4060.0, 3980.0] },
   mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.86, prev:1.88, unit:"%", zscore:1.51, hist:[1.73, 1.74, 1.77, 1.77, 1.78, 1.78, 1.79, 1.88, 1.86] },
-  refiBoomster: { label:"Refi App Index (proxy)", value:6.76, prev:6.71, unit:"", zscore:1.68, hist:[6.49, 6.43, 6.49, 6.55, 6.58, 6.66, 6.69, 6.67, 6.65, 6.66, 6.71, 6.76] },
-  igSpread: { label:"IG Corp OAS", value:80.0, prev:80.0, unit:"bps", zscore:0.59, hist:[79.0, 80.0, 81.0, 81.0, 81.0, 81.0, 81.0, 81.0, 81.0, 80.0, 80.0, 80.0] },
-  hySpread: { label:"HY Corp OAS", value:271.0, prev:265.0, unit:"bps", zscore:-0.18, hist:[260.0, 263.0, 265.0, 266.0, 265.0, 268.0, 268.0, 267.0, 271.0, 270.0, 265.0, 271.0] },
-  mbsSpread: { label:"MBS OAS (est.)", value:201.0, prev:196.0, unit:"bps", zscore:1.68, hist:[174.0, 168.0, 174.0, 180.0, 183.0, 191.0, 194.0, 192.0, 190.0, 191.0, 196.0, 201.0] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:7.03, prev:6.95, unit:"", zscore:2.34, hist:[6.49, 6.55, 6.58, 6.66, 6.69, 6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03] },
+  igSpread: { label:"IG Corp OAS", value:77.0, prev:77.0, unit:"bps", zscore:-1.12, hist:[81.0, 81.0, 80.0, 80.0, 80.0, 80.0, 78.0, 78.0, 77.0, 77.0, 77.0, 77.0] },
+  hySpread: { label:"HY Corp OAS", value:273.0, prev:268.0, unit:"bps", zscore:0.33, hist:[267.0, 271.0, 270.0, 265.0, 271.0, 276.0, 270.0, 270.0, 268.0, 266.0, 268.0, 273.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:228.0, prev:220.0, unit:"bps", zscore:2.34, hist:[174.0, 180.0, 183.0, 191.0, 194.0, 192.0, 190.0, 191.0, 196.0, 201.0, 220.0, 228.0] },
 };
 // @@SIGNALS_END@@
 
