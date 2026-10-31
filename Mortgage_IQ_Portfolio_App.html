@@ -2039,30 +2039,30 @@ let state = {
 
 // ── SEED DATA ──────────────────────────────────────────────────────
 // @@SIGNALS_START@@
-// Live data — 2026-10-23T07:55:28.996239Z
-const SIGNALS_AS_OF = "2026-10-22"; // last observation date backing hist[] trailing windows
+// Live data — 2026-10-31T07:32:49.199751Z
+const SIGNALS_AS_OF = "2026-10-29"; // last observation date backing hist[] trailing windows
 const SEED_SIGNALS = {
   fedFunds: { label:"Fed Funds Rate", value:3.75, prev:3.63, unit:"%", zscore:-0.92, hist:[4.09, 3.88, 3.72, 3.64, 3.64, 3.64, 3.64, 3.63, 3.63, 3.63, 3.63, 3.75] },
-  sofr: { label:"SOFR", value:3.88, prev:3.88, unit:"%", zscore:0.11, hist:[3.89, 3.9, 3.88, 3.87, 3.87, 3.89, 3.88, 3.89, 3.88, 3.87, 3.88, 3.88] },
-  tenYrTsy: { label:"10Y Treasury", value:5.13, prev:5.12, unit:"%", zscore:0.94, hist:[5.31, 5.27, 5.28, 5.22, 5.24, 5.21, 5.19, 5.1, 5.09, 5.15, 5.12, 5.13] },
-  twoYrTsy: { label:"2Y Treasury", value:4.81, prev:4.79, unit:"%", zscore:1.12, hist:[4.84, 4.79, 4.77, 4.75, 4.8, 4.79, 4.82, 4.77, 4.74, 4.77, 4.79, 4.81] },
-  pmms30: { label:"PMMS 30Y Rate", value:7.32, prev:7.4, unit:"%", zscore:2.68, hist:[6.69, 6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03, 7.28, 7.4, 7.4, 7.32] },
-  pmms15: { label:"PMMS 15Y Rate", value:6.68, prev:6.71, unit:"%", zscore:2.74, hist:[6.01, 5.96, 5.95, 5.98, 6.04, 6.09, 6.26, 6.42, 6.6, 6.73, 6.71, 6.68] },
-  mba30: { label:"MBA 30Y Rate", value:7.304, prev:7.326, unit:"%", zscore:0.66, hist:[7.458, 7.451, 7.433, 7.424, 7.388, 7.361, 7.378, 7.294, 7.276, 7.322, 7.326, 7.304] },
+  sofr: { label:"SOFR", value:3.94, prev:3.94, unit:"%", zscore:1.9, hist:[3.88, 3.89, 3.88, 3.87, 3.88, 3.88, 3.9, 3.92, 3.93, 3.95, 3.94, 3.94] },
+  tenYrTsy: { label:"10Y Treasury", value:4.98, prev:5.05, unit:"%", zscore:0.17, hist:[5.19, 5.1, 5.09, 5.15, 5.12, 5.13, 4.96, 5.0, 5.0, 4.99, 5.05, 4.98] },
+  twoYrTsy: { label:"2Y Treasury", value:4.61, prev:4.67, unit:"%", zscore:0.24, hist:[4.82, 4.77, 4.74, 4.77, 4.79, 4.81, 4.65, 4.69, 4.68, 4.7, 4.67, 4.61] },
+  pmms30: { label:"PMMS 30Y Rate", value:7.24, prev:7.32, unit:"%", zscore:2.29, hist:[6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03, 7.28, 7.4, 7.4, 7.32, 7.24] },
+  pmms15: { label:"PMMS 15Y Rate", value:6.6, prev:6.68, unit:"%", zscore:2.34, hist:[5.96, 5.95, 5.98, 6.04, 6.09, 6.26, 6.42, 6.6, 6.73, 6.71, 6.68, 6.6] },
+  mba30: { label:"MBA 30Y Rate", value:7.147, prev:7.22, unit:"%", zscore:-0.41, hist:[7.378, 7.294, 7.276, 7.322, 7.326, 7.304, 7.251, 7.229, 7.203, 7.218, 7.22, 7.147] },
   cpi: { label:"CPI YoY", value:4.0233, prev:3.713, unit:"%", zscore:1.47, hist:[3.0226, 2.9883, 3.0023, 2.8287, 2.6646, 3.3202, 3.947, 4.27, 3.7265, 3.5398, 3.713, 4.0233] },
-  corePce: { label:"Core PCE", value:3.0076, prev:2.9835, unit:"%", zscore:0.7, hist:[2.8171, 2.7048, 2.7212, 2.872, 2.938, 2.9592, 3.1052, 3.0839, 3.1617, 3.0412, 2.9835, 3.0076] },
+  corePce: { label:"Core PCE", value:3.1212, prev:3.0344, unit:"%", zscore:1.32, hist:[2.7048, 2.7212, 2.872, 2.938, 2.9592, 3.1052, 3.0839, 3.1617, 3.0412, 2.9953, 3.0344, 3.1212] },
   ppi: { label:"PPI", value:12.8424, prev:9.7764, unit:"%", zscore:1.92, hist:[2.9674, 3.4371, 3.1213, 2.4277, 3.8679, 6.8017, 9.4159, 12.2171, 9.8069, 8.6199, 9.7764, 12.8424] },
   unemployment: { label:"Unemployment Rate", value:4.2, prev:4.1, unit:"%", zscore:-0.02, hist:[4.4, 4.5, 4.4, 4.3, 4.4, 4.3, 4.3, 4.3, 4.2, 4.1, 4.1, 4.2] },
   nfp: { label:"NFP (000s)", value:29.0, prev:133.0, unit:"k", zscore:-0.26, hist:[-140.0, 41.0, -17.0, 160.0, -156.0, 214.0, 148.0, 63.0, 31.0, -10.0, 133.0, 29.0] },
   jolts: { label:"JOLTS Openings", value:7.079, prev:7.335, unit:"M", zscore:-0.55, hist:[7.169, 7.17, 6.846, 6.55, 7.24, 6.922, 6.887, 7.585, 7.537, 7.182, 7.335, 7.079] },
-  hpiNational: { label:"HPI National YoY", value:1.9304, prev:1.6155, unit:"%", zscore:0.83, hist:[1.4952, 1.3236, 1.335, 1.3103, 1.1703, 0.9608, 0.8192, 0.8242, 1.0038, 1.2698, 1.6155, 1.9304] },
+  hpiNational: { label:"HPI National YoY", value:2.0908, prev:1.9207, unit:"%", zscore:1.06, hist:[1.3236, 1.3345, 1.3097, 1.1682, 0.9591, 0.8195, 0.8301, 1.0103, 1.2753, 1.6208, 1.9207, 2.0908] },
   housingStarts: { label:"Housing Starts (000s)", value:1221.0, prev:1288.0, unit:"k", zscore:-1.77, hist:[1273.0, 1319.0, 1378.0, 1385.0, 1346.0, 1522.0, 1414.0, 1182.0, 1439.0, 1369.0, 1288.0, 1221.0] },
   existingHomeSales: { label:"Existing Home Sales", value:3990.0, prev:3930.0, unit:"M", zscore:-0.93, hist:[4110.0, 4090.0, 4270.0, 4020.0, 4130.0, 4010.0, 4040.0, 4190.0, 4130.0, 4060.0, 3930.0, 3990.0] },
   mortgageDelinquency: { label:"Mortgage Delinquency Rate", value:1.86, prev:1.88, unit:"%", zscore:1.51, hist:[1.73, 1.74, 1.77, 1.77, 1.78, 1.78, 1.79, 1.88, 1.86] },
-  refiBoomster: { label:"Refi App Index (proxy)", value:7.32, prev:7.4, unit:"", zscore:2.09, hist:[6.69, 6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03, 7.28, 7.4, 7.4, 7.32] },
-  igSpread: { label:"IG Corp OAS", value:88.0, prev:87.0, unit:"bps", zscore:2.66, hist:[83.0, 82.0, 82.0, 83.0, 83.0, 83.0, 84.0, 84.0, 85.0, 87.0, 87.0, 88.0] },
-  hySpread: { label:"HY Corp OAS", value:327.0, prev:333.0, unit:"bps", zscore:1.91, hist:[303.0, 309.0, 315.0, 311.0, 311.0, 316.0, 325.0, 323.0, 331.0, 329.0, 333.0, 327.0] },
-  mbsSpread: { label:"MBS OAS (est.)", value:257.0, prev:265.0, unit:"bps", zscore:2.09, hist:[194.0, 192.0, 190.0, 191.0, 196.0, 201.0, 220.0, 228.0, 253.0, 265.0, 265.0, 257.0] },
+  refiBoomster: { label:"Refi App Index (proxy)", value:7.24, prev:7.32, unit:"", zscore:1.75, hist:[6.67, 6.65, 6.66, 6.71, 6.76, 6.95, 7.03, 7.28, 7.4, 7.4, 7.32, 7.24] },
+  igSpread: { label:"IG Corp OAS", value:89.0, prev:86.0, unit:"bps", zscore:2.05, hist:[84.0, 84.0, 85.0, 87.0, 87.0, 88.0, 89.0, 91.0, 90.0, 88.0, 86.0, 89.0] },
+  hySpread: { label:"HY Corp OAS", value:326.0, prev:314.0, unit:"bps", zscore:1.42, hist:[325.0, 323.0, 331.0, 329.0, 333.0, 327.0, 340.0, 338.0, 330.0, 318.0, 314.0, 326.0] },
+  mbsSpread: { label:"MBS OAS (est.)", value:249.0, prev:257.0, unit:"bps", zscore:1.75, hist:[192.0, 190.0, 191.0, 196.0, 201.0, 220.0, 228.0, 253.0, 265.0, 265.0, 257.0, 249.0] },
 };
 // @@SIGNALS_END@@
 
